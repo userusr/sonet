@@ -1,0 +1,97 @@
+---
+- name: Install aptitude using apt
+  apt:
+    name: aptitude
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+  tags:
+    - init
+
+- name: Install required system packages
+  apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  loop:
+    - 'apt-transport-https'
+    - 'ca-certificates'
+    - 'curl'
+    - 'software-properties-common'
+    - 'python3-pip'
+    - 'virtualenv'
+    - 'python3-setuptools'
+  tags:
+    - init
+    - docker
+
+- name: Add Docker s official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/{{ ansible_distribution|lower }}/gpg
+    state: present
+  when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian"
+  tags:
+    - init
+    - docker
+
+- name: Add Docker s official GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+  when: ansible_facts['distribution'] == "Linux Mint"
+  tags:
+    - init
+    - docker
+
+- name: Verify that we have the key with the fingerprint
+  apt_key:
+    id: 0EBFCD88
+    state: present
+  tags:
+    - init
+    - docker
+
+- name: Set up the stable repository
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable'
+    state: present
+    update_cache: yes
+  when: ansible_facts['distribution'] == "Ubuntu" or ansible_facts['distribution'] == "Debian"
+  tags:
+    - init
+    - docker
+
+- name: Set up the stable repository
+  apt_repository:
+    repo: 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable'
+    state: present
+    update_cache: yes
+  when: ansible_facts['distribution'] == "Linux Mint" and ansible_facts['distribution_release'] == "ulyana"
+  tags:
+    - init
+    - docker
+
+- name: Update apt packages
+  apt:
+    update_cache: yes
+  tags:
+    - init
+    - docker
+
+- name: Install docker
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+  tags:
+    - init
+    - docker
+
+- name: Install docker-compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: 'u+x,g+x'
+  tags:
+    - init
+    - docker

@@ -1,0 +1,9 @@
+docker-py
+molecule
+ansible-lint
+yamllint
+
+ansible
+Sphinx
+watchdog
+argh

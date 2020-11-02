@@ -1,0 +1,13 @@
+---
+redmine:
+  ldap_auth_name: "{{ openldap['ldap_organisation'] }}"
+  ldap_host: "{{ openldap['ldap_hostname'] }}"
+  ldap_account: "cn={{ openldap['ldap_readonly_user_username'] }},{{ openldap['ldap_base_dn'] }}"
+  ldap_account_password: "{{ openldap['ldap_readonly_user_password'] }}"
+  ldap_base_dn: "ou=users,{{ openldap['ldap_base_dn'] }}"
+  ldap_attr_login: cn
+  ldap_attr_firstname: givenName
+  ldap_attr_lastname: sn
+  ldap_attr_mail: mail
+  ldap_filter: "(&(objectClass=person)(memberOf=cn=redmine,ou=groups,{{ openldap['ldap_base_dn'] }}))"
+  admin_mail_account_password: "{{ conf['redmine_admin_mail_account_password'] }}"

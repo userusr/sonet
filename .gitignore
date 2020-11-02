@@ -1,0 +1,29 @@
+inventories/*
+!inventories/sonet.local
+inventories/sonet.local/build/*
+!inventories/sonet.local/build/.keep
+inventories/sonet.local/pki/*
+!inventories/sonet.local/pki/.keep*
+registry/*
+!registry/.keep
+inventories/sonet.local/redmine/plugins/*
+!inventories/sonet.local/redmine/plugins/.keep
+inventories/sonet.local/redmine/themes/*
+!inventories/sonet.local/redmine/themes/.keep
+
+# environment variables
+.env
+
+# virtual environment
+venv
+
+# local project deployment folder
+build/*
+!build/.keep
+
+# IDE stuff
+.vscode
+.idea/
+
+# Sphinx documentation
+docs/_build/

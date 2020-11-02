@@ -1,0 +1,90 @@
+{% for ou in openldap['preset_ldiff'].keys() %}
+dn: ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: organizationalUnit
+objectClass: top
+ou: {{ ou }}
+
+{% if ou == 'users' %}
+{% for name, data in openldap['preset_ldiff'][ou].items() %}
+{% if data['person'] %}
+dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: posixAccount
+objectClass: mailAccount
+objectClass: person
+objectClass: top
+cn: {{ name }}
+uid: {{ name }}
+homeDirectory: /home/{{ name }}
+uidNumber: {{ data['id'] }}
+gidNumber: {{ data['id'] }}
+sn: {{ data['sn'] }}
+displayName: {{ data['displayName'] }}
+givenName: {{ data['givenName'] }}
+mail: {{ name }}@{{ openldap['ldap_domain'] }}
+ou: {{ data['ou'] }}
+mailenable: ok
+mailAlias: {{ name }}@{{ openldap['ldap_domain'] }}
+userPassword: {{ data['userPassword'] }}
+
+{% else %}
+dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: mailAccount
+objectClass: organizationalRole
+objectClass: simpleSecurityObject
+objectClass: top
+cn: {{ name }}
+mailenable: ok
+mailAlias: {{ name }}@{{ openldap['ldap_domain'] }}
+mail: {{ name }}@{{ openldap['ldap_domain'] }}
+userPassword: {{ data['userPassword'] }}
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+{% if ou == 'groups' %}
+{% for name, data in openldap['preset_ldiff'][ou].items() %}
+dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: {{ name }}
+{% for cn in openldap['preset_ldiff'][ou][name] %}
+uniqueMember: cn={{ cn }},ou=users,{{ openldap['ldap_base_dn'] }}
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+
+dn: ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: organizationalUnit
+objectClass: top
+ou: mailDomains
+
+dn: virtualdomain={{ openldap['ldap_domain'] }},ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: mailDomain
+objectClass: top
+virtualdomain: {{ openldap['ldap_domain'] }}
+
+dn: ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: organizationalUnit
+objectClass: top
+ou: mailAliases
+
+dn: mailalias={{ openldap['ldap_domain'] }},ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+changetype: add
+objectClass: mailAlias
+objectClass: top
+mailalias: {{ openldap['ldap_domain'] }}
+mailenable: ok

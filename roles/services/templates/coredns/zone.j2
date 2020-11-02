@@ -1,0 +1,29 @@
+$TTL    24h
+{{item['domain_name']}} IN SOA {{item['name_server_fqdn']}} {{item['admin_email']}} (
+                     2014032001    ; Serial
+                             1d    ; Refresh
+                             2h    ; Retry
+                           100h    ; Expire
+                             2d )  ; Negative Cache TTL
+;
+{% for member in item['members'] | sort(attribute='type', reverse=True) | sort(attribute='address') %}
+{% if member['type']|upper == 'NS' -%}
+  {{"%-20s" | format(member['hostname'],)}} IN {{"%-6s" | format(member['type'])}} {{member['address']}}
+{% endif %}
+{% endfor %}
+{% for member in item['members'] | sort(attribute='type', reverse=True) | sort(attribute='address') %}
+{% if member['type']|upper == 'MX' -%}
+  {{"%-20s" | format(member['hostname'],)}} IN {{"%-6s" | format(member['type'])}} {{member['address']}}
+{% endif %}
+{% endfor %}
+{% for member in item['members'] | sort(attribute='type', reverse=True) | sort(attribute='address') %}
+{% if member['type']|upper not in ('NS', 'MX', 'PTR') -%}
+  {{"%-20s" | format(member['hostname'],)}} IN {{"%-6s" | format(member['type'])}} {{member['address']}}
+{% endif %}
+{% endfor %}
+{% for member in item['members'] | sort(attribute='type', reverse=True) | sort(attribute='address') %}
+{% if member['type']|upper == 'PTR' -%}
+  {% set ip = member['address'].split('.') -%}
+  {{"%-20s" | format(ip[-1])}} IN {{"%-6s" | format(member['type'])}} {{member['hostname']}}
+{% endif %}
+{% endfor %}

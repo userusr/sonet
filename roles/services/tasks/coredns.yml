@@ -1,0 +1,16 @@
+---
+- name: 'coredns : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_image_dir: '{{ local_path }}/images/coredns'
+    - service_dirs:
+      - zones
+  tags: [init, build, push]
+
+- name: 'coredns : create zone files'
+  template:
+    src: 'coredns/zone.j2'
+    dest: "{{ local_path }}/images/coredns/zones/{{ item['zonefile'] }}"
+    mode: preserve
+  loop: "{{ coredns['zones'] }}"
+  tags: init

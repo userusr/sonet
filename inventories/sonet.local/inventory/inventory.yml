@@ -1,0 +1,44 @@
+---
+all:
+  hosts:
+    sonet_vbox:
+      ansible_connection: ssh
+      ansible_host: 192.168.56.2
+      ansible_become: true
+      ansible_python_interpreter: python3
+      ansible_become_password: "{{ sonet_vbox_become_password }}"
+      local_path: "/opt/{{ project }}/docker"
+      docker_bind_ip: 192.168.56.2
+    sonet_local:
+      ansible_connection: local
+      ansible_python_interpreter: python3
+      local_path: "{{ local_playbook_path }}/build/sonet_local"
+      docker_data_dir: "{{ local_playbook_path }}/build/sonet_local/docker"
+      docker_bind_ip: 127.0.0.1
+      include_service:
+        - caddy
+        - coredns
+        - openldap
+        - phpldapadmin
+        - redmine
+        - excalidraw
+        - gitlab
+        - roundcube
+        - mailserv
+        - storage
+    sonet_docker_mashine:
+      ansible_connection: local
+      ansible_python_interpreter: python3
+      local_path: "{{ local_playbook_path }}/build/sonet_docker_mashine"
+      docker_data_dir: "/opt/{{ project }}/docker"
+      include_service:
+        - caddy
+        - coredns
+        - openldap
+        - phpldapadmin
+        - redmine
+        - excalidraw
+        - gitlab
+        - roundcube
+        - mailserv
+        - storage

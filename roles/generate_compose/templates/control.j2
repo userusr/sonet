@@ -1,0 +1,97 @@
+{%- if docker_registry_url is defined -%}
+  {%- set registry_url = docker_registry_url + '/' -%}
+{%- else -%}
+  {%- set registry_url = '' -%}
+{%- endif -%}
+#!/bin/bash
+set -e
+
+DETACH=--detach
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+while getopts "d?" opt; do
+  case $opt in
+    d)
+      DETACH=
+    ;;
+  esac
+done
+
+shift $((OPTIND-1))
+[ "${1:-}" = "--" ] && shift
+
+case "$1" in
+  up)
+    shift
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      up \
+      $DETACH \
+      --remove-orphans \
+      $@
+  ;;
+  down)
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      down \
+      --remove-orphans
+  ;;
+  start)
+    shift
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      start \
+      $@
+  ;;
+  stop)
+    shift
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      stop \
+      $@
+  ;;
+  restart)
+    shift
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      restart \
+      $@
+  ;;
+  exec)
+    shift
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      exec \
+      $@
+  ;;
+  logs)
+    shift
+    docker-compose \
+      --file ${DIR}/{{project}}.yml \
+      --project-name {{project}} \
+      logs \
+      --follow \
+      $@
+  ;;
+  clean)
+    docker ps -a \
+    | grep "{{registry_url}}{{project}}-" \
+    | awk '{print $1}' \
+    | xargs --no-run-if-empty docker rm --force --volumes
+  ;;
+  clean-images)
+    docker images \
+    | grep "{{registry_url}}{{project}}-" \
+    | awk '{print $3}' \
+    | xargs --no-run-if-empty docker rmi --force
+  ;;
+  *)
+    echo "start | stop | logs | clean | clean-images"
+  ;;
+esac

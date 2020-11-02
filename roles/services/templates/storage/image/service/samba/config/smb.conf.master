@@ -1,0 +1,22 @@
+﻿[global]
+    server string = storage server
+    workgroup = WORKGROUP
+
+    log level = 1
+    log file = /dev/stdout
+
+    security = user
+    map to guest = Bad User
+    guest account = nobody
+
+    unix charset = UTF-8
+    dos charset = cp1251
+    store dos attributes = yes
+
+{% for share in storage['smb_shares'] %}
+[{{ share['name'] }}]
+    path = /opt/var/storage/{{ share['dir'] }}
+    guest ok = yes
+    read only = yes
+
+{% endfor %}

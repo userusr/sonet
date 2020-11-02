@@ -1,0 +1,34 @@
+---
+- name: "services : create build folder {{ local_path }}/images"
+  file:
+    path: '{{ local_path }}/images'
+    state: directory
+    recurse: yes
+    mode: 0775
+  tags: init
+
+- name: "services : register docker directory var"
+  stat:
+    path: '{{ local_path }}/docker'
+  register: docker_dir
+  tags: init
+
+- name: "services : create docker folder '{{ local_path }}/docker' if not exists"
+  file:
+    path: '{{ local_path }}/docker'
+    state: directory
+    recurse: yes
+    mode: 0775
+  when: not docker_dir.stat.exists
+  tags: init
+
+- name: "setup pki"
+  include_tasks: 'setup_pki.yml'
+  tags: init
+
+- name: "include services"
+  include_tasks: '{{ service }}.yml'
+  loop: '{{ include_service|default([]) }}'
+  loop_control:
+    loop_var: service
+  tags: [init, build, push]

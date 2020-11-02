@@ -1,0 +1,19 @@
+.:53 {
+{% if coredns['root_forward'] is defined %}
+    forward . {{ coredns['root_forward']|join(' ') }}
+{%- endif %}
+
+    log
+    errors {
+        consolidate 5m ".* i/o timeout$"
+        consolidate 30s "^Failed to .+"
+    }
+}
+
+{% for zone in coredns['zones'] %}
+{{ zone['name'] }}:53 {
+    file /etc/coredns/zones/{{ zone['zonefile'] }}
+    log
+    errors
+}
+{% endfor %}

@@ -1,0 +1,7 @@
+---
+conf:
+  ldap_hostname: 'ldap'
+  ldap_domain: "sonet.local"
+  ldap_base_dn: "dc=sonet,dc=local"
+  redmine_admin_mail_account_password: redmine
+  gitlab_mail_account_password: gitlab

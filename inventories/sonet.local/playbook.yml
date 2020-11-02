@@ -1,0 +1,24 @@
+---
+- name: Deploy local
+  hosts: "sonet_local"
+  roles:
+    - role: '../../roles/services'
+    - role: '../../roles/generate_compose'
+
+- name: Generate compose file for docker-mashine
+  hosts: "sonet_docker_mashine"
+  roles:
+    - role: '../../roles/generate_compose'
+
+# - name: Deploy to VirtualBox host
+#   become: yes
+#   hosts: "sonet_vbox"
+#   roles:
+#     - role: '../../roles/common'
+#     - role: '../../roles/install_docker'
+#     - role: '../../roles/generate_compose'
+#     - role: '../../roles/coredns'
+#     - role: '../../roles/openldap'
+#     - role: '../../roles/phpldapadmin'
+#     - role: '../../roles/redmine'
+#     - role: '../../roles/caddy'

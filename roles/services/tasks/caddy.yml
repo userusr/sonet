@@ -1,0 +1,40 @@
+---
+- name: 'caddy : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_image_dir: '{{ local_path }}/images/caddy'
+    - service_dirs:
+      - certs
+      - private
+      - pki
+    - service_gen_certs:
+      - "pki.{{ openldap['ldap_domain'] }}"
+      - "gitlab.{{ openldap['ldap_domain'] }}"
+      - "ldapadmin.{{ openldap['ldap_domain'] }}"
+      - "mail.{{ openldap['ldap_domain'] }}"
+      - "mattermost.{{ openldap['ldap_domain'] }}"
+      - "redmine.{{ openldap['ldap_domain'] }}"
+      - "registry.{{ openldap['ldap_domain'] }}"
+      - "storage.{{ openldap['ldap_domain'] }}"
+      - "excalidraw.{{ openldap['ldap_domain'] }}"
+    - service_copy_certs:
+      - { src: "ca.crt", dest: "certs/ca.crt" }
+      - { src: "ca.crt", dest: "pki/ca.crt" }
+      - { src: "dh.pem", dest: "certs/dhparam.pem" }
+      - { src: "issued/gitlab.{{ openldap['ldap_domain'] }}.crt", dest: "certs/gitlab.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/gitlab.{{ openldap['ldap_domain'] }}.key", dest: "private/gitlab.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/mattermost.{{ openldap['ldap_domain'] }}.crt", dest: "certs/mattermost.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/mattermost.{{ openldap['ldap_domain'] }}.key", dest: "private/mattermost.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/mail.{{ openldap['ldap_domain'] }}.crt", dest: "certs/mail.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/mail.{{ openldap['ldap_domain'] }}.key", dest: "private/mail.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/registry.{{ openldap['ldap_domain'] }}.crt", dest: "certs/registry.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/registry.{{ openldap['ldap_domain'] }}.key", dest: "private/registry.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/redmine.{{ openldap['ldap_domain'] }}.crt", dest: "certs/redmine.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/redmine.{{ openldap['ldap_domain'] }}.key", dest: "private/redmine.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/ldapadmin.{{ openldap['ldap_domain'] }}.crt", dest: "certs/ldapadmin.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/ldapadmin.{{ openldap['ldap_domain'] }}.key", dest: "private/ldapadmin.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/pki.{{ openldap['ldap_domain'] }}.crt", dest: "certs/pki.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/pki.{{ openldap['ldap_domain'] }}.key", dest: "private/pki.{{ openldap['ldap_domain'] }}.key" }
+      - { src: "issued/excalidraw.{{ openldap['ldap_domain'] }}.crt", dest: "certs/excalidraw.{{ openldap['ldap_domain'] }}.crt" }
+      - { src: "private/excalidraw.{{ openldap['ldap_domain'] }}.key", dest: "private/excalidraw.{{ openldap['ldap_domain'] }}.key" }
+  tags: [init, build, push]

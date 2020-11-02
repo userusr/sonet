@@ -1,0 +1,12 @@
+uris = {{ mailserv['ldap_url'] }}
+auth_bind = yes
+ldap_version = 3
+base = ou=users,{{ mailserv['ldap_base_dn'] }}
+user_attrs = mailuserquota=quota_rule=*:bytes=%$
+user_filter = (&(objectClass=mailAccount)(mail=%u)(mailenable=OK))
+pass_attrs = mail=user,userPassword=password
+pass_filter = (&(objectClass=mailAccount)(cn=%n)(mailenable=OK))
+iterate_attrs = mail=user
+iterate_filter = (objectClass=mailAccount)
+dn = {{ mailserv['ldap_bind_dn'] }}
+dnpass = {{ mailserv['ldap_bind_pw'] }}

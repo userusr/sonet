@@ -1,0 +1,63 @@
+---
+- name: Register docker directory var
+  stat:
+    path: '{{ service_image_dir }}'
+  register: service_image_dir
+  tags: init
+
+- name: '{{ service }} : create service image folder'
+  file:
+    path: '{{ service_image_dir }}'
+    state: directory
+    recurse: yes
+    mode: 0755
+  tags: init
+
+- name: '{{ service }} : create service directories'
+  file:
+    path: '{{ service_image_dir }}/{{ item }}'
+    state: directory
+    mode: 0755
+  loop: '{{ service_dirs|default([]) }}'
+  tags: [init, skip_ansible_lint]
+
+- name: '{{ service }} : create directories'
+  file:
+    path: '{{ service_image_dir }}/{{ item.path }}'
+    state: directory
+    mode: '{{ item.mode }}'
+  with_filetree: '../templates/{{ service }}/image'
+  when: item.state == 'directory'
+  tags: [init, skip_ansible_lint]
+
+- name: '{{ service }} : create config files from templates'
+  template:
+    src: '{{ item.src }}'
+    dest: "{{ service_image_dir }}/{{ item.path | regex_replace('^(.*?)(\\.j2)?$', '\\1') }}"
+    mode: '{{ item.mode }}'
+  with_filetree: '../templates/{{ service }}/image'
+  when: item.state == 'file'
+  tags: [init, skip_ansible_lint]
+
+- name: '{{ service }} : generate certs'
+  shell: |
+    "{{ playbook_dir }}/pki/easy-rsa/easyrsa3/easyrsa" --batch build-server-full "{{ item }}" nopass
+  args:
+    creates: '{{ playbook_dir }}/pki/certs/issued/{{ item }}.crt'
+  loop: '{{ service_gen_certs|default([]) }}'
+  tags: init
+
+- name: '{{ service }} : copy certs'
+  copy:
+    src: '{{ playbook_dir }}/pki/certs/{{ item.src }}'
+    dest: '{{ service_image_dir }}/{{ item.dest }}'
+  loop: '{{ service_copy_certs|default([]) }}'
+  tags: init
+
+- name: '{{ service }} : create docker image'
+  command: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service }}:latest'
+  tags: [build, skip_ansible_lint]
+
+- name: '{{ service }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service }}:latest'
+  command: docker push {{ docker_registry_url }}/{{ project }}-{{ service }}:latest
+  tags: push

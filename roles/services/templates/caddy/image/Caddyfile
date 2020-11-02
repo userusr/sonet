@@ -1,0 +1,64 @@
+pki.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/pki.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/pki.{{ openldap['ldap_domain'] }}.key
+
+    file_server browse {
+        root /opt/caddy/pki/
+    }
+}
+
+ldapadmin.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/ldapadmin.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/ldapadmin.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * phpldapadmin:80
+}
+
+redmine.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/redmine.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/redmine.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * redmine:3000
+}
+
+mail.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/mail.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/mail.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * roundcube:80
+}
+
+excalidraw.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/excalidraw.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/excalidraw.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * excalidraw:80
+}
+
+gitlab.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/gitlab.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/gitlab.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * gitlab:443 {
+        transport http {
+            tls
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+mattermost.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/mattermost.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/mattermost.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * mattermost:443 {
+        transport http {
+            tls
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+registry.{{ openldap['ldap_domain'] }}:443 {
+    tls /etc/pki/tls/certs/registry.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/registry.{{ openldap['ldap_domain'] }}.key
+
+    reverse_proxy * registry:443 {
+        transport http {
+            tls
+            tls_insecure_skip_verify
+        }
+    }
+}

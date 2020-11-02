@@ -1,0 +1,16 @@
+---
+- name: 'storage : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_image_dir: '{{ local_path }}/images/storage'
+    - service_dirs:
+      - service/proftpd/certs
+    - service_gen_certs:
+      - "storage.{{ openldap['ldap_domain'] }}"
+    - service_copy_certs:
+      - { src: "ca.crt", dest: "service/proftpd/certs/ca.crt" }
+      - { src: "dh.pem", dest: "service/proftpd/certs/dhparam.pem" }
+      - { src: "issued/storage.{{ openldap['ldap_domain'] }}.crt", dest: "service/proftpd/certs/cert.crt" }
+      - { src: "private/storage.{{ openldap['ldap_domain'] }}.key", dest: "service/proftpd/certs/cert.key" }
+  tags: [init, build, push]
+

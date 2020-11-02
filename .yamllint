@@ -1,0 +1,15 @@
+---
+extends: default
+
+ignore: |
+  venv
+  **/build/
+  **/inventories/sonet.local/pki/easy-rsa/
+
+rules:
+  # 80 chars should be enough, but don't fail if a line is longer
+  line-length: disable
+  # don't bother me with this rule
+  # indentation: disable
+  braces: { min-spaces-inside: 1, max-spaces-inside: 1 }
+  truthy: { allowed-values: ['yes', 'no', 'true', 'false'] }

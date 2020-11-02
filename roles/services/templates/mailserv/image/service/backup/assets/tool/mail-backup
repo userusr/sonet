@@ -1,0 +1,18 @@
+#!/bin/bash -e
+
+# Usage: /sbin/mail-backup
+backupPath="/data/backup"
+
+source /container/run/environment.sh
+
+# delete backups that are over $BACKUP_TTL days
+find $backupPath -type f -mtime +$BACKUP_TTL -exec rm {} \;
+
+# Date format for the dump file name
+dateFileFormat="+%Y%m%dT%H%M%S"
+backupFilePath="$backupPath/$(date "$dateFileFormat")-mail.tar.gz"
+
+tar -czf $backupFilePath -C / var/mail
+chmod 600 $backupFilePath
+
+exit 0

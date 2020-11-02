@@ -1,0 +1,298 @@
+{%- if docker_bind_ip is defined -%}
+  {%- set bind_ip = docker_bind_ip + ':' -%}
+{%- else -%}
+  {%- set bind_ip = '' -%}
+{%- endif -%}
+
+{%- if docker_registry_url is defined -%}
+  {%- set registry_url = docker_registry_url + '/' -%}
+{%- else -%}
+  {%- set registry_url = '' -%}
+{%- endif -%}
+version: '3.4'
+networks:
+  net:
+    attachable: true
+services:
+
+{% if "coredns" in include_service|default([]) %}
+  coredns:
+    container_name: {{project}}-coredns
+    image:  {{registry_url}}{{project}}-coredns:latest
+    restart: always
+    expose:
+      - '53'
+      - '53/udp'
+    ports:
+      - '{{bind_ip}}53:53'
+      - '{{bind_ip}}53:53/udp'
+    networks:
+      - net
+{% endif %}
+
+{% if "openldap" in include_service|default([]) %}
+  openldap:
+    container_name: {{project}}-openldap
+    image:  {{registry_url}}{{project}}-openldap:latest
+    restart: always
+    environment:
+      LDAP_LOG_LEVEL: "{{ openldap['ldap_log_level'] }}"
+      LDAP_ORGANISATION: "{{ openldap['ldap_organisation'] }}"
+      LDAP_DOMAIN: "{{ openldap['ldap_domain'] }}"
+      LDAP_ADMIN_PASSWORD: "{{ openldap['ldap_admin_password'] }}"
+      LDAP_CONFIG_PASSWORD: "{{ openldap['ldap_config_password'] }}"
+      LDAP_READONLY_USER: "{{ openldap['ldap_readonly_user'] }}"
+      LDAP_READONLY_USER_USERNAME: "{{ openldap['ldap_readonly_user_username'] }}"
+      LDAP_READONLY_USER_PASSWORD: "{{ openldap['ldap_readonly_user_password'] }}"
+      LDAP_TLS: "{{ openldap['ldap_tls'] }}"
+      LDAP_TLS_CRT_FILENAME: "{{ openldap['ldap_tls_crt_filename'] }}"
+      LDAP_TLS_KEY_FILENAME: "{{ openldap['ldap_tls_key_filename'] }}"
+      LDAP_TLS_DH_PARAM_FILENAME: "{{ openldap['ldap_tls_dh_param_filename'] }}"
+      LDAP_TLS_CA_CRT_FILENAME: "{{ openldap['ldap_tls_ca_crt_filename'] }}"
+      LDAP_TLS_ENFORCE: "{{ openldap['ldap_tls_enforce'] }}"
+      LDAP_TLS_CIPHER_SUITE: "{{ openldap['ldap_tls_cipher_suite'] }}"
+      LDAP_TLS_VERIFY_CLIENT: "{{ openldap['ldap_tls_verify_client'] }}"
+      KEEP_EXISTING_CONFIG: "{{ openldap['keep_existing_config'] }}"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "{{ openldap['ldap_remove_config_after_setup'] }}"
+      LDAP_SSL_HELPER_PREFIX: "{{ openldap['ldap_ssl_helper_prefix'] }}"
+    volumes:
+      - {{docker_data_dir}}/openldap/var/lib/ldap:/var/lib/ldap
+      - {{docker_data_dir}}/openldap/etc/ldap/slapd.d:/etc/ldap/slapd.d
+    ports:
+      # - "{{bind_ip}}389:389/tcp"
+      - "{{bind_ip}}636:636/tcp"
+    # For replication to work correctly, domainname and hostname must be
+    # set correctly so that "hostname"."domainname" equates to the
+    # fully-qualified domain name for the host.
+    domainname: "{{ openldap['ldap_domain'] }}"
+    hostname: "{{ openldap['ldap_hostname'] }}"
+    networks:
+      net:
+        aliases:
+          - "{{ openldap['ldap_hostname'] }}"
+          - "{{ openldap['ldap_hostname'] }}.{{ openldap['ldap_domain'] }}"
+{% endif %}
+
+{% if "openldap" in include_service|default([]) %}
+  phpldapadmin:
+    container_name: {{project}}-phpldapadmin
+    image:  {{registry_url}}{{project}}-phpldapadmin:latest
+    restart: always
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+      PHPLDAPADMIN_HTTPS: "false"
+    depends_on:
+      - openldap
+    networks:
+      - net
+{% endif %}
+
+{% if "redmine" in include_service|default([]) %}
+  redmine:
+    image:  {{registry_url}}{{project}}-redmine:latest
+    container_name: {{project}}-redmine
+    restart: always
+    environment:
+      REDMINE_DB_POSTGRES: "redminedb"
+      REDMINE_DB_DATABASE: "redmine"
+      REDMINE_DB_USERNAME: "postgres"
+      REDMINE_DB_PASSWORD: "password"
+    volumes:
+      - {{docker_data_dir}}/redmine/redmine-data:/usr/src/redmine/files
+    depends_on:
+      - redminedb
+    networks:
+      - net
+
+  redminedb:
+    image: {{registry_url}}{{project}}-redminedb:latest
+    container_name: {{project}}-redminedb
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/redmine/postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USERNAME: "postgres"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_DB: "redmine"
+      PGDATA: "/var/lib/postgresql/data"
+    networks:
+      - net
+{% endif %}
+
+{% if "caddy" in include_service|default([]) %}
+  caddy:
+    container_name: {{project}}-caddy
+    image:  {{registry_url}}{{project}}-caddy:latest
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/caddy/www:/opt/caddy/www
+      - {{docker_data_dir}}/caddy/logs:/var/log/caddy
+    ports:
+      - "{{bind_ip}}80:80/tcp"
+      - "{{bind_ip}}443:443/tcp"
+    networks:
+      - net
+{% endif %}
+
+{% if "storage" in include_service|default([]) %}
+  storage:
+    container_name: {{project}}-storage
+    image:  {{registry_url}}{{project}}-storage:latest
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/storage/proftpd/var/log/proftpd:/var/log/proftpd
+{% for share in storage['smb_shares'] %}
+      - {{docker_data_dir}}/storage/storage/{{ share["name"] }}:/opt/var/storage/{{ share["name"] }}
+{% endfor %}
+    ports:
+      - "{{bind_ip}}137:137/udp"
+      - "{{bind_ip}}138:138/udp"
+      - "{{bind_ip}}139:139/tcp"
+      - "{{bind_ip}}445:445/tcp"
+      - "{{bind_ip}}{{ storage['sftp_port' ]}}:22/tcp"
+    networks:
+      - net
+{% endif %}
+
+{% if "mailserv" in include_service|default([]) %}
+  mailserv:
+    container_name: {{project}}-mailserv
+    image:  {{registry_url}}{{project}}-mailserv:latest
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/mailserv/var/mail:/var/mail
+      - {{docker_data_dir}}/mailserv/data/backup:/data/backup
+    ports:
+      # Expose smtp, pop3, imap, smtp (submission), imap ssl, managesieve and dovecot replication ports
+      - "{{bind_ip}}25:25/tcp"
+      - "{{bind_ip}}143:143/tcp"
+      - "{{bind_ip}}587:587/tcp"
+      - "{{bind_ip}}993:993/tcp"
+    domainname: "{{ mailserv['domain'] }}"
+    hostname: "{{ mailserv['hostname'] }}"
+    networks:
+      net:
+        aliases:
+          - "{{ mailserv['hostname'] }}"
+          - "{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}"
+{% endif %}
+
+{% if "roundcube" in include_service|default([]) %}
+  roundcube:
+    container_name: {{project}}-roundcube
+    image:  {{registry_url}}{{project}}-roundcube:latest
+    restart: unless-stopped
+    depends_on:
+      - roundcubedb
+    volumes:
+      - {{docker_data_dir}}/roundcube/roundcube/var/www/html:/var/www/html
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=pgsql
+      - ROUNDCUBEMAIL_DB_HOST=roundcubedb
+      - ROUNDCUBEMAIL_DB_NAME=roundcube
+      - ROUNDCUBEMAIL_DB_USER=roundcube
+      - ROUNDCUBEMAIL_DB_PASSWORD=roundcube
+      - ROUNDCUBEMAIL_SKIN=elastic
+      - ROUNDCUBEMAIL_DEFAULT_HOST=tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
+      - ROUNDCUBEMAIL_SMTP_SERVER=tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
+    networks:
+      - net
+
+  roundcubedb:
+    image:  {{registry_url}}{{project}}-roundcubedb:latest
+    container_name: {{project}}-roundcubedb
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/roundcube/postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: roundcube
+      POSTGRES_PASSWORD: roundcube
+      POSTGRES_DB: roundcube
+      PGDATA: /var/lib/postgresql/data
+    networks:
+      - net
+{% endif %}
+
+{% if "gitlab" in include_service|default([]) %}
+  gitlab:
+    image:  {{registry_url}}{{project}}-gitlab:latest
+    container_name: {{project}}-gitlab
+    # hostname: 'gitlab.{{ openldap['ldap_domain'] }}'
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.{{ openldap['ldap_domain'] }}'
+        mattermost_external_url 'https://mattermost.{{ openldap['ldap_domain'] }}'
+        registry_external_url "https://registry.{{ openldap['ldap_domain'] }}"
+        letsencrypt['enable'] = false
+        nginx['ssl_client_certificate'] = "/certs/ca.crt"
+        nginx['ssl_dhparam'] = "/certs/dhparam.pem"
+        nginx['ssl_certificate'] = '/certs/gitlab.{{ openldap['ldap_domain'] }}.crt'
+        nginx['ssl_certificate_key'] = '/certs/gitlab.{{ openldap['ldap_domain'] }}.key'
+        mattermost_nginx['ssl_certificate'] = '/certs/mattermost.{{ openldap['ldap_domain'] }}.crt'
+        mattermost_nginx['ssl_certificate_key'] = '/certs/mattermost.{{ openldap['ldap_domain'] }}.key'
+        registry_nginx['ssl_certificate'] = "/certs/registry.{{ openldap['ldap_domain'] }}.crt"
+        registry_nginx['ssl_certificate_key'] = "/certs/registry.{{ openldap['ldap_domain'] }}.key"
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_address'] = '{{ mailserv['hostname'] }}'
+        gitlab_rails['smtp_port'] = 25
+        gitlab_rails['smtp_domain'] = '{{ mailserv['domain'] }}'
+        gitlab_rails['smtp_tls'] = false
+        gitlab_rails['smtp_openssl_verify_mode'] = 'none'
+        gitlab_rails['smtp_enable_starttls_auto'] = false
+        gitlab_rails['smtp_ssl'] = false
+        gitlab_rails['smtp_force_ssl'] = false
+        gitlab_rails['gitlab_email_from'] = 'gitlab@{{ openldap['ldap_domain'] }}'
+        gitlab_rails['gitlab_email_reply_to'] = 'noreply@{{ openldap['ldap_domain'] }}'
+        gitlab_rails['ldap_enabled'] = true
+        gitlab_rails['prevent_ldap_sign_in'] = false
+        gitlab_rails['gitlab_shell_ssh_port'] = 2222
+        gitlab_rails['ldap_servers'] = {
+          'main' => {
+            'label' => 'LDAP',
+            'host' =>  'ldap',
+            'port' => 389,
+            'uid' => 'cn',
+            'encryption' => 'plain',
+            'bind_dn' => 'cn={{ openldap['ldap_readonly_user_username'] }},{{ openldap['ldap_base_dn'] }}',
+            'password' => '{{ openldap['ldap_readonly_user_password'] }}',
+            'timeout' => 10,
+            'allow_username_or_email_login' => true,
+            'block_auto_created_users' => false,
+            'base' => '{{ openldap['ldap_base_dn'] }}',
+            'user_filter' => '(&(objectClass=person)(memberOf=cn=gitlab,ou=groups,{{ openldap['ldap_base_dn'] }}))',
+            'attributes' => {
+              'username' => 'cn',
+              'email' => 'mail',
+              'name' => 'displayName',
+              'first_name' => 'givenName',
+              'last_name' => 'sn'
+            },
+            'lowercase_usernames' => true,
+          }
+        }
+    ports:
+      - "{{bind_ip}}2222:22/tcp"
+    volumes:
+      - '{{docker_data_dir}}/gitlab/config:/etc/gitlab'
+      - '{{docker_data_dir}}/gitlab/logs:/var/log/gitlab'
+      - '{{docker_data_dir}}/gitlab/data:/var/opt/gitlab'
+    networks:
+      net:
+        aliases:
+          - "gitlab.{{ openldap['ldap_domain'] }}"
+          - gitlab
+          - "mattermost.{{ openldap['ldap_domain'] }}"
+          - mattermost
+          - "registry.{{ openldap['ldap_domain'] }}"
+          - registry
+{% endif %}
+
+{% if "excalidraw" in include_service|default([]) %}
+  excalidraw:
+    container_name: {{project}}-excalidraw
+    image:  {{registry_url}}{{project}}-excalidraw:latest
+    restart: always
+    networks:
+      - net
+{% endif %}

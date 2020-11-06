@@ -1,9 +1,9 @@
-============================
-SONet (Small Office Network)
-============================
+=====
+SONet
+=====
 
-Привет! Это ``SONet`` -- набор docker-контейнеров для организации работы небольшой
-команды. В ``SONet`` входят:
+Привет! ``SONet`` это набор ролей Ansible_ для генерации docker-контейнеров.
+В ``SONet`` входят:
 
 * CoreDNS_ -- сервер DNS_
 * Caddy_ -- сервер `HTTP/2`_ и `reverse proxy`_ к внутренним ресурсам
@@ -14,6 +14,45 @@ SONet (Small Office Network)
 * GitLab_ -- сервер git_ и `CI/CD`_
 * RedMine_ -- управление проектами
 * Excalidraw_ -- доска для рисунков "от руки"
+
+-----------
+Quick start
+-----------
+
+------
+Зачем?
+------
+
+Я как-то подумал, что не плохо было бы на работе иметь современные инструменты
+для взаимодействия команды и организации сети вцелом. Денег на покупку готовых
+решений никто не давал да и не нашел я того, чтобы полностью меня удовлетворило.
+А хотелось многого:
+
+* авторизацию пользователей во всех сервисах через LDAP
+* внутреннюю почту и чат
+* трекер задач
+* сервер git
+
+Все это можно получить установив OpenLDAP_, GitLab_, RedMine_ и т. д. И я так и
+сделал. И все бы ничего, но пришло время менять работу и там, угадайте, все
+пришлось начинать сначала. Хватит, подумал я, и решил все автоматизировать.
+
+Инфраструктура должна настраиваться из кода, т.е. IaC_. По крайней мере на
+первых этапах. Для этого я выбрал Ansible_. Я уже работал с puppet_  но Ansible_
+подкупил свой clientless архитектурой, языком Python_ и шаблонизатором Jinja_
+под капотом.
+
+Инфраструктура должна быть переносимой. По началу, я планировал написать роли
+Ansible для настройки серверов или виртуальных машин. Но тогда пришлось бы на
+время разработки держать все виртуальные машины у себя на ноутбуке, настраивать
+между ними сеть, следить за обновлением операционной системы. Ну и все это
+выглядело громоздко. Я решил, что docker лучше подойдет для этой задачи.
+
+Большинство необходимого ПО уже есть в docker и это существенно облегчает задачу.
+Для GitLab, CoreDNS, Roundcube есть официально поддерживаемые репозитории (`gitlab/gitlab-ce`_,
+`coredns/coredns`_, `roundcube/roundcubemail`_)
+
+
 
 .. _CoreDNS: https://coredns.io/
 .. _DNS: https://en.wikipedia.org/wiki/Domain_Name_System
@@ -31,7 +70,16 @@ SONet (Small Office Network)
 .. _Postfix: http://www.postfix.org/
 .. _Dovecot: https://www.dovecot.org/
 .. _Excalidraw: https://excalidraw.com/
+.. _Ansible: https://www.ansible.com/
+.. _puppet: https://puppet.com/
+.. _Python: https://www.python.org/
+.. _Jinja: https://jinja.palletsprojects.com
+.. _IaC: https://en.wikipedia.org/wiki/Infrastructure_as_code
 .. _`osixia/docker-mmc-mail`: https://github.com/osixia/docker-mmc-mail
 .. _`osixia/docker-openldap`: https://github.com/osixia/docker-openldap
 .. _`osixia/docker-phpLDAPadmin`: https://github.com/osixia/docker-phpLDAPadmin
 .. _`excalidraw/excalidraw`: https://github.com/excalidraw/excalidraw
+.. _`gitlab/gitlab-ce`: https://hub.docker.com/r/gitlab/gitlab-ce/
+.. _`docker/caddy`: https://hub.docker.com/_/caddy
+.. _`coredns/coredns`: https://hub.docker.com/r/coredns/coredns/
+.. _`roundcube/roundcubemail`: https://hub.docker.com/r/roundcube/roundcubemail/

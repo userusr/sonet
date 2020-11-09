@@ -6,20 +6,8 @@ SONet
 содержащих инструменты для командной работы. Идеи ``SONet``:
 
 * отделить конфигурацию от кода, IaC_
-* авторизация во всех сервисах должна быть через LDAP_
-* все сервисы должны иметь сертификаты
-
-Сейчас в ``SONet`` входят:
-
-* CoreDNS_ - сервер DNS_
-* Caddy_ - сервер `HTTP/2`_ и `reverse proxy`_ к внутренним ресурсам
-* OpenLDAP_ - сервер LDAP_
-* phpLDAPadmin_ - WEB-интерфейс для управления LDAP
-* Postfix_ - Dovecot_ -- почтовый сервер
-* Roundcube_ - WEB-клиент почты
-* GitLab_ - сервер git_ и `CI/CD`_
-* RedMine_ - управление проектами
-* Excalidraw_ - доска для рисунков "от руки"
+* авторизация пользователей во всех сервисах через LDAP_
+* сгенерировать сертификаты для всех сервисов
 
 -----------
 Quick start
@@ -27,15 +15,14 @@ Quick start
 
 .. code-block:: bash
 
-    git clone git@github.com:userusr/sonet.git
+    # Склонировать репозитории
+    $ git clone git@github.com:userusr/sonet.git && cd sonet
 
-    cd sonet
+    # Запустить локальное хранилище docker контейнеров
+    $ make registry-start
 
-    make registry-start
-
-    make init && make build && make push
-
-    cat <<EOF | sudo tee -a /etc/hosts
+    # Для доступа к сервисам по именам и работы реверс-прокси
+    $ cat <<EOF | sudo tee -a /etc/hosts
     127.0.0.1 gitlab.sonet.local
     127.0.0.1 mattermost.sonet.local
     127.0.0.1 mail.sonet.local
@@ -47,13 +34,17 @@ Quick start
     127.0.0.1 registry.sonet.local
     EOF
 
-    ./inventories/sonet.local/build/sonet_local/sonet up
+    # Собираем проект с конфигурацией по-умолчанию
+    $ make init && make build && make push
+
+
+    $ ./inventories/sonet.local/build/sonet_local/sonet up
 
 .. code-block:: bash
 
-    ./inventories/sonet.local/build/sonet_local/sonet down
+    $ ./inventories/sonet.local/build/sonet_local/sonet down
 
-    make registry-stop
+    $ make registry-stop
 
 ------
 Зачем?
@@ -93,6 +84,20 @@ Ansible для настройки серверов или виртуальных
 
 Осталось только настроить нужные сервисы и сгенерировать docker-compose файл.
 Этим и займемся.
+
+Сейчас в ``SONet`` входят:
+
+* CoreDNS_ - сервер DNS_
+* Caddy_ - сервер `HTTP/2`_ и `reverse proxy`_ к внутренним ресурсам
+* OpenLDAP_ - сервер LDAP_
+* phpLDAPadmin_ - WEB-интерфейс для управления LDAP
+* Postfix_ - Dovecot_ -- почтовый сервер
+* Roundcube_ - WEB-клиент почты
+* GitLab_ - сервер git_ и `CI/CD`_
+* RedMine_ - управление проектами
+* Excalidraw_ - доска для рисунков "от руки"
+
+---
 
 .. _CoreDNS: https://coredns.io/
 .. _DNS: https://en.wikipedia.org/wiki/Domain_Name_System

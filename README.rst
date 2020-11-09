@@ -2,22 +2,58 @@
 SONet
 =====
 
-Привет! ``SONet`` это набор ролей Ansible_ для генерации docker-контейнеров.
-В ``SONet`` входят:
+Привет! Это ``SONet`` - набор ролей Ansible_ для генерации docker-контейнеров
+содержащих инструменты для командной работы. Идеи ``SONet``:
 
-* CoreDNS_ -- сервер DNS_
-* Caddy_ -- сервер `HTTP/2`_ и `reverse proxy`_ к внутренним ресурсам
-* OpenLDAP_ -- сервер LDAP_
-* phpLDAPadmin_ -- WEB-интерфейс для управления LDAP
-* Postfix_ + Dovecot_ -- почтовый сервер
-* Roundcube_ -- WEB-клиент почты
-* GitLab_ -- сервер git_ и `CI/CD`_
-* RedMine_ -- управление проектами
-* Excalidraw_ -- доска для рисунков "от руки"
+* отделить конфигурацию от кода, чтобы ее можно было хранить в git
+* авторизация во всех сервисах должна быть через LDAP_
+* все сервисы должны иметь сертификаты
+
+Сейчас в ``SONet`` входят:
+
+* CoreDNS_ - сервер DNS_
+* Caddy_ - сервер `HTTP/2`_ и `reverse proxy`_ к внутренним ресурсам
+* OpenLDAP_ - сервер LDAP_
+* phpLDAPadmin_ - WEB-интерфейс для управления LDAP
+* Postfix_ - Dovecot_ -- почтовый сервер
+* Roundcube_ - WEB-клиент почты
+* GitLab_ - сервер git_ и `CI/CD`_
+* RedMine_ - управление проектами
+* Excalidraw_ - доска для рисунков "от руки"
 
 -----------
 Quick start
 -----------
+
+.. code-block:: bash
+
+    git clone git@github.com:userusr/sonet.git
+
+    cd sonet
+
+    make registry-start
+
+    make init && make build && make push
+
+    cat <<EOF | sudo tee -a /etc/hosts
+    127.0.0.1 gitlab.sonet.local
+    127.0.0.1 mattermost.sonet.local
+    127.0.0.1 mail.sonet.local
+    127.0.0.1 redmine.sonet.local
+    127.0.0.1 ldapadmin.sonet.local
+    127.0.0.1 pki.sonet.local
+    127.0.0.1 excalidraw.sonet.local
+    127.0.0.1 owncloud.sonet.local
+    127.0.0.1 registry.sonet.local
+    EOF
+
+    ./inventories/sonet.local/build/sonet_local/sonet up
+
+.. code-block:: bash
+
+    ./inventories/sonet.local/build/sonet_local/sonet down
+
+    make registry-stop
 
 ------
 Зачем?
@@ -48,11 +84,15 @@ Ansible для настройки серверов или виртуальных
 между ними сеть, следить за обновлением операционной системы. Ну и все это
 выглядело громоздко. Я решил, что docker лучше подойдет для этой задачи.
 
-Большинство необходимого ПО уже есть в docker и это существенно облегчает задачу.
-Для GitLab, CoreDNS, Roundcube есть официально поддерживаемые репозитории (`gitlab/gitlab-ce`_,
-`coredns/coredns`_, `roundcube/roundcubemail`_)
+Большинство необходимого ПО уже есть в docker и это существенно облегчает
+задачу. Для GitLab, CoreDNS, Roundcube есть официально поддерживаемые
+репозитории (`gitlab/gitlab-ce`_, `coredns/coredns`_,
+`roundcube/roundcubemail`_)
 
+.. Рассказать о docker_host
 
+Осталось только настроить нужные сервисы и сгенерировать docker-compose файл.
+Этим и займемся.
 
 .. _CoreDNS: https://coredns.io/
 .. _DNS: https://en.wikipedia.org/wiki/Domain_Name_System

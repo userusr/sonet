@@ -37,13 +37,15 @@ Quick start
     # Собираем проект с конфигурацией по-умолчанию
     $ make init && make build && make push
 
-
+    # Запускаем проект
     $ ./inventories/sonet.local/build/sonet_local/sonet up
 
 .. code-block:: bash
 
+    # Останавливаем проект
     $ ./inventories/sonet.local/build/sonet_local/sonet down
 
+    # Остановить локальных docker registry
     $ make registry-stop
 
 ------

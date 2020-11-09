@@ -12,8 +12,6 @@ COMPOSER_PROJECT=$(PROJECT)
 INVENTORY ?= inventories/sonet.local/inventory
 # Ansible playbook
 PLAYBOOK ?= inventories/sonet.local/playbook.yml
-# Docker registry URL
-DOCKER_REGISTY_URL ?= registry.sonet.local:5000
 #
 LOCAL_PLAYBOOK_PATH ?= $(shell dirname `realpath $(PLAYBOOK)`)
 #
@@ -61,7 +59,6 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 ANSIBLE_VARS := "project": "$(PROJECT)", \
 		"local_playbook_path": "$(LOCAL_PLAYBOOK_PATH)", \
-		"docker_registry_url": "$(DOCKER_REGISTY_URL)", \
 		"git_url": "$(GIT_URL)"
 
 help:

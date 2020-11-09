@@ -187,14 +187,14 @@ services:
     volumes:
       - {{docker_data_dir}}/roundcube/roundcube/var/www/html:/var/www/html
     environment:
-      - ROUNDCUBEMAIL_DB_TYPE=pgsql
-      - ROUNDCUBEMAIL_DB_HOST=roundcubedb
-      - ROUNDCUBEMAIL_DB_NAME=roundcube
-      - ROUNDCUBEMAIL_DB_USER=roundcube
-      - ROUNDCUBEMAIL_DB_PASSWORD=roundcube
-      - ROUNDCUBEMAIL_SKIN=elastic
-      - ROUNDCUBEMAIL_DEFAULT_HOST=tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
-      - ROUNDCUBEMAIL_SMTP_SERVER=tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
+      - ROUNDCUBEMAIL_DB_TYPE: pgsql
+      - ROUNDCUBEMAIL_DB_HOST: roundcubedb
+      - ROUNDCUBEMAIL_DB_NAME: roundcube
+      - ROUNDCUBEMAIL_DB_USER: roundcube
+      - ROUNDCUBEMAIL_DB_PASSWORD: roundcube
+      - ROUNDCUBEMAIL_SKIN: elastic
+      - ROUNDCUBEMAIL_DEFAULT_HOST: tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
+      - ROUNDCUBEMAIL_SMTP_SERVER: tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
     networks:
       - net
 

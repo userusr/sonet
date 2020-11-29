@@ -1,38 +1,48 @@
-.PHONY: venv docs
-
-.DEFAULT_GOAL := help
-
 -include .env
 
 # Project instance name
 PROJECT ?= sonet
-# Project name for composer by default
-COMPOSER_PROJECT=$(PROJECT)
+# Project version
+VERSION ?= 0.0.1
 # Ansible inventory file
 INVENTORY ?= inventories/sonet.local/inventory
 # Ansible playbook
 PLAYBOOK ?= inventories/sonet.local/playbook.yml
 #
-LOCAL_PLAYBOOK_PATH ?= $(shell dirname `realpath $(PLAYBOOK)`)
+LOCAL_DOCKER_REGISTRY_ADDR ?= registry.sonet.local
 #
+LOCAL_DOCKER_REGISTRY_PORT ?= 5000
+# Ask become password (1 - ask)
 ANSIBLE_ASK_BECOME_PASS ?= 0
+#
+LDAP_ADMIN_PASSWORD ?= admin
+#
+LDAP_CONFIG_PASSWORD ?= config
+#
+LDAP_READONLY_USER_PASSWORD ?= readonly
 #
 ANSIBLE_PYTHON_INTERPRETE ?= python3
 #
 ANSIBLE_PLAYBOOK ?= ansible-playbook
 #
-VAULT_PASSWORD_FILE ?= $(shell realpath ~/.ssh/id_rsa)
+VENV_DIR ?= venv
+#
+LOCAL_PLAYBOOK_PATH=$(shell dirname `realpath $(PLAYBOOK)`)
+# Project name for composer by default
+COMPOSER_PROJECT=$(PROJECT)
+#
+REGISTRY_CONTAINER_NAME = $(PROJECT)-registry
+
+ifeq ($(wildcard ${VENV_DIR}),)
+	VENV_BIN=
+else
+	VENV_BIN=./${VENV_DIR}/bin/
+endif
 
 ifeq ($(ANSIBLE_ASK_BECOME_PASS),1)
 	ANSIBLE_ASK_BECOME_PASS=--ask-become-pass
 else
 	ANSIBLE_ASK_BECOME_PASS=
-endif
-
-ifeq ($(VAULT_PASSWORD_FILE),)
-	ANSIBLE_VAULT_PASSWORD_FILE=
-else
-	ANSIBLE_VAULT_PASSWORD_FILE=--vault-password-file $(VAULT_PASSWORD_FILE)
 endif
 
 define PRINT_HELP_PYSCRIPT
@@ -59,45 +69,48 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
 ANSIBLE_VARS := "project": "$(PROJECT)", \
 		"local_playbook_path": "$(LOCAL_PLAYBOOK_PATH)", \
-		"git_url": "$(GIT_URL)"
-
-help:
-	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
-
-venv:  ## make python virtualenv
-	python -m venv ${VENV_DIR} && \
-	./${VENV_DIR}/bin/pip install -U pip
-	./${VENV_DIR}/bin/pip install -r requirements.txt
-
-$(PROJECT):
-
-clean-all: clean clean-images
-
-clean:
-	docker ps -a \
-	| grep $(PROJECT) \
-	| awk '{print $$1}' \
-	| xargs --no-run-if-empty docker rm --force --volumes
-
-clean-images:
-	docker images \
-	| grep $(PROJECT) \
-	| awk '{print $$3}' \
-	| xargs --no-run-if-empty docker rmi --force
-
-lint:
-	yamllint .
-	${ANSIBLE_PLAYBOOK} $(PLAYBOOK) --inventory $(INVENTORY) --syntax-check
-	ansible-lint $(PLAYBOOK)
+		"local_docker_registry_addr": "$(LOCAL_DOCKER_REGISTRY_ADDR)", \
+		"local_docker_registry_port": "$(LOCAL_DOCKER_REGISTRY_PORT)", \
+		"ldap_admin_password": $(LDAP_ADMIN_PASSWORD), \
+		"ldap_config_password": $(LDAP_CONFIG_PASSWORD), \
+		"ldap_readonly_user_password": $(LDAP_READONLY_USER_PASSWORD)
 
 _build:
 	${ANSIBLE_PLAYBOOK} $(ANSIBLE_DEBUG) \
 		$(PLAYBOOK) \
 		--inventory $(INVENTORY) \
-		$(ANSIBLE_VAULT_PASSWORD_FILE) \
 		$(ANSIBLE_ASK_BECOME_PASS) \
 		--tags '$(TAGS)' \
 		--extra-vars '{ $(ANSIBLE_ADD_VARS), $(ANSIBLE_VARS) }'
+
+help:
+	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
+
+pip-requirements: ## compile requirements with pip-compile
+	${VENV_BIN}pip-compile requirements.in
+	${VENV_BIN}pip-compile requirements_dev.in
+
+venv:  ## make python virtualenv
+	python3 -m venv ${VENV_DIR} && \
+	./${VENV_DIR}/bin/pip install -U pip pip-tools && \
+	./${VENV_DIR}/bin/pip install -r requirements.txt
+
+clean: ## remove all project containers
+	docker ps -a \
+	| grep $(PROJECT) \
+	| awk '{print $$1}' \
+	| xargs --no-run-if-empty docker rm --force --volumes
+
+clean-images: ## delete all project images
+	docker images \
+	| grep $(PROJECT) \
+	| awk '{print $$3}' \
+	| xargs --no-run-if-empty docker rmi --force
+
+lint: ## lint ansible and yaml files
+	yamllint .
+	${ANSIBLE_PLAYBOOK} $(PLAYBOOK) --inventory $(INVENTORY) --syntax-check
+	ansible-lint $(PLAYBOOK)
 
 docs: ## generate Sphinx HTML documentation
 	$(MAKE) -C docs clean
@@ -107,21 +120,20 @@ docs: ## generate Sphinx HTML documentation
 servedocs: docs ## compile the docs watching for changes
 	${VENV_BIN}watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-registry-start:
-	docker run -d --rm \
-		-e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
-		-p 5000:5000 \
-		--name registry \
-		-e "REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data" \
-		-v "$(shell pwd)/registry":/data \
-		registry:2
+registry-start: ## start local docker registry
+	[ ! "$$(docker ps -q -f name=${REGISTRY_CONTAINER_NAME})" ] && \
+		docker run --detach --rm \
+			--publish $(LOCAL_DOCKER_REGISTRY_PORT):5000 \
+			--name ${REGISTRY_CONTAINER_NAME} \
+			--volume "$(shell pwd)/registry":/var/lib/registry \
+			registry:2
 
-registry-stop:
-	docker rm -f registry
+registry-stop: ## stop local docker registry
+	docker rm --force ${REGISTRY_CONTAINER_NAME}
 
 init: ANSIBLE_ADD_VARS="dummy": true
 init: TAGS=init, generate
-init: | $(PROJECT) _build  ## build all docker images
+init: | $(PROJECT) _build  ## create folders and generate configs
 
 build: ANSIBLE_ADD_VARS="dummy": true
 build: TAGS=build
@@ -129,4 +141,8 @@ build: | $(PROJECT) _build  ## build all docker images
 
 push: ANSIBLE_ADD_VARS="dummy": true
 push: TAGS=push
-push: | $(PROJECT) _build  ## pull docker images
+push: | $(PROJECT) _build  ## push docker images to local registry
+
+.PHONY: venv docs $(PROJECT)
+
+.DEFAULT_GOAL := help

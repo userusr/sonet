@@ -9,16 +9,3 @@
   hosts: "sonet_docker_mashine"
   roles:
     - role: '../../roles/generate_compose'
-
-# - name: Deploy to VirtualBox host
-#   become: yes
-#   hosts: "sonet_vbox"
-#   roles:
-#     - role: '../../roles/common'
-#     - role: '../../roles/install_docker'
-#     - role: '../../roles/generate_compose'
-#     - role: '../../roles/coredns'
-#     - role: '../../roles/openldap'
-#     - role: '../../roles/phpldapadmin'
-#     - role: '../../roles/redmine'
-#     - role: '../../roles/caddy'

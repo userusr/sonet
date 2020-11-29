@@ -56,8 +56,15 @@
 
 - name: '{{ service }} : create docker image'
   command: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service }}:latest'
+  when: docker_registry_url is defined
   tags: [build, skip_ansible_lint]
 
 - name: '{{ service }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service }}:latest'
   command: docker push {{ docker_registry_url }}/{{ project }}-{{ service }}:latest
+  when: docker_registry_url is defined
   tags: push
+
+- name: '{{ service }} : create docker image'
+  command: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service }}:latest'
+  when: docker_registry_url is not defined
+  tags: [build, skip_ansible_lint]

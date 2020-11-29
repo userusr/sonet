@@ -17,7 +17,8 @@ SONet
 Quick start
 -----------
 
-.. image:: https://raw.githubusercontent.com/userusr/sonet/docs/docs/_static/quickstart_dia.png
+.. image:: https://raw.githubusercontent.com/userusr/sonet/master/docs/_static/quickstart_dia.png
+    :align: center
 
 Это пример того как развернуть SONet на локальной машине с тестовой
 конфигурацией. В ``/etc/hosts`` нужно будет добавить имена всех сервисов, чтобы

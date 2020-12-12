@@ -31,7 +31,9 @@ LOCAL_PLAYBOOK_PATH=$(shell dirname `realpath $(PLAYBOOK)`)
 # Project name for composer by default
 COMPOSER_PROJECT=$(PROJECT)
 #
-REGISTRY_CONTAINER_NAME = $(PROJECT)-registry
+REGISTRY_CONTAINER_NAME ?= $(PROJECT)-registry
+#
+REGISTRY_DATA_DIR ?= $(shell pwd)/registry
 
 ifeq ($(wildcard ${VENV_DIR}),)
 	VENV_BIN=
@@ -40,9 +42,9 @@ else
 endif
 
 ifeq ($(ANSIBLE_ASK_BECOME_PASS),1)
-	ANSIBLE_ASK_BECOME_PASS=--ask-become-pass
+	ANSIBLE_ASK_BECOME_PASS_PARAM=--ask-become-pass
 else
-	ANSIBLE_ASK_BECOME_PASS=
+	ANSIBLE_ASK_BECOME_PASS_PARAM=
 endif
 
 define PRINT_HELP_PYSCRIPT
@@ -79,7 +81,7 @@ _build:
 	${ANSIBLE_PLAYBOOK} $(ANSIBLE_DEBUG) \
 		$(PLAYBOOK) \
 		--inventory $(INVENTORY) \
-		$(ANSIBLE_ASK_BECOME_PASS) \
+		$(ANSIBLE_ASK_BECOME_PASS_PARAM) \
 		--tags '$(TAGS)' \
 		--extra-vars '{ $(ANSIBLE_ADD_VARS), $(ANSIBLE_VARS) }'
 
@@ -125,7 +127,7 @@ registry-start: ## start local docker registry
 		docker run --detach --rm \
 			--publish $(LOCAL_DOCKER_REGISTRY_PORT):5000 \
 			--name ${REGISTRY_CONTAINER_NAME} \
-			--volume "$(shell pwd)/registry":/var/lib/registry \
+			--volume "$(REGISTRY_DATA_DIR)":/var/lib/registry \
 			registry:2
 
 registry-stop: ## stop local docker registry

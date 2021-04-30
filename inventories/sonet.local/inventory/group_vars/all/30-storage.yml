@@ -1,6 +1,0 @@
----
-storage:
-  sftp_port: 2221
-  smb_shares:
-    - { name: public, dir: public }
-    - { name: library, dir: library }

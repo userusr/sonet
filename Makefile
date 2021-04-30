@@ -89,8 +89,8 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 pip-requirements: ## compile requirements with pip-compile
-	${VENV_BIN}pip-compile requirements.in
-	${VENV_BIN}pip-compile requirements_dev.in
+	${VENV_BIN}pip-compile requirements.in > requirements.txt
+	${VENV_BIN}pip-compile requirements_dev.in > requirements_dev.txt
 
 venv:  ## make python virtualenv
 	python3 -m venv ${VENV_DIR} && \

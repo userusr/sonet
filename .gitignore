@@ -27,3 +27,6 @@ build/*
 
 # Sphinx documentation
 docs/_build/
+
+# VIM swp files
+*.swp

@@ -64,16 +64,37 @@
   tags: init
 
 - name: '{{ service_name }} : create docker image'
-  command: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
+  shell: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
+  when: docker_registry_url is defined
+  register: shell_output
+  tags: [build, skip_ansible_lint]
+
+- name: '{{ service_name }} : debug : create docker image'
+  ansible.builtin.debug:
+    var: shell_output.cmd
   when: docker_registry_url is defined
   tags: [build, skip_ansible_lint]
 
 - name: '{{ service_name }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
-  command: docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest
+  shell: docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest
+  when: docker_registry_url is defined
+  register: shell_output
+  tags: push
+
+- name: '{{ service_name }} : debug : push docker image'
+  ansible.builtin.debug:
+    var: shell_output.cmd
   when: docker_registry_url is defined
   tags: push
 
 - name: '{{ service_name }} : create docker image'
-  command: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service_name }}:latest'
+  shell: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service_name }}:latest'
+  when: docker_registry_url is not defined
+  register: shell_output
+  tags: [build, skip_ansible_lint]
+
+- name: '{{ service_name }} : debug : create docker image'
+  ansible.builtin.debug:
+    var: shell_output.cmd
   when: docker_registry_url is not defined
   tags: [build, skip_ansible_lint]

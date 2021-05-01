@@ -2,20 +2,21 @@
 - name: 'gitlab : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: gitlab
     - service_image_dir: '{{ local_path }}/images/gitlab'
     - service_dirs:
-      - certs
+        - certs
     - service_gen_certs:
-      - "gitlab.{{ openldap['ldap_domain'] }}"
-      - "mattermost.{{ openldap['ldap_domain'] }}"
-      - "registry.{{ openldap['ldap_domain'] }}"
+        - "gitlab.{{ openldap['ldap_domain'] }}"
+        - "mattermost.{{ openldap['ldap_domain'] }}"
+        - "registry.{{ openldap['ldap_domain'] }}"
     - service_copy_certs:
-      - { src: "ca.crt", dest: "certs/ca.crt" }
-      - { src: "dh.pem", dest: "certs/dhparam.pem" }
-      - { src: "issued/gitlab.{{ openldap['ldap_domain'] }}.crt", dest: "certs/gitlab.{{ openldap['ldap_domain'] }}.crt" }
-      - { src: "private/gitlab.{{ openldap['ldap_domain'] }}.key", dest: "certs/gitlab.{{ openldap['ldap_domain'] }}.key" }
-      - { src: "issued/mattermost.{{ openldap['ldap_domain'] }}.crt", dest: "certs/mattermost.{{ openldap['ldap_domain'] }}.crt" }
-      - { src: "private/mattermost.{{ openldap['ldap_domain'] }}.key", dest: "certs/mattermost.{{ openldap['ldap_domain'] }}.key" }
-      - { src: "issued/registry.{{ openldap['ldap_domain'] }}.crt", dest: "certs/registry.{{ openldap['ldap_domain'] }}.crt" }
-      - { src: "private/registry.{{ openldap['ldap_domain'] }}.key", dest: "certs/registry.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "ca.crt", dest: "certs/ca.crt" }
+        - { src: "dh.pem", dest: "certs/dhparam.pem" }
+        - { src: "issued/gitlab.{{ openldap['ldap_domain'] }}.crt", dest: "certs/gitlab.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/gitlab.{{ openldap['ldap_domain'] }}.key", dest: "certs/gitlab.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/mattermost.{{ openldap['ldap_domain'] }}.crt", dest: "certs/mattermost.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/mattermost.{{ openldap['ldap_domain'] }}.key", dest: "certs/mattermost.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/registry.{{ openldap['ldap_domain'] }}.crt", dest: "certs/registry.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/registry.{{ openldap['ldap_domain'] }}.key", dest: "certs/registry.{{ openldap['ldap_domain'] }}.key" }
   tags: [init, build, push]

@@ -1,5 +1,19 @@
+{
+    admin :2019
+}
+
 pki.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/pki.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/pki.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     file_server browse {
         root /opt/caddy/pki/
@@ -7,31 +21,81 @@ pki.{{ openldap['ldap_domain'] }}:443 {
 }
 
 ldapadmin.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/ldapadmin.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/ldapadmin.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * phpldapadmin:80
 }
 
 redmine.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/redmine.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/redmine.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * redmine:3000
 }
 
 mail.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/mail.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/mail.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * roundcube:80
 }
 
 excalidraw.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/excalidraw.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/excalidraw.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * excalidraw:80
 }
 
 gitlab.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/gitlab.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/gitlab.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * gitlab:443 {
         transport http {
@@ -42,7 +106,17 @@ gitlab.{{ openldap['ldap_domain'] }}:443 {
 }
 
 mattermost.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/mattermost.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/mattermost.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * mattermost:443 {
         transport http {
@@ -53,7 +127,17 @@ mattermost.{{ openldap['ldap_domain'] }}:443 {
 }
 
 registry.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
     tls /etc/pki/tls/certs/registry.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/registry.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
 
     reverse_proxy * registry:443 {
         transport http {

@@ -24,6 +24,7 @@
 
 - name: "setup pki"
   include_tasks: 'setup_pki.yml'
+  when: generate_service_certs
   tags: init
 
 - name: "include services"

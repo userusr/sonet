@@ -2,16 +2,17 @@
 - name: 'redmine : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: redmine
     - service_image_dir: '{{ local_path }}/images/redmine'
     - service_dirs:
-      - service/redmine/plugins
-      - service/redmine/themes
+        - service/redmine/plugins
+        - service/redmine/themes
   tags: [init, build, push]
 
 - name: 'redminedb : service init'
   include_tasks: service_common.yml
   vars:
-    - service: redminedb
+    - service_name: redminedb
     - service_image_dir: '{{ local_path }}/images/redminedb'
   tags: [init, build, push]
 
@@ -19,7 +20,8 @@
   copy:
     src: "{{ item['src'] }}"
     dest: "{{ item['dest'] }}"
+    mode: 0775
   loop:
-    - {src: "{{ playbook_dir }}/redmine/plugins/", dest: "{{ local_path }}/images/redmine/service/redmine/plugins/"}
-    - {src: "{{ playbook_dir }}/redmine/themes/", dest: "{{ local_path }}/images/redmine/service/redmine/themes/"}
+    - { src: "{{ playbook_dir }}/redmine/plugins/", dest: "{{ local_path }}/images/redmine/service/redmine/plugins/" }
+    - { src: "{{ playbook_dir }}/redmine/themes/", dest: "{{ local_path }}/images/redmine/service/redmine/themes/" }
   tags: init

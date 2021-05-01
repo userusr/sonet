@@ -2,14 +2,15 @@
 - name: 'mailserv : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: mailserv
     - service_image_dir: '{{ local_path }}/images/mailserv'
     - service_dirs:
-      - certs
+        - certs
     - service_gen_certs:
-      - "mail.{{ openldap['ldap_domain'] }}"
+        - "mail.{{ openldap['ldap_domain'] }}"
     - service_copy_certs:
-      - { src: "ca.crt", dest: "certs/ca.crt" }
-      - { src: "dh.pem", dest: "certs/dhparam.pem" }
-      - { src: "issued/mail.{{ openldap['ldap_domain'] }}.crt", dest: "certs/cert.crt" }
-      - { src: "private/mail.{{ openldap['ldap_domain'] }}.key", dest: "certs/cert.key" }
+        - { src: "ca.crt", dest: "certs/ca.crt" }
+        - { src: "dh.pem", dest: "certs/dhparam.pem" }
+        - { src: "issued/mail.{{ openldap['ldap_domain'] }}.crt", dest: "certs/cert.crt" }
+        - { src: "private/mail.{{ openldap['ldap_domain'] }}.key", dest: "certs/cert.key" }
   tags: [init, build, push]

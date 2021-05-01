@@ -1,10 +1,17 @@
 ---
+- name: 'register local path'
+  stat:
+    path: "{{ local_path }}"
+  register: local_path_dir
+  tags: init
+
 - name: "create local path"
   file:
     path: '{{ local_path }}'
     state: directory
     recurse: yes
     mode: 0775
+  when: not local_path_dir.stat.exists
   tags: init
 
 - name: generate composer file

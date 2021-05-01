@@ -1,4 +1,5 @@
-FROM coredns/coredns:1.7.1
+# https://hub.docker.com/r/coredns/coredns/tags?page=1&ordering=last_updated
+FROM coredns/coredns:{{ conf['docker_tag_coredns']|default("1.8.3") }}
 
 LABEL project="{{ project }}"
 

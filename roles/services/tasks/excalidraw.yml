@@ -2,5 +2,6 @@
 - name: 'excalidraw : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: excalidraw
     - service_image_dir: '{{ local_path }}/images/excalidraw'
   tags: [init, build, push]

@@ -1,4 +1,5 @@
-FROM osixia/openldap:1.4.0
+# https://hub.docker.com/r/osixia/openldap/tags?page=1&ordering=last_updated
+FROM osixia/openldap:{{ conf['docker_tag_openldap']|default("stable-amd64") }}
 
 LABEL project="{{ project }}"
 

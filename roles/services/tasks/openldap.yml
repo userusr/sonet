@@ -2,15 +2,15 @@
 - name: 'openldap : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: openldap
     - service_image_dir: '{{ local_path }}/images/openldap'
     - service_dirs:
-      - certs
+        - certs
     - service_gen_certs:
-      - "ldap.{{ openldap['ldap_domain'] }}"
+        - "ldap.{{ openldap['ldap_domain'] }}"
     - service_copy_certs:
-      - { src: "ca.crt", dest: "certs/ca.crt" }
-      - { src: "dh.pem", dest: "certs/dhparam.pem" }
-      - { src: "issued/ldap.{{ openldap['ldap_domain'] }}.crt", dest: "certs/cert.crt" }
-      - { src: "private/ldap.{{ openldap['ldap_domain'] }}.key", dest: "certs/cert.key" }
+        - { src: "ca.crt", dest: "certs/ca.crt" }
+        - { src: "dh.pem", dest: "certs/dhparam.pem" }
+        - { src: "issued/ldap.{{ openldap['ldap_domain'] }}.crt", dest: "certs/cert.crt" }
+        - { src: "private/ldap.{{ openldap['ldap_domain'] }}.key", dest: "certs/cert.key" }
   tags: [init, build, push]
-

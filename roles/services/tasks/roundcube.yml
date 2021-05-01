@@ -2,16 +2,17 @@
 - name: 'roundcube : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: roundcube
     - service_image_dir: '{{ local_path }}/images/roundcube'
     - service_dirs:
-      - certs
+        - certs
     - service_copy_certs:
-      - { src: "ca.crt", dest: "certs/ca.crt" }
+        - { src: "ca.crt", dest: "certs/ca.crt" }
   tags: [init, build, push]
 
 - name: 'roundcubedb : service init'
   include_tasks: service_common.yml
   vars:
-    - service: roundcubedb
+    - service_name: roundcubedb
     - service_image_dir: '{{ local_path }}/images/roundcubedb'
   tags: [init, build, push]

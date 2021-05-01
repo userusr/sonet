@@ -5,7 +5,7 @@
   register: service_image_dir
   tags: init
 
-- name: '{{ service }} : create service image folder'
+- name: '{{ service_name }} : create service image folder'
   file:
     path: '{{ service_image_dir }}'
     state: directory
@@ -13,7 +13,7 @@
     mode: 0755
   tags: init
 
-- name: '{{ service }} : create service directories'
+- name: '{{ service_name }} : create service directories'
   file:
     path: '{{ service_image_dir }}/{{ item }}'
     state: directory
@@ -21,50 +21,59 @@
   loop: '{{ service_dirs|default([]) }}'
   tags: [init, skip_ansible_lint]
 
-- name: '{{ service }} : create directories'
+- name: '{{ service_name }} : create directories'
   file:
     path: '{{ service_image_dir }}/{{ item.path }}'
     state: directory
     mode: '{{ item.mode }}'
-  with_filetree: '../templates/{{ service }}/image'
+  with_filetree: '../templates/{{ service_name }}/image'
   when: item.state == 'directory'
   tags: [init, skip_ansible_lint]
 
-- name: '{{ service }} : create config files from templates'
+- name: '{{ service_name }} : create config files from templates'
   template:
     src: '{{ item.src }}'
     dest: "{{ service_image_dir }}/{{ item.path | regex_replace('^(.*?)(\\.j2)?$', '\\1') }}"
     mode: '{{ item.mode }}'
-  with_filetree: '../templates/{{ service }}/image'
+  with_filetree: '../templates/{{ service_name }}/image'
   when: item.state == 'file'
   tags: [init, skip_ansible_lint]
 
-- name: '{{ service }} : generate certs'
+- name: '{{ service_name }} : copy files'
+  copy:
+    src: "{{ item['src'] }}"
+    dest: "{{ item['dest'] }}"
+    mode: 0755
+  loop: '{{ service_copy_files|default([]) }}'
+  tags: init
+
+- name: '{{ service_name }} : generate certs'
   shell: |
-    "{{ playbook_dir }}/pki/easy-rsa/easyrsa3/easyrsa" --batch build-server-full "{{ item }}" nopass
+    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch build-server-full "{{ item }}" nopass
   args:
-    creates: '{{ playbook_dir }}/pki/certs/issued/{{ item }}.crt'
+    creates: '{{ local_path }}/pki/certs/issued/{{ item }}.crt'
   loop: '{{ service_gen_certs|default([]) }}'
   tags: init
 
-- name: '{{ service }} : copy certs'
+- name: '{{ service_name }} : copy certs'
   copy:
-    src: '{{ playbook_dir }}/pki/certs/{{ item.src }}'
+    src: '{{ local_path }}/pki/certs/{{ item.src }}'
     dest: '{{ service_image_dir }}/{{ item.dest }}'
+    mode: 0755
   loop: '{{ service_copy_certs|default([]) }}'
   tags: init
 
-- name: '{{ service }} : create docker image'
-  command: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service }}:latest'
+- name: '{{ service_name }} : create docker image'
+  command: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
   when: docker_registry_url is defined
   tags: [build, skip_ansible_lint]
 
-- name: '{{ service }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service }}:latest'
-  command: docker push {{ docker_registry_url }}/{{ project }}-{{ service }}:latest
+- name: '{{ service_name }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
+  command: docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest
   when: docker_registry_url is defined
   tags: push
 
-- name: '{{ service }} : create docker image'
-  command: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service }}:latest'
+- name: '{{ service_name }} : create docker image'
+  command: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service_name }}:latest'
   when: docker_registry_url is not defined
   tags: [build, skip_ansible_lint]

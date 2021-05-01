@@ -1,4 +1,4 @@
-FROM redmine:4.1.1-passenger
+FROM redmine:{{ conf['docker_tag_redmine']|default("4.2.1-passenger") }}
 
 LABEL project="{{ project }}"
 

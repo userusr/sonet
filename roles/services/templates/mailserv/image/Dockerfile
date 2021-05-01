@@ -1,6 +1,7 @@
 # Use osixia/light-baseimage
 # https://github.com/osixia/docker-light-baseimage
-FROM osixia/light-baseimage:1.2.0
+# https://hub.docker.com/r/osixia/light-baseimage/tags?page=1&ordering=last_updated
+FROM osixia/light-baseimage:{{ conf['docker_tag_mailserv_baseimage']|default("stable-amd64") }}
 
 LABEL project="{{ project }}"
 

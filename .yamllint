@@ -3,8 +3,6 @@ extends: default
 
 ignore: |
   venv
-  **/build/
-  **/inventories/sonet.local/pki/easy-rsa/
 
 rules:
   # 80 chars should be enough, but don't fail if a line is longer

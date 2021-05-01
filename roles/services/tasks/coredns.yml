@@ -2,9 +2,10 @@
 - name: 'coredns : service init'
   include_tasks: service_common.yml
   vars:
+    - service_name: coredns
     - service_image_dir: '{{ local_path }}/images/coredns'
     - service_dirs:
-      - zones
+        - zones
   tags: [init, build, push]
 
 - name: 'coredns : create zone files'

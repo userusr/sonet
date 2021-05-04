@@ -1,0 +1,66 @@
+---
+- name: 'nextcloud : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: nextcloud
+    - service_image_dir: '{{ local_path }}/images/nextcloud'
+    - service_dirs:
+        - service/nextcloud/apps
+  tags: [init, build, push]
+
+- name: 'nextcloud_db : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: nextcloud_db
+    - service_image_dir: '{{ local_path }}/images/nextcloud_db'
+  tags: [init, build, push]
+
+- name: 'nextcloud_redis : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: nextcloud_redis
+    - service_image_dir: '{{ local_path }}/images/nextcloud_redis'
+  tags: [init, build, push]
+
+- name: 'nextcloud_onlyoffice_ds : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: nextcloud_onlyoffice_ds
+    - service_image_dir: '{{ local_path }}/images/nextcloud_onlyoffice_ds'
+  tags: [init, build, push]
+
+- name: 'nextcloud_drawio_export_server: service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: nextcloud_drawio_export_server
+    - service_image_dir: '{{ local_path }}/images/nextcloud_drawio_export_server'
+  tags: [init, build, push]
+
+- name: 'nextcloud_drawio: service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: nextcloud_drawio
+    - service_image_dir: '{{ local_path }}/images/nextcloud_drawio'
+  tags: [init, build, push]
+
+- name: 'nextcloud : create apps folder'
+  file:
+    path: '{{ playbook_dir }}/nextcloud/apps/'
+    state: directory
+    recurse: yes
+    mode: 0755
+  tags: init
+
+- name: 'nextcloud : get apps'
+  include_tasks: helper_get_url.yml
+  loop: "{{ nextcloud['apps'] }}"
+  tags: init
+
+- name: 'nextcloud : copy apps'
+  copy:
+    src: "{{ item['src'] }}"
+    dest: "{{ item['dest'] }}"
+    mode: 0775
+  loop:
+    - { src: "{{ playbook_dir }}/nextcloud/apps/", dest: "{{ local_path }}/images/nextcloud/service/nextcloud/apps/" }
+  tags: init

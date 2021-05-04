@@ -12,6 +12,8 @@ PLAYBOOK ?= inventories/sonet.local/playbook.yml
 LOCAL_DOCKER_REGISTRY_ADDR ?= registry.sonet.local
 #
 LOCAL_DOCKER_REGISTRY_PORT ?= 5000
+#
+LOCAL_DOCKER_REGISTRY_BIND_IP ?= 127.0.0.1
 # Ask become password (1 - ask)
 ANSIBLE_ASK_BECOME_PASS ?= 0
 #
@@ -125,7 +127,7 @@ servedocs: docs ## compile the docs watching for changes
 registry-start: ## start local docker registry
 	[ ! "$$(docker ps -q -f name=${REGISTRY_CONTAINER_NAME})" ] && \
 		docker run --detach --rm \
-			--publish $(LOCAL_DOCKER_REGISTRY_PORT):5000 \
+			--publish $(LOCAL_DOCKER_REGISTRY_BIND_IP):$(LOCAL_DOCKER_REGISTRY_PORT):5000 \
 			--name ${REGISTRY_CONTAINER_NAME} \
 			--volume "$(REGISTRY_DATA_DIR)":/var/lib/registry \
 			registry:2

@@ -1,0 +1,13 @@
+---
+- name: 'get_url : check destination'
+  stat:
+    path: "{{ item.dest }}"
+  register: get_url_dest
+  tags: init
+
+- name: "get_url : download"
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+  when: ( item.url is defined ) and ( not get_url_dest.stat.exists )
+  tags: init

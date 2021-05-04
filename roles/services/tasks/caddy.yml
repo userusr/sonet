@@ -18,6 +18,9 @@
         - "registry.{{ openldap['ldap_domain'] }}"
         - "storage.{{ openldap['ldap_domain'] }}"
         - "excalidraw.{{ openldap['ldap_domain'] }}"
+        - "nextcloud.{{ openldap['ldap_domain'] }}"
+        - "onlyoffice.{{ openldap['ldap_domain'] }}"
+        - "drawio.{{ openldap['ldap_domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "ca.crt", dest: "pki/ca.crt" }
@@ -38,4 +41,10 @@
         - { src: "private/pki.{{ openldap['ldap_domain'] }}.key", dest: "private/pki.{{ openldap['ldap_domain'] }}.key" }
         - { src: "issued/excalidraw.{{ openldap['ldap_domain'] }}.crt", dest: "certs/excalidraw.{{ openldap['ldap_domain'] }}.crt" }
         - { src: "private/excalidraw.{{ openldap['ldap_domain'] }}.key", dest: "private/excalidraw.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/nextcloud.{{ openldap['ldap_domain'] }}.crt", dest: "certs/nextcloud.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/nextcloud.{{ openldap['ldap_domain'] }}.key", dest: "private/nextcloud.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/onlyoffice.{{ openldap['ldap_domain'] }}.crt", dest: "certs/onlyoffice.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/onlyoffice.{{ openldap['ldap_domain'] }}.key", dest: "private/onlyoffice.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/drawio.{{ openldap['ldap_domain'] }}.crt", dest: "certs/drawio.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/drawio.{{ openldap['ldap_domain'] }}.key", dest: "private/drawio.{{ openldap['ldap_domain'] }}.key" }
   tags: [init, build, push]

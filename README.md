@@ -41,6 +41,9 @@ $ cat <<EOF | sudo tee -a /etc/hosts
 127.0.0.1 mattermost.sonet.local
 127.0.0.1 storage.sonet.local
 127.0.0.1 excalidraw.sonet.local
+127.0.0.1 nextcloud.sonet.local
+127.0.0.1 onlyoffice.sonet.local
+127.0.0.1 drawio.sonet.local
 EOF
 
 # Создаем виртуальное окружение и устанавливаем зависимости
@@ -65,20 +68,24 @@ https://pki.sonet.local, скачиваем и устанавливаем кор
 Заходим на https://redmine.sonet.local. Вводим логин `admin` и пароль
 `admin`. Redmine попросит поменять пароль администратора - меняем. Теперь
 пробуем зайти под логином пользователя из LDAP. Разлогиневаемся из-под админа и
-входим как `ltolstoy` с паролем `ltolstoy`. Redmine запросит данные
+входим как `lpervov` с паролем `lpervov`. Redmine запросит данные
 пользователя из LDAP и создаст у себя такого же.
 
+Заходим на https://nextcloud.sonet.local. Вводим логин `admin` и пароль
+`nextcloud`. Nextcloud так же уже подключен к LDAP и можно авторизоваться как
+`lpervov` с паролем `lpervov`. В Nextcloud настроена интеграция с onlyoffice и drawio, которые так же работают в docker контейнерах.
+
 Заходим на https://mail.sonet.local. Появится страница авторизации
-почтового клиента _Roundcube_. Входим как `ltolstoy` с паролем `ltolstoy`.
+почтового клиента _Roundcube_. Входим как `lpervov` с паролем `lpervov`.
 
 Заходим на https://gitlab.sonet.local. Меняем пароль пользователя `root`.
-И заходим под пользователем из LDAP `ltolstoy` с паролем `ltolstoy`.
+И заходим под пользователем из LDAP `lpervov` с паролем `lpervov`.
 
 Заходим на https://mattermost.sonet.local. Выбираем "Gitbab Singl Sign-On" и
 на следующей странице "Authorize". Появится интерфейс mattermost.
 
 В FileZilla создадим новое подключение, выберем протокол `SFTP`, адрес
-`storage.sonet.local`, порт 2221, логин `ltolstoy`, пароль `ltolstoy`.
+`storage.sonet.local`, порт 2221, логин `lpervov`, пароль `lpervov`.
 Должны быть доступны две папки `public` и `library`.
 
 В файловом менеджере подключаемся к `smb://storage.sonet.local`. Появятся те

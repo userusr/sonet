@@ -54,8 +54,9 @@ dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
 changetype: add
 objectClass: groupOfUniqueNames
 objectClass: top
+description: {{ openldap['preset_ldiff'][ou][name]['description']|default(name) }}
 cn: {{ name }}
-{% for cn in openldap['preset_ldiff'][ou][name] %}
+{% for cn in openldap['preset_ldiff'][ou][name]['members'] %}
 uniqueMember: cn={{ cn }},ou=users,{{ openldap['ldap_base_dn'] }}
 {% endfor %}
 

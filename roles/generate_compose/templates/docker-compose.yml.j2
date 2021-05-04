@@ -296,3 +296,127 @@ services:
     networks:
       - net
 {% endif %}
+
+{% if "nextcloud" in include_service|default([]) %}
+  nextcloud_db:
+    image:  {{registry_url}}{{project}}-nextcloud_db:latest
+    container_name: {{project}}-nextcloud_db
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/nextcloud/postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+      POSTGRES_DB: nextcloud
+      PGDATA: /var/lib/postgresql/data
+    networks:
+      - net
+
+  nextcloud_redis:
+    image:  {{registry_url}}{{project}}-nextcloud_redis:latest
+    container_name: {{project}}-nextcloud_redis
+    restart: always
+    networks:
+      - net
+
+  nextcloud_onlyoffice_ds:
+    image:  {{registry_url}}{{project}}-nextcloud_onlyoffice_ds:latest
+    container_name: {{project}}-nextcloud_onlyoffice_ds
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/nextcloud/onlyoffice_ds/var/www/onlyoffice/Data:/var/www/onlyoffice/Data
+      - {{docker_data_dir}}/nextcloud/onlyoffice_ds/var/log/onlyoffice:/var/log/onlyoffice
+    networks:
+      - net
+
+  nextcloud_drawio_export_server:
+    image:  {{registry_url}}{{project}}-nextcloud_drawio_export_server:latest
+    container_name: {{project}}-nextcloud_drawio_export_server
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/nextcloud/drawio/export-server/usr/share/fonts/drawio:/usr/share/fonts/drawio
+    networks:
+      - net
+
+  nextcloud_drawio:
+    image:  {{registry_url}}{{project}}-nextcloud_drawio:latest
+    container_name: {{project}}-nextcloud_drawio
+    restart: always
+    environment:
+      VIRTUAL_HOST: drawio.{{ openldap['ldap_domain'] }}
+      VIRTUAL_PORT: 8080
+      EXPORT_URL: http://nextcloud_drawio_export_server:8000/
+    depends_on:
+      - nextcloud_drawio_export_server
+    networks:
+      - net
+
+  nextcloud:
+    image:  {{registry_url}}{{project}}-nextcloud:latest
+    container_name: {{project}}-nextcloud
+    restart: always
+    volumes:
+      - {{docker_data_dir}}/nextcloud/nextcloud-data/var/www/html:/var/www/html
+    environment:
+      VIRTUAL_HOST: nextcloud.{{ openldap['ldap_domain'] }}
+      NEXTCLOUD_TRUSTED_DOMAINS: nextcloud nextcloud.{{ openldap['ldap_domain'] }}
+
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: {{ conf['nextcloud_admin_mail_account_password'] }}
+
+      SMTP_HOST: {{ mailserv['hostname'] }}
+      SMTP_PORT: 25
+      SMTP_AUTHTYPE: LOGIN
+      SMTP_NAME: nextcloud
+      SMTP_PASSWORD: {{ conf['nextcloud_admin_mail_account_password'] }}
+      MAIL_FROM_ADDRESS: nextcloud
+      MAIL_DOMAIN: {{ mailserv['domain'] }}
+
+      REDIS_HOST: nextcloud_redis
+      POSTGRES_HOST: nextcloud_db
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+
+      NEXTCLOUD_DRAWIO_URL: "https://drawio.{{ openldap['ldap_domain'] }}/"
+
+      NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_URL: "https://onlyoffice.{{ openldap['ldap_domain'] }}/"
+      NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_INTERNAL_URL: "http://nextcloud_onlyoffice_ds/"
+      NEXTCLOUD_ONLYOFFICE_STORAGE_URL: "http://nextcloud/"
+      NEXTCLOUD_ONLYOFFICE_VERIFY_PEER_OFF: "true"
+
+      NEXTCLOUD_LDAP_HOST: ldap
+      NEXTCLOUD_LDAP_PORT: 389
+      NEXTCLOUD_LDAP_BASE: {{ openldap['ldap_base_dn'] }}
+      NEXTCLOUD_LDAP_AGENT_NAME: cn={{ openldap['ldap_readonly_user_username'] }},{{ openldap['ldap_base_dn'] }}
+      NEXTCLOUD_LDAP_AGENT_PASSWORD: {{ openldap['ldap_readonly_user_password'] }}
+      NEXTCLOUD_LDAP_EMAIL_ATTRIBUTE: mail
+      NEXTCLOUD_LDAP_GID_NUMBER: gidNumber
+      NEXTCLOUD_LDAP_GROUP_DISPLAY_NAME: description
+      NEXTCLOUD_LDAP_GROUP_FILTER: (&(|(objectclass=groupOfUniqueNames))(|(cn=colleagues)(cn=managers)))
+      NEXTCLOUD_LDAP_GROUP_FILTER_OBJECTCLASS: groupOfUniqueNames
+      NEXTCLOUD_LDAP_GROUP_MEMBER_ASSOC_ATTR: uniqueMember
+      NEXTCLOUD_LDAP_LOGIN_FILTER: (&(&(|(objectclass=person))(|(memberof=cn=nextcloud_users,ou=groups,dc=sonet,dc=local)))(|(cn=%uid)))
+      NEXTCLOUD_LDAP_LOGIN_FILTER_ATTRIBUTES: cn
+      NEXTCLOUD_LDAP_USERDISPLAY_NAME: displayname
+      NEXTCLOUD_LDAP_USER_FILTER: (&(|(objectclass=person))(|(memberof=cn=nextcloud_users,ou=groups,dc=sonet,dc=local)))
+      NEXTCLOUD_LDAP_USER_FILTER_GROUPS: nextcloud
+      NEXTCLOUD_LDAP_USER_FILTER_OBJECTCLASS: person
+      NEXTCLOUD_LDAP_CONFIGURATION_ACTIVE: 1
+    entrypoint:
+      - "/wait-for-postgres.sh"
+      - "--host=nextcloud_db"
+      - "--db=nextcloud"
+      - "--user=nextcloud"
+      - "--pass=nextcloud"
+      - "--"
+      - "/entrypoint.sh"
+      - "apache2-foreground"
+    depends_on:
+      - nextcloud_db
+      - nextcloud_redis
+      - nextcloud_onlyoffice_ds
+      - nextcloud_drawio
+    networks:
+      - net
+{% endif %}

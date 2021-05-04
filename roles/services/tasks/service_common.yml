@@ -76,7 +76,7 @@
   tags: [build, skip_ansible_lint]
 
 - name: '{{ service_name }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
-  shell: docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest
+  command: "docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest"
   when: docker_registry_url is defined
   register: shell_output
   tags: push

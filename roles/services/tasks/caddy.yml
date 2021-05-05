@@ -21,6 +21,7 @@
         - "nextcloud.{{ openldap['ldap_domain'] }}"
         - "onlyoffice.{{ openldap['ldap_domain'] }}"
         - "drawio.{{ openldap['ldap_domain'] }}"
+        - "portainer.{{ openldap['ldap_domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "ca.crt", dest: "pki/ca.crt" }
@@ -47,4 +48,6 @@
         - { src: "private/onlyoffice.{{ openldap['ldap_domain'] }}.key", dest: "private/onlyoffice.{{ openldap['ldap_domain'] }}.key" }
         - { src: "issued/drawio.{{ openldap['ldap_domain'] }}.crt", dest: "certs/drawio.{{ openldap['ldap_domain'] }}.crt" }
         - { src: "private/drawio.{{ openldap['ldap_domain'] }}.key", dest: "private/drawio.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/portainer.{{ openldap['ldap_domain'] }}.crt", dest: "certs/portainer.{{ openldap['ldap_domain'] }}.crt" }
+        - { src: "private/portainer.{{ openldap['ldap_domain'] }}.key", dest: "private/portainer.{{ openldap['ldap_domain'] }}.key" }
   tags: [init, build, push]

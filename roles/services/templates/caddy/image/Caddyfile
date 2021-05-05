@@ -100,6 +100,22 @@ nextcloud.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * nextcloud:80
 }
 
+portainer.{{ openldap['ldap_domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
+    tls /etc/pki/tls/certs/portainer.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/portainer.{{ openldap['ldap_domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
+
+    reverse_proxy * portainer:9000
+}
+
 onlyoffice.{{ openldap['ldap_domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}

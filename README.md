@@ -44,6 +44,7 @@ $ cat <<EOF | sudo tee -a /etc/hosts
 127.0.0.1 nextcloud.sonet.local
 127.0.0.1 onlyoffice.sonet.local
 127.0.0.1 drawio.sonet.local
+127.0.0.1 portainer.sonet.local
 EOF
 
 # Создаем виртуальное окружение и устанавливаем зависимости
@@ -94,6 +95,15 @@ https://pki.sonet.local, скачиваем и устанавливаем кор
 
 Проверяем доступность https://excalidraw.sonet.local, если все хорошо, то
 в браузере появится область для рисования.
+
+Управлять запущенными контейнерами можно через интерфейс Portainer, доступный
+тут http://portainer.sonet.local. Пользователь для входа `admin` и пароль
+`portainer`. Portainer так же [поддерживает][auth ldap] аутентификацию пользователей через
+LDAP, но подключить docker образ с помощью переменных окружения к LDAP [пока
+нельзя][feature request].
+
+[auth ldap]:(https://documentation.portainer.io/v2.0/auth/ldap/)
+[feature request]:(https://github.com/portainer/portainer/issues/3125)
 
 Управлять содержимым каталога LDAP можно с помощью сервиса
 https://ldapadmin.sonet.local, `Apache Directory Studio`, или других

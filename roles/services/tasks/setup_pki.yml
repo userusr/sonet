@@ -29,7 +29,7 @@
 - name: 'pki : init and generate ca keys'
   shell: |
     "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch init-pki nopass
-    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch "--req-cn=rootca.{{ openldap['ldap_domain'] }}" build-ca nopass
+    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch "--req-cn=rootca.{{ conf['domain'] }}" build-ca nopass
     "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch gen-dh
   when: not pki_certs_dir.stat.exists
   tags: init

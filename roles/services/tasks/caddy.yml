@@ -9,45 +9,45 @@
         - private
         - pki
     - service_gen_certs:
-        - "pki.{{ openldap['ldap_domain'] }}"
-        - "gitlab.{{ openldap['ldap_domain'] }}"
-        - "ldapadmin.{{ openldap['ldap_domain'] }}"
-        - "mail.{{ openldap['ldap_domain'] }}"
-        - "mattermost.{{ openldap['ldap_domain'] }}"
-        - "redmine.{{ openldap['ldap_domain'] }}"
-        - "registry.{{ openldap['ldap_domain'] }}"
-        - "storage.{{ openldap['ldap_domain'] }}"
-        - "excalidraw.{{ openldap['ldap_domain'] }}"
-        - "nextcloud.{{ openldap['ldap_domain'] }}"
-        - "onlyoffice.{{ openldap['ldap_domain'] }}"
-        - "drawio.{{ openldap['ldap_domain'] }}"
-        - "portainer.{{ openldap['ldap_domain'] }}"
+        - "pki.{{ conf['domain'] }}"
+        - "gitlab.{{ conf['domain'] }}"
+        - "ldapadmin.{{ conf['domain'] }}"
+        - "mail.{{ conf['domain'] }}"
+        - "mattermost.{{ conf['domain'] }}"
+        - "redmine.{{ conf['domain'] }}"
+        - "registry.{{ conf['domain'] }}"
+        - "storage.{{ conf['domain'] }}"
+        - "excalidraw.{{ conf['domain'] }}"
+        - "nextcloud.{{ conf['domain'] }}"
+        - "onlyoffice.{{ conf['domain'] }}"
+        - "drawio.{{ conf['domain'] }}"
+        - "portainer.{{ conf['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "ca.crt", dest: "pki/ca.crt" }
         - { src: "dh.pem", dest: "certs/dhparam.pem" }
-        - { src: "issued/gitlab.{{ openldap['ldap_domain'] }}.crt", dest: "certs/gitlab.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/gitlab.{{ openldap['ldap_domain'] }}.key", dest: "private/gitlab.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/mattermost.{{ openldap['ldap_domain'] }}.crt", dest: "certs/mattermost.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/mattermost.{{ openldap['ldap_domain'] }}.key", dest: "private/mattermost.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/mail.{{ openldap['ldap_domain'] }}.crt", dest: "certs/mail.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/mail.{{ openldap['ldap_domain'] }}.key", dest: "private/mail.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/registry.{{ openldap['ldap_domain'] }}.crt", dest: "certs/registry.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/registry.{{ openldap['ldap_domain'] }}.key", dest: "private/registry.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/redmine.{{ openldap['ldap_domain'] }}.crt", dest: "certs/redmine.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/redmine.{{ openldap['ldap_domain'] }}.key", dest: "private/redmine.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/ldapadmin.{{ openldap['ldap_domain'] }}.crt", dest: "certs/ldapadmin.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/ldapadmin.{{ openldap['ldap_domain'] }}.key", dest: "private/ldapadmin.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/pki.{{ openldap['ldap_domain'] }}.crt", dest: "certs/pki.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/pki.{{ openldap['ldap_domain'] }}.key", dest: "private/pki.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/excalidraw.{{ openldap['ldap_domain'] }}.crt", dest: "certs/excalidraw.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/excalidraw.{{ openldap['ldap_domain'] }}.key", dest: "private/excalidraw.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/nextcloud.{{ openldap['ldap_domain'] }}.crt", dest: "certs/nextcloud.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/nextcloud.{{ openldap['ldap_domain'] }}.key", dest: "private/nextcloud.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/onlyoffice.{{ openldap['ldap_domain'] }}.crt", dest: "certs/onlyoffice.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/onlyoffice.{{ openldap['ldap_domain'] }}.key", dest: "private/onlyoffice.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/drawio.{{ openldap['ldap_domain'] }}.crt", dest: "certs/drawio.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/drawio.{{ openldap['ldap_domain'] }}.key", dest: "private/drawio.{{ openldap['ldap_domain'] }}.key" }
-        - { src: "issued/portainer.{{ openldap['ldap_domain'] }}.crt", dest: "certs/portainer.{{ openldap['ldap_domain'] }}.crt" }
-        - { src: "private/portainer.{{ openldap['ldap_domain'] }}.key", dest: "private/portainer.{{ openldap['ldap_domain'] }}.key" }
+        - { src: "issued/gitlab.{{ conf['domain'] }}.crt", dest: "certs/gitlab.{{ conf['domain'] }}.crt" }
+        - { src: "private/gitlab.{{ conf['domain'] }}.key", dest: "private/gitlab.{{ conf['domain'] }}.key" }
+        - { src: "issued/mattermost.{{ conf['domain'] }}.crt", dest: "certs/mattermost.{{ conf['domain'] }}.crt" }
+        - { src: "private/mattermost.{{ conf['domain'] }}.key", dest: "private/mattermost.{{ conf['domain'] }}.key" }
+        - { src: "issued/mail.{{ conf['domain'] }}.crt", dest: "certs/mail.{{ conf['domain'] }}.crt" }
+        - { src: "private/mail.{{ conf['domain'] }}.key", dest: "private/mail.{{ conf['domain'] }}.key" }
+        - { src: "issued/registry.{{ conf['domain'] }}.crt", dest: "certs/registry.{{ conf['domain'] }}.crt" }
+        - { src: "private/registry.{{ conf['domain'] }}.key", dest: "private/registry.{{ conf['domain'] }}.key" }
+        - { src: "issued/redmine.{{ conf['domain'] }}.crt", dest: "certs/redmine.{{ conf['domain'] }}.crt" }
+        - { src: "private/redmine.{{ conf['domain'] }}.key", dest: "private/redmine.{{ conf['domain'] }}.key" }
+        - { src: "issued/ldapadmin.{{ conf['domain'] }}.crt", dest: "certs/ldapadmin.{{ conf['domain'] }}.crt" }
+        - { src: "private/ldapadmin.{{ conf['domain'] }}.key", dest: "private/ldapadmin.{{ conf['domain'] }}.key" }
+        - { src: "issued/pki.{{ conf['domain'] }}.crt", dest: "certs/pki.{{ conf['domain'] }}.crt" }
+        - { src: "private/pki.{{ conf['domain'] }}.key", dest: "private/pki.{{ conf['domain'] }}.key" }
+        - { src: "issued/excalidraw.{{ conf['domain'] }}.crt", dest: "certs/excalidraw.{{ conf['domain'] }}.crt" }
+        - { src: "private/excalidraw.{{ conf['domain'] }}.key", dest: "private/excalidraw.{{ conf['domain'] }}.key" }
+        - { src: "issued/nextcloud.{{ conf['domain'] }}.crt", dest: "certs/nextcloud.{{ conf['domain'] }}.crt" }
+        - { src: "private/nextcloud.{{ conf['domain'] }}.key", dest: "private/nextcloud.{{ conf['domain'] }}.key" }
+        - { src: "issued/onlyoffice.{{ conf['domain'] }}.crt", dest: "certs/onlyoffice.{{ conf['domain'] }}.crt" }
+        - { src: "private/onlyoffice.{{ conf['domain'] }}.key", dest: "private/onlyoffice.{{ conf['domain'] }}.key" }
+        - { src: "issued/drawio.{{ conf['domain'] }}.crt", dest: "certs/drawio.{{ conf['domain'] }}.crt" }
+        - { src: "private/drawio.{{ conf['domain'] }}.key", dest: "private/drawio.{{ conf['domain'] }}.key" }
+        - { src: "issued/portainer.{{ conf['domain'] }}.crt", dest: "certs/portainer.{{ conf['domain'] }}.crt" }
+        - { src: "private/portainer.{{ conf['domain'] }}.key", dest: "private/portainer.{{ conf['domain'] }}.key" }
   tags: [init, build, push]

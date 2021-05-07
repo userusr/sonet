@@ -16,6 +16,12 @@
     - service_image_dir: '{{ local_path }}/images/redminedb'
   tags: [init, build, push]
 
+- name: 'redmine : get plugins and themes'
+  include_tasks: helper_github_clone.yml
+  loop: "{{ redmine['plugins_and_themes'] }}"
+  when: redmine.plugins_and_themes is defined
+  tags: init
+
 - name: 'redmine : copy plugins'
   copy:
     src: "{{ item['src'] }}"

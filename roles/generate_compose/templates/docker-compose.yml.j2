@@ -38,7 +38,7 @@ services:
     environment:
       LDAP_LOG_LEVEL: "{{ openldap['ldap_log_level'] }}"
       LDAP_ORGANISATION: "{{ openldap['ldap_organisation'] }}"
-      LDAP_DOMAIN: "{{ openldap['ldap_domain'] }}"
+      LDAP_DOMAIN: "{{ conf['domain'] }}"
       LDAP_ADMIN_PASSWORD: "{{ openldap['ldap_admin_password'] }}"
       LDAP_CONFIG_PASSWORD: "{{ openldap['ldap_config_password'] }}"
       LDAP_READONLY_USER: "{{ openldap['ldap_readonly_user'] }}"
@@ -59,18 +59,17 @@ services:
       - {{docker_data_dir}}/openldap/var/lib/ldap:/var/lib/ldap
       - {{docker_data_dir}}/openldap/etc/ldap/slapd.d:/etc/ldap/slapd.d
     ports:
-      # - "{{bind_ip}}389:389/tcp"
       - "{{bind_ip}}636:636/tcp"
     # For replication to work correctly, domainname and hostname must be
     # set correctly so that "hostname"."domainname" equates to the
     # fully-qualified domain name for the host.
-    domainname: "{{ openldap['ldap_domain'] }}"
-    hostname: "{{ openldap['ldap_hostname'] }}"
+    domainname: "{{ conf['domain'] }}"
+    hostname: "{{ conf['ldap_hostname'] }}"
     networks:
       net:
         aliases:
-          - "{{ openldap['ldap_hostname'] }}"
-          - "{{ openldap['ldap_hostname'] }}.{{ openldap['ldap_domain'] }}"
+          - "{{ conf['ldap_hostname'] }}"
+          - "{{ conf['ldap_hostname'] }}.{{ conf['domain'] }}"
 {% endif %}
 
 {% if "openldap" in include_service|default([]) %}
@@ -97,8 +96,9 @@ services:
       REDMINE_DB_DATABASE: "redmine"
       REDMINE_DB_USERNAME: "postgres"
       REDMINE_DB_PASSWORD: "password"
+      REDMINE_PLUGINS_MIGRATE: "true"
     volumes:
-      - {{docker_data_dir}}/redmine/redmine-data:/usr/src/redmine/files
+      - {{docker_data_dir}}/redmine/redmine-data/usr/src/redmine/files:/usr/src/redmine/files
     depends_on:
       - redminedb
     networks:
@@ -109,7 +109,7 @@ services:
     container_name: {{project}}-redminedb
     restart: always
     volumes:
-      - {{docker_data_dir}}/redmine/postgres-data:/var/lib/postgresql/data
+      - {{docker_data_dir}}/redmine/postgres-data/var/lib/postgresql/data:/var/lib/postgresql/data
     environment:
       POSTGRES_USERNAME: "postgres"
       POSTGRES_PASSWORD: "password"
@@ -217,22 +217,22 @@ services:
   gitlab:
     image:  {{registry_url}}{{project}}-gitlab:latest
     container_name: {{project}}-gitlab
-    # hostname: 'gitlab.{{ openldap['ldap_domain'] }}'
+    # hostname: 'gitlab.{{ conf['domain'] }}'
     restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.{{ openldap['ldap_domain'] }}'
-        mattermost_external_url 'https://mattermost.{{ openldap['ldap_domain'] }}'
-        registry_external_url "https://registry.{{ openldap['ldap_domain'] }}"
+        external_url 'https://gitlab.{{ conf['domain'] }}'
+        mattermost_external_url 'https://mattermost.{{ conf['domain'] }}'
+        registry_external_url "https://registry.{{ conf['domain'] }}"
         letsencrypt['enable'] = false
         nginx['ssl_client_certificate'] = "/certs/ca.crt"
         nginx['ssl_dhparam'] = "/certs/dhparam.pem"
-        nginx['ssl_certificate'] = '/certs/gitlab.{{ openldap['ldap_domain'] }}.crt'
-        nginx['ssl_certificate_key'] = '/certs/gitlab.{{ openldap['ldap_domain'] }}.key'
-        mattermost_nginx['ssl_certificate'] = '/certs/mattermost.{{ openldap['ldap_domain'] }}.crt'
-        mattermost_nginx['ssl_certificate_key'] = '/certs/mattermost.{{ openldap['ldap_domain'] }}.key'
-        registry_nginx['ssl_certificate'] = "/certs/registry.{{ openldap['ldap_domain'] }}.crt"
-        registry_nginx['ssl_certificate_key'] = "/certs/registry.{{ openldap['ldap_domain'] }}.key"
+        nginx['ssl_certificate'] = '/certs/gitlab.{{ conf['domain'] }}.crt'
+        nginx['ssl_certificate_key'] = '/certs/gitlab.{{ conf['domain'] }}.key'
+        mattermost_nginx['ssl_certificate'] = '/certs/mattermost.{{ conf['domain'] }}.crt'
+        mattermost_nginx['ssl_certificate_key'] = '/certs/mattermost.{{ conf['domain'] }}.key'
+        registry_nginx['ssl_certificate'] = "/certs/registry.{{ conf['domain'] }}.crt"
+        registry_nginx['ssl_certificate_key'] = "/certs/registry.{{ conf['domain'] }}.key"
         gitlab_rails['smtp_enable'] = true
         gitlab_rails['smtp_address'] = '{{ mailserv['hostname'] }}'
         gitlab_rails['smtp_port'] = 25
@@ -242,8 +242,8 @@ services:
         gitlab_rails['smtp_enable_starttls_auto'] = false
         gitlab_rails['smtp_ssl'] = false
         gitlab_rails['smtp_force_ssl'] = false
-        gitlab_rails['gitlab_email_from'] = 'gitlab@{{ openldap['ldap_domain'] }}'
-        gitlab_rails['gitlab_email_reply_to'] = 'noreply@{{ openldap['ldap_domain'] }}'
+        gitlab_rails['gitlab_email_from'] = 'gitlab@{{ conf['domain'] }}'
+        gitlab_rails['gitlab_email_reply_to'] = 'noreply@{{ conf['domain'] }}'
         gitlab_rails['ldap_enabled'] = true
         gitlab_rails['prevent_ldap_sign_in'] = false
         gitlab_rails['gitlab_shell_ssh_port'] = 2222
@@ -260,7 +260,7 @@ services:
             'allow_username_or_email_login' => true,
             'block_auto_created_users' => false,
             'base' => '{{ openldap['ldap_base_dn'] }}',
-            'user_filter' => '(&(objectClass=person)(memberOf=cn=gitlab,ou=groups,{{ openldap['ldap_base_dn'] }}))',
+            'user_filter' => '(&(objectClass=person)(memberOf=cn=gitlab_users,ou=groups,{{ openldap['ldap_base_dn'] }}))',
             'attributes' => {
               'username' => 'cn',
               'email' => 'mail',
@@ -280,11 +280,11 @@ services:
     networks:
       net:
         aliases:
-          - "gitlab.{{ openldap['ldap_domain'] }}"
+          - "gitlab.{{ conf['domain'] }}"
           - gitlab
-          - "mattermost.{{ openldap['ldap_domain'] }}"
+          - "mattermost.{{ conf['domain'] }}"
           - mattermost
-          - "registry.{{ openldap['ldap_domain'] }}"
+          - "registry.{{ conf['domain'] }}"
           - registry
 {% endif %}
 
@@ -343,7 +343,7 @@ services:
     container_name: {{project}}-nextcloud_drawio
     restart: always
     environment:
-      VIRTUAL_HOST: drawio.{{ openldap['ldap_domain'] }}
+      VIRTUAL_HOST: drawio.{{ conf['domain'] }}
       VIRTUAL_PORT: 8080
       EXPORT_URL: http://nextcloud_drawio_export_server:8000/
     depends_on:
@@ -358,8 +358,8 @@ services:
     volumes:
       - {{docker_data_dir}}/nextcloud/nextcloud-data/var/www/html:/var/www/html
     environment:
-      VIRTUAL_HOST: nextcloud.{{ openldap['ldap_domain'] }}
-      NEXTCLOUD_TRUSTED_DOMAINS: nextcloud nextcloud.{{ openldap['ldap_domain'] }}
+      VIRTUAL_HOST: nextcloud.{{ conf['domain'] }}
+      NEXTCLOUD_TRUSTED_DOMAINS: nextcloud nextcloud.{{ conf['domain'] }}
 
       NEXTCLOUD_ADMIN_USER: admin
       NEXTCLOUD_ADMIN_PASSWORD: {{ conf['nextcloud_admin_mail_account_password'] }}
@@ -378,9 +378,9 @@ services:
       POSTGRES_USER: nextcloud
       POSTGRES_PASSWORD: nextcloud
 
-      NEXTCLOUD_DRAWIO_URL: "https://drawio.{{ openldap['ldap_domain'] }}/"
+      NEXTCLOUD_DRAWIO_URL: "https://drawio.{{ conf['domain'] }}/"
 
-      NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_URL: "https://onlyoffice.{{ openldap['ldap_domain'] }}/"
+      NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_URL: "https://onlyoffice.{{ conf['domain'] }}/"
       NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_INTERNAL_URL: "http://nextcloud_onlyoffice_ds/"
       NEXTCLOUD_ONLYOFFICE_STORAGE_URL: "http://nextcloud/"
       NEXTCLOUD_ONLYOFFICE_VERIFY_PEER_OFF: "true"
@@ -433,7 +433,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - {{docker_data_dir}}/portainer/data:/data
     environment:
-      - VIRTUAL_HOST=portainer.{{ openldap['ldap_domain'] }}
+      - VIRTUAL_HOST=portainer.{{ conf['domain'] }}
       - VIRTUAL_PORT=9000
     networks:
       - net

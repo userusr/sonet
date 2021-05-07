@@ -5,4 +5,3 @@
     - service_name: portainer
     - service_image_dir: '{{ local_path }}/images/portainer'
   tags: [init, build, push]
-

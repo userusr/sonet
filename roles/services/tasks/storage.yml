@@ -7,10 +7,10 @@
     - service_dirs:
         - service/proftpd/certs
     - service_gen_certs:
-        - "storage.{{ openldap['ldap_domain'] }}"
+        - "storage.{{ conf['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "service/proftpd/certs/ca.crt" }
         - { src: "dh.pem", dest: "service/proftpd/certs/dhparam.pem" }
-        - { src: "issued/storage.{{ openldap['ldap_domain'] }}.crt", dest: "service/proftpd/certs/cert.crt" }
-        - { src: "private/storage.{{ openldap['ldap_domain'] }}.key", dest: "service/proftpd/certs/cert.key" }
+        - { src: "issued/storage.{{ conf['domain'] }}.crt", dest: "service/proftpd/certs/cert.crt" }
+        - { src: "private/storage.{{ conf['domain'] }}.key", dest: "service/proftpd/certs/cert.key" }
   tags: [init, build, push]

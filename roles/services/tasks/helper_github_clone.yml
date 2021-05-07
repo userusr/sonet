@@ -1,0 +1,14 @@
+---
+- name: 'github_clone : check destination'
+  stat:
+    path: "{{ item.dest }}"
+  register: github_clone_dest
+  tags: init
+
+- name: 'github_clone : checkuot repo'
+  git:
+    repo: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    version: "{{ item.tag }}"
+  when: ( item.tag is defined ) and ( not github_clone_dest.stat.exists )
+  tags: init

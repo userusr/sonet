@@ -24,10 +24,10 @@ gidNumber: {{ data['id'] }}
 sn: {{ data['sn'] }}
 displayName: {{ data['displayName'] }}
 givenName: {{ data['givenName'] }}
-mail: {{ name }}@{{ openldap['ldap_domain'] }}
+mail: {{ name }}@{{ conf['domain'] }}
 ou: {{ data['ou'] }}
 mailenable: ok
-mailAlias: {{ name }}@{{ openldap['ldap_domain'] }}
+mailAlias: {{ name }}@{{ conf['domain'] }}
 userPassword: {{ data['userPassword'] }}
 
 {% else %}
@@ -39,8 +39,8 @@ objectClass: simpleSecurityObject
 objectClass: top
 cn: {{ name }}
 mailenable: ok
-mailAlias: {{ name }}@{{ openldap['ldap_domain'] }}
-mail: {{ name }}@{{ openldap['ldap_domain'] }}
+mailAlias: {{ name }}@{{ conf['domain'] }}
+mail: {{ name }}@{{ conf['domain'] }}
 userPassword: {{ data['userPassword'] }}
 
 {% endif %}
@@ -71,11 +71,11 @@ objectClass: organizationalUnit
 objectClass: top
 ou: mailDomains
 
-dn: virtualdomain={{ openldap['ldap_domain'] }},ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+dn: virtualdomain={{ conf['domain'] }},ou=mailDomains,{{ openldap['ldap_base_dn'] }}
 changetype: add
 objectClass: mailDomain
 objectClass: top
-virtualdomain: {{ openldap['ldap_domain'] }}
+virtualdomain: {{ conf['domain'] }}
 
 dn: ou=mailAliases,{{ openldap['ldap_base_dn'] }}
 changetype: add
@@ -83,9 +83,9 @@ objectClass: organizationalUnit
 objectClass: top
 ou: mailAliases
 
-dn: mailalias={{ openldap['ldap_domain'] }},ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+dn: mailalias={{ conf['domain'] }},ou=mailAliases,{{ openldap['ldap_base_dn'] }}
 changetype: add
 objectClass: mailAlias
 objectClass: top
-mailalias: {{ openldap['ldap_domain'] }}
+mailalias: {{ conf['domain'] }}
 mailenable: ok

@@ -2,10 +2,10 @@
     admin :2019
 }
 
-pki.{{ openldap['ldap_domain'] }}:443 {
+pki.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/pki.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/pki.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/pki.{{ conf['domain'] }}.crt /etc/pki/tls/private/pki.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -20,10 +20,10 @@ pki.{{ openldap['ldap_domain'] }}:443 {
     }
 }
 
-ldapadmin.{{ openldap['ldap_domain'] }}:443 {
+ldapadmin.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/ldapadmin.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/ldapadmin.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/ldapadmin.{{ conf['domain'] }}.crt /etc/pki/tls/private/ldapadmin.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -36,10 +36,10 @@ ldapadmin.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * phpldapadmin:80
 }
 
-redmine.{{ openldap['ldap_domain'] }}:443 {
+redmine.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/redmine.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/redmine.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/redmine.{{ conf['domain'] }}.crt /etc/pki/tls/private/redmine.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -52,10 +52,10 @@ redmine.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * redmine:3000
 }
 
-mail.{{ openldap['ldap_domain'] }}:443 {
+mail.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/mail.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/mail.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/mail.{{ conf['domain'] }}.crt /etc/pki/tls/private/mail.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -68,10 +68,10 @@ mail.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * roundcube:80
 }
 
-excalidraw.{{ openldap['ldap_domain'] }}:443 {
+excalidraw.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/excalidraw.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/excalidraw.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/excalidraw.{{ conf['domain'] }}.crt /etc/pki/tls/private/excalidraw.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -84,10 +84,10 @@ excalidraw.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * excalidraw:80
 }
 
-nextcloud.{{ openldap['ldap_domain'] }}:443 {
+nextcloud.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/nextcloud.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/nextcloud.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/nextcloud.{{ conf['domain'] }}.crt /etc/pki/tls/private/nextcloud.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -100,10 +100,10 @@ nextcloud.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * nextcloud:80
 }
 
-portainer.{{ openldap['ldap_domain'] }}:443 {
+portainer.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/portainer.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/portainer.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/portainer.{{ conf['domain'] }}.crt /etc/pki/tls/private/portainer.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -116,10 +116,10 @@ portainer.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * portainer:9000
 }
 
-onlyoffice.{{ openldap['ldap_domain'] }}:443 {
+onlyoffice.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/onlyoffice.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/onlyoffice.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/onlyoffice.{{ conf['domain'] }}.crt /etc/pki/tls/private/onlyoffice.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -132,10 +132,10 @@ onlyoffice.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * nextcloud_onlyoffice_ds:80
 }
 
-drawio.{{ openldap['ldap_domain'] }}:443 {
+drawio.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/drawio.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/drawio.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/drawio.{{ conf['domain'] }}.crt /etc/pki/tls/private/drawio.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -148,10 +148,10 @@ drawio.{{ openldap['ldap_domain'] }}:443 {
     reverse_proxy * nextcloud_drawio:8080
 }
 
-gitlab.{{ openldap['ldap_domain'] }}:443 {
+gitlab.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/gitlab.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/gitlab.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/gitlab.{{ conf['domain'] }}.crt /etc/pki/tls/private/gitlab.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -169,10 +169,10 @@ gitlab.{{ openldap['ldap_domain'] }}:443 {
     }
 }
 
-mattermost.{{ openldap['ldap_domain'] }}:443 {
+mattermost.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/mattermost.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/mattermost.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/mattermost.{{ conf['domain'] }}.crt /etc/pki/tls/private/mattermost.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -190,10 +190,10 @@ mattermost.{{ openldap['ldap_domain'] }}:443 {
     }
 }
 
-registry.{{ openldap['ldap_domain'] }}:443 {
+registry.{{ conf['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/registry.{{ openldap['ldap_domain'] }}.crt /etc/pki/tls/private/registry.{{ openldap['ldap_domain'] }}.key
+    tls /etc/pki/tls/certs/registry.{{ conf['domain'] }}.crt /etc/pki/tls/private/registry.{{ conf['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 

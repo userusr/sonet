@@ -7,10 +7,10 @@
     - service_dirs:
         - certs
     - service_gen_certs:
-        - "ldap.{{ openldap['ldap_domain'] }}"
+        - "ldap.{{ conf['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "dh.pem", dest: "certs/dhparam.pem" }
-        - { src: "issued/ldap.{{ openldap['ldap_domain'] }}.crt", dest: "certs/cert.crt" }
-        - { src: "private/ldap.{{ openldap['ldap_domain'] }}.key", dest: "certs/cert.key" }
+        - { src: "issued/ldap.{{ conf['domain'] }}.crt", dest: "certs/cert.crt" }
+        - { src: "private/ldap.{{ conf['domain'] }}.key", dest: "certs/cert.key" }
   tags: [init, build, push]

@@ -5,6 +5,7 @@ LABEL project="{{ project }}"
 RUN apt-get -y update \
   && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git \
+    unzip \
     build-essential \
     imagemagick \
     libmagickcore-dev \
@@ -12,14 +13,6 @@ RUN apt-get -y update \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN gem install rmagick
-
-# The gitmike theme can be retrieved from its project page
-# Hide Sidebar plugin allows to hide the sidebar. Especially useful when editing issues
-# and Clipboard Image Paste allows to attach an image pasting from the clipboard instead of selecting a file
-RUN git clone https://github.com/makotokw/redmine-theme-gitmike.git public/themes/gitmike \
-    && git clone https://github.com/fraoustin/RTMaterial.git public/themes/RTMaterial \
-    && git clone https://gitlab.com/bdemirkir/sidebar_hide.git plugins/sidebar_hide \
-    && git clone https://github.com/RubyClickAP/clipboard_image_paste.git plugins/clipboard_image_paste
 
 COPY service/redmine/db/migrate/20200916115806_add_ldap.rb /usr/src/redmine/db/migrate/20200916115806_add_ldap.rb
 COPY service/redmine/config/configuration.yml /usr/src/redmine/config/configuration.yml
@@ -30,6 +23,11 @@ COPY service/redmine/themes/ /themes
 RUN find /plugins -name "*.zip" -exec unzip -d /usr/src/redmine/plugins/ {} \;
 RUN find /themes -name "*.zip" -exec unzip -d /usr/src/redmine/public/themes/ {} \;
 
-RUN cd /usr/src/redmine/ && bundle install --without development test
+RUN find /plugins -type d -exec cp -r {} /usr/src/redmine/plugins/ \;
+RUN find /themes -type d -exec cp -r {} /usr/src/redmine/public/themes/ \;
+
+WORKDIR /usr/src/redmine/
+
+RUN BUNDLER_WITHOUT="development test" bundle install
 
 CMD ["passenger", "start"]

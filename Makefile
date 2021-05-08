@@ -17,11 +17,9 @@ LOCAL_DOCKER_REGISTRY_BIND_IP ?= 127.0.0.1
 # Ask become password (1 - ask)
 ANSIBLE_ASK_BECOME_PASS ?= 0
 #
-LDAP_ADMIN_PASSWORD ?= admin
+ANSIBLE_VAULT_PASSWORD ?= sonet
 #
-LDAP_CONFIG_PASSWORD ?= config
-#
-LDAP_READONLY_USER_PASSWORD ?= readonly
+ANSIBLE_VAULT_CLIENT_SCRIPT ?= ./tools/vault-env-client.py
 #
 ANSIBLE_PYTHON_INTERPRETE ?= python3
 #
@@ -74,14 +72,12 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 ANSIBLE_VARS := "project": "$(PROJECT)", \
 		"local_playbook_path": "$(LOCAL_PLAYBOOK_PATH)", \
 		"local_docker_registry_addr": "$(LOCAL_DOCKER_REGISTRY_ADDR)", \
-		"local_docker_registry_port": "$(LOCAL_DOCKER_REGISTRY_PORT)", \
-		"ldap_admin_password": $(LDAP_ADMIN_PASSWORD), \
-		"ldap_config_password": $(LDAP_CONFIG_PASSWORD), \
-		"ldap_readonly_user_password": $(LDAP_READONLY_USER_PASSWORD)
+		"local_docker_registry_port": "$(LOCAL_DOCKER_REGISTRY_PORT)"
 
 _build:
 	${ANSIBLE_PLAYBOOK} $(ANSIBLE_DEBUG) \
 		$(PLAYBOOK) \
+		--vault-password-file $(ANSIBLE_VAULT_CLIENT_SCRIPT) \
 		--inventory $(INVENTORY) \
 		$(ANSIBLE_ASK_BECOME_PASS_PARAM) \
 		--tags '$(TAGS)' \

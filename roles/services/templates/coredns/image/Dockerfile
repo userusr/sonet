@@ -1,9 +1,15 @@
-# https://hub.docker.com/r/coredns/coredns/tags?page=1&ordering=last_updated
-FROM coredns/coredns:{{ conf['docker_tag_coredns']|default("1.8.3") }}
+# https://hub.docker.com/_/golang?tab=tags&page=1&ordering=last_updated
+FROM golang:{{ conf['docker_tag_coredns_golang']|default("1.16.4-buster") }}
 
 LABEL project="{{ project }}"
 
-COPY Corefile /etc/coredns/Corefile
-COPY zones /etc/coredns/zones/
+RUN git clone --depth 1 --branch {{ conf['git_tag_coredns']|default("v1.8.3") }} https://github.com/coredns/coredns.git /coredns
+RUN cd /coredns && make
 
-CMD ["-conf", "/etc/coredns/Corefile"]
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+COPY Corefile /service/coredns/Corefile
+COPY zones /service/coredns/zones
+
+ENTRYPOINT ["/entrypoint.sh"]

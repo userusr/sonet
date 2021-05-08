@@ -18,8 +18,15 @@ services:
 {% if "coredns" in include_service|default([]) %}
   coredns:
     container_name: {{project}}-coredns
-    image:  {{registry_url}}{{project}}-coredns:latest
+    image: {{registry_url}}{{project}}-coredns:latest
     restart: always
+    volumes:
+      - {{docker_data_dir}}/coredns/etc/coredns:/etc/coredns
+    entrypoint:
+      - "/entrypoint.sh"
+      - "/coredns/coredns"
+      - "-conf"
+      - "/etc/coredns/Corefile"
     expose:
       - '53'
       - '53/udp'

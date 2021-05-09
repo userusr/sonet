@@ -132,8 +132,18 @@ services:
     image:  {{registry_url}}{{project}}-caddy:latest
     restart: always
     volumes:
-      - {{docker_data_dir}}/caddy/www:/opt/caddy/www
-      - {{docker_data_dir}}/caddy/logs:/var/log/caddy
+      - {{docker_data_dir}}/caddy/config:/config
+      - {{docker_data_dir}}/caddy/data:/data
+      - {{docker_data_dir}}/caddy/opt/caddy:/opt/caddy
+      - {{docker_data_dir}}/caddy/var/log/caddy:/var/log/caddy
+      - {{docker_data_dir}}/caddy/etc/pki/tls:/etc/pki/tls
+      - {{docker_data_dir}}/caddy/etc/caddy:/etc/caddy
+    entrypoint:
+      - "/entrypoint.sh"
+      - "/usr/bin/caddy"
+      - "run"
+      - "--config"
+      - "/etc/caddy/Caddyfile"
     ports:
       - "{{bind_ip}}80:80/tcp"
       - "{{bind_ip}}443:443/tcp"

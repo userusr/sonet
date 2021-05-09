@@ -18,6 +18,10 @@ pki.{{ conf['domain'] }}:443 {
     file_server browse {
         root /opt/caddy/pki/
     }
+
+    log {
+        output file /var/log/caddy/pki.{{ conf['domain'] }}.log
+    }
 }
 
 ldapadmin.{{ conf['domain'] }}:443 {
@@ -34,6 +38,10 @@ ldapadmin.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * phpldapadmin:80
+
+    log {
+        output file /var/log/caddy/ldapadmin.{{ conf['domain'] }}.log
+    }
 }
 
 redmine.{{ conf['domain'] }}:443 {
@@ -50,6 +58,10 @@ redmine.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * redmine:3000
+
+    log {
+        output file /var/log/caddy/redmine.{{ conf['domain'] }}.log
+    }
 }
 
 mail.{{ conf['domain'] }}:443 {
@@ -66,6 +78,10 @@ mail.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * roundcube:80
+
+    log {
+        output file /var/log/caddy/mail.{{ conf['domain'] }}.log
+    }
 }
 
 excalidraw.{{ conf['domain'] }}:443 {
@@ -82,6 +98,10 @@ excalidraw.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * excalidraw:80
+
+    log {
+        output file /var/log/caddy/excalidraw.{{ conf['domain'] }}.log
+    }
 }
 
 nextcloud.{{ conf['domain'] }}:443 {
@@ -98,6 +118,10 @@ nextcloud.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * nextcloud:80
+
+    log {
+        output file /var/log/caddy/nextcloud.{{ conf['domain'] }}.log
+    }
 }
 
 portainer.{{ conf['domain'] }}:443 {
@@ -114,6 +138,10 @@ portainer.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * portainer:9000
+
+    log {
+        output file /var/log/caddy/portainer.{{ conf['domain'] }}.log
+    }
 }
 
 onlyoffice.{{ conf['domain'] }}:443 {
@@ -130,6 +158,10 @@ onlyoffice.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * nextcloud_onlyoffice_ds:80
+
+    log {
+        output file /var/log/caddy/onlyoffice.{{ conf['domain'] }}.log
+    }
 }
 
 drawio.{{ conf['domain'] }}:443 {
@@ -146,6 +178,10 @@ drawio.{{ conf['domain'] }}:443 {
 {%- endif %}
 
     reverse_proxy * nextcloud_drawio:8080
+
+    log {
+        output file /var/log/caddy/drawio.{{ conf['domain'] }}.log
+    }
 }
 
 gitlab.{{ conf['domain'] }}:443 {
@@ -166,6 +202,10 @@ gitlab.{{ conf['domain'] }}:443 {
             tls
             tls_insecure_skip_verify
         }
+    }
+
+    log {
+        output file /var/log/caddy/gitlab.{{ conf['domain'] }}.log
     }
 }
 
@@ -188,6 +228,10 @@ mattermost.{{ conf['domain'] }}:443 {
             tls_insecure_skip_verify
         }
     }
+
+    log {
+        output file /var/log/caddy/mattermost.{{ conf['domain'] }}.log
+    }
 }
 
 registry.{{ conf['domain'] }}:443 {
@@ -208,5 +252,9 @@ registry.{{ conf['domain'] }}:443 {
             tls
             tls_insecure_skip_verify
         }
+    }
+
+    log {
+        output file /var/log/caddy/registry.{{ conf['domain'] }}.log
     }
 }

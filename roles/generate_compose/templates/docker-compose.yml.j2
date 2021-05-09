@@ -199,10 +199,17 @@ services:
     container_name: {{project}}-roundcube
     image:  {{registry_url}}{{project}}-roundcube:latest
     restart: unless-stopped
-    depends_on:
-      - roundcubedb
     volumes:
       - {{docker_data_dir}}/roundcube/roundcube/var/www/html:/var/www/html
+    entrypoint:
+      - "/wait-for-postgres.sh"
+      - "--host=roundcubedb"
+      - "--db=roundcube"
+      - "--user=roundcube"
+      - "--pass=roundcube"
+      - "--"
+      - "/docker-entrypoint.sh"
+      - "apache2-foreground"
     environment:
       ROUNDCUBEMAIL_DB_TYPE: pgsql
       ROUNDCUBEMAIL_DB_HOST: roundcubedb
@@ -212,6 +219,8 @@ services:
       ROUNDCUBEMAIL_SKIN: elastic
       ROUNDCUBEMAIL_DEFAULT_HOST: tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
       ROUNDCUBEMAIL_SMTP_SERVER: tls://{{ mailserv['hostname'] }}.{{ mailserv['domain'] }}
+    depends_on:
+      - roundcubedb
     networks:
       - net
 

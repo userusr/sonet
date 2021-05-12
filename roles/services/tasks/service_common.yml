@@ -39,6 +39,15 @@
   when: item.state == 'file'
   tags: [init, skip_ansible_lint]
 
+- name: '{{ service_name }} : create image config files from templates'
+  template:
+    src: '{{ item.src }}'
+    dest: "{{ service_image_dir }}/{{ item.path | regex_replace('^(.*?)(\\.j2)?$', '\\1') }}"
+    mode: '{{ item.mode }}'
+  with_filetree: '../templates/image'
+  when: item.state == 'file'
+  tags: [init, skip_ansible_lint]
+
 - name: '{{ service_name }} : copy files'
   copy:
     src: "{{ item['src'] }}"

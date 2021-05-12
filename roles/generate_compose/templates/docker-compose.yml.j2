@@ -411,24 +411,24 @@ services:
       NEXTCLOUD_ONLYOFFICE_STORAGE_URL: "http://nextcloud/"
       NEXTCLOUD_ONLYOFFICE_VERIFY_PEER_OFF: "true"
 
-      NEXTCLOUD_LDAP_HOST: ldap
-      NEXTCLOUD_LDAP_PORT: 389
-      NEXTCLOUD_LDAP_BASE: {{ openldap['ldap_base_dn'] }}
-      NEXTCLOUD_LDAP_AGENT_NAME: cn={{ openldap['ldap_readonly_user_username'] }},{{ openldap['ldap_base_dn'] }}
-      NEXTCLOUD_LDAP_AGENT_PASSWORD: {{ openldap['ldap_readonly_user_password'] }}
-      NEXTCLOUD_LDAP_EMAIL_ATTRIBUTE: mail
-      NEXTCLOUD_LDAP_GID_NUMBER: gidNumber
-      NEXTCLOUD_LDAP_GROUP_DISPLAY_NAME: description
-      NEXTCLOUD_LDAP_GROUP_FILTER: (&(|(objectclass=groupOfUniqueNames))(|(cn=colleagues)(cn=managers)))
-      NEXTCLOUD_LDAP_GROUP_FILTER_OBJECTCLASS: groupOfUniqueNames
-      NEXTCLOUD_LDAP_GROUP_MEMBER_ASSOC_ATTR: uniqueMember
-      NEXTCLOUD_LDAP_LOGIN_FILTER: (&(&(|(objectclass=person))(|(memberof=cn=nextcloud_users,ou=groups,dc=sonet,dc=local)))(|(cn=%uid)))
-      NEXTCLOUD_LDAP_LOGIN_FILTER_ATTRIBUTES: cn
-      NEXTCLOUD_LDAP_USERDISPLAY_NAME: displayname
-      NEXTCLOUD_LDAP_USER_FILTER: (&(|(objectclass=person))(|(memberof=cn=nextcloud_users,ou=groups,dc=sonet,dc=local)))
-      NEXTCLOUD_LDAP_USER_FILTER_GROUPS: nextcloud
-      NEXTCLOUD_LDAP_USER_FILTER_OBJECTCLASS: person
-      NEXTCLOUD_LDAP_CONFIGURATION_ACTIVE: 1
+      NEXTCLOUD_LDAP_HOST: {{ nextcloud['ldap_host'] }}
+      NEXTCLOUD_LDAP_PORT: {{ nextcloud['ldap_port'] }}
+      NEXTCLOUD_LDAP_BASE: {{ nextcloud['ldap_base'] }}
+      NEXTCLOUD_LDAP_AGENT_NAME: {{ nextcloud['ldap_agent_name'] }}
+      NEXTCLOUD_LDAP_AGENT_PASSWORD: {{ nextcloud['ldap_agent_password'] }}
+      NEXTCLOUD_LDAP_EMAIL_ATTRIBUTE: {{ nextcloud['ldap_email_attribute'] }}
+      NEXTCLOUD_LDAP_GID_NUMBER: {{ nextcloud['ldap_gid_number'] }}
+      NEXTCLOUD_LDAP_GROUP_DISPLAY_NAME: {{ nextcloud['ldap_group_display_name'] }}
+      NEXTCLOUD_LDAP_GROUP_FILTER: {{ nextcloud['ldap_group_filter'] }}
+      NEXTCLOUD_LDAP_GROUP_FILTER_OBJECTCLASS: {{ nextcloud['ldap_group_filter_objectclass'] }}
+      NEXTCLOUD_LDAP_GROUP_MEMBER_ASSOC_ATTR: {{ nextcloud['ldap_group_member_assoc_attr'] }}
+      NEXTCLOUD_LDAP_LOGIN_FILTER: {{ nextcloud['ldap_login_filter'] }}
+      NEXTCLOUD_LDAP_LOGIN_FILTER_ATTRIBUTES: {{ nextcloud['ldap_login_filter_attributes'] }}
+      NEXTCLOUD_LDAP_USERDISPLAY_NAME: {{ nextcloud['ldap_userdisplay_name'] }}
+      NEXTCLOUD_LDAP_USER_FILTER: {{ nextcloud['ldap_user_filter'] }}
+      NEXTCLOUD_LDAP_USER_FILTER_GROUPS: {{ nextcloud['ldap_user_filter_groups'] }}
+      NEXTCLOUD_LDAP_USER_FILTER_OBJECTCLASS: {{ nextcloud['ldap_user_filter_objectclass'] }}
+      NEXTCLOUD_LDAP_CONFIGURATION_ACTIVE: {{ nextcloud['ldap_configuration_active'] }}
     entrypoint:
       - "/wait-for-postgres.sh"
       - "--host=nextcloud_db"

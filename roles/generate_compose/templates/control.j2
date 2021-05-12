@@ -7,7 +7,74 @@
 set -e
 
 DETACH=--detach
+TAG=latest
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DATE_TAG=$(date +%Y%m%d%H%M%S)
+
+LOCAL_PATH="{{ local_path }}"
+DOCKER_DATA_DIR="{{ docker_data_dir }}"
+BACKUP_DIR="{{ backup_dir }}"
+REGISTRY="{{ registry_url }}"
+
+PROJ_CONTROL_FILE="{{ local_path }}/{{project}}"
+PROJ_COMPOSE_FILE="{{ local_path }}/{{project}}.yml"
+
+IMAGES_NAME_SUFFIX="{{registry_url}}{{project}}-"
+DELIM_TAG="!!"
+DELIM_REGISTRY="__"
+
+backup() {
+    local tag=$1
+
+    local backup_to_dir=${BACKUP_DIR}/${DATE_TAG}
+    local backup_docker_images_dir=${backup_to_dir}/docker_images
+
+    local image_sources_backup_file=image_sources.tar.gz
+    local pki_backup_file=pki.tar.gz
+    local docker_data_backup_file=docker_data.tar.gz
+
+    local images=$(docker images \
+    | grep "${IMAGES_NAME_SUFFIX}" \
+    | grep "$tag" \
+    | awk '{print $1";"$2}')
+
+    mkdir -p $backup_docker_images_dir
+
+    echo Saving docker images ...
+
+    for i in $images; do
+      local image_and_tag=(${i//;/ })
+      local image=${image_and_tag[0]}
+      local tag=${image_and_tag[1]}
+      local image_backup_file="${image//\//${DELIM_REGISTRY}}${DELIM_TAG}${tag}.tar.gz"
+
+      echo "    ${image}:${tag}"
+      docker save ${image}:${tag} \
+      | gzip > ${backup_docker_images_dir}/${image_backup_file}
+    done
+
+    if [ -d ${LOCAL_PATH}/images ]; then
+      echo Saving docker images sources ...
+      tar -czf "${backup_to_dir}/${image_sources_backup_file}" -C ${LOCAL_PATH} images
+    fi
+
+    if [ -d ${LOCAL_PATH}/pki ]; then
+      echo Saving PKI ...
+      tar -czf "${backup_to_dir}/${pki_backup_file}" -C ${LOCAL_PATH} pki
+    fi
+
+    if [ -d ${DOCKER_DATA_DIR} ]; then
+      echo Saving docker images data ...
+      tar -czf "${backup_to_dir}/${docker_data_backup_file}" -C ${DOCKER_DATA_DIR} $(ls -A ${DOCKER_DATA_DIR})
+    fi
+
+    echo Coping control files ...
+    cp "${PROJ_CONTROL_FILE}" "${backup_to_dir}"
+    cp "${PROJ_COMPOSE_FILE}" "${backup_to_dir}"
+
+    echo Backup ${DATE_TAG} done
+}
 
 while getopts "d?" opt; do
   case $opt in
@@ -90,6 +157,10 @@ case "$1" in
     | grep "{{registry_url}}{{project}}-" \
     | awk '{print $3}' \
     | xargs --no-run-if-empty docker rmi --force
+  ;;
+  backup)
+    ./$0 down
+    backup latest
   ;;
   *)
     echo "start | stop | logs | clean | clean-images"

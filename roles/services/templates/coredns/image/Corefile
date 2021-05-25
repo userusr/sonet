@@ -3,6 +3,7 @@
     forward . {{ coredns['root_forward']|join(' ') }}
 {%- endif %}
 
+    reload
     log
     errors {
         consolidate 5m ".* i/o timeout$"

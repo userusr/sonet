@@ -20,11 +20,14 @@ COPY service/redmine/config/configuration.yml /usr/src/redmine/config/configurat
 COPY service/redmine/plugins/ /plugins
 COPY service/redmine/themes/ /themes
 
-RUN find /plugins -name "*.zip" -exec unzip -d /usr/src/redmine/plugins/ {} \;
-RUN find /themes -name "*.zip" -exec unzip -d /usr/src/redmine/public/themes/ {} \;
+RUN find /plugins -maxdepth 1 -mindepth 1 -name "*.zip" -exec unzip -d /usr/src/redmine/plugins/ {} \;
+RUN find /themes -maxdepth 1 -mindepth 1 -name "*.zip" -exec unzip -d /usr/src/redmine/public/themes/ {} \;
 
-RUN find /plugins -type d -exec cp -r {} /usr/src/redmine/plugins/ \;
-RUN find /themes -type d -exec cp -r {} /usr/src/redmine/public/themes/ \;
+RUN find /plugins -maxdepth 1 -mindepth 1 -type d -exec cp -r {} /usr/src/redmine/plugins/ \;
+RUN find /themes -maxdepth 1 -mindepth 1 -type d -exec cp -r {} /usr/src/redmine/public/themes/ \;
+
+RUN chown -R redmine:redmine /usr/src/redmine/public/themes/
+RUN chown -R redmine:redmine /usr/src/redmine/plugins/
 
 WORKDIR /usr/src/redmine/
 

@@ -69,6 +69,7 @@
     src: '{{ local_path }}/pki/certs/{{ item.src }}'
     dest: '{{ service_image_dir }}/{{ item.dest }}'
     mode: 0755
+    remote_src: yes
   loop: '{{ service_copy_certs|default([]) }}'
   tags: init
 

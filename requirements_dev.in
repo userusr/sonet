@@ -4,7 +4,10 @@ ansible-lint
 yamllint
 
 ansible
-Sphinx
-watchdog
+
 argh
 bump2version
+
+Sphinx
+sphinx_rtd_theme
+watchdog

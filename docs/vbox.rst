@@ -17,6 +17,7 @@ Cервер в локальной сети
 
     graph scheme1 {
         fontname="arial";
+        graph [pad="0.5", nodesep="1", ranksep="1.5"];
         node [
             shape=box,
             fontname="arial",
@@ -36,7 +37,7 @@ Cервер в локальной сети
             fillcolor="#ffffff"
         ];
 
-        subgraph cluster_level1 {
+        subgraph scheme1_1 {
             label ="VirtualBox Host";
             labeljust=l;
             labelloc=b;
@@ -45,18 +46,32 @@ Cервер в локальной сети
             rankdir = LR;
 
             workspace [
-                label="{<f0> Рабочее место\nадминистратора|<f1>NAT|<f2> intnet\nIP: 192.168.15.250\nDNS: 192.168.15.101}",
-                shape=record
+                label=<
+                    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                        <TR><TD PORT="f0">Рабочее место<BR />администратора</TD></TR>
+                        <TR><TD PORT="f1">NAT</TD></TR>
+                        <TR><TD PORT="f2">intnet<BR />IP: 192.168.15.250<BR />DNS: 192.168.15.101</TD></TR>
+                    </TABLE>>
+                shape=plaintext
             ];
 
             user [
-                label="{<f0> Рабочее место\nпользователя|<f1> intnet\nIP: 192.168.15.1\nDNS: 192.168.15.101}",
-                shape=record
+                label=<
+                    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                        <TR><TD PORT="f0">Рабочее место<BR />пользователя</TD></TR>
+                        <TR><TD PORT="f1">intnet<BR />IP: 192.168.15.101<BR />DNS: 192.168.15.101</TD></TR>
+                    </TABLE>>
+                shape=plaintext
             ];
 
             server [
-                label="{<f0> Сервер|<f1>NAT|<f2> intnet\nIP: 192.168.15.101\nDNS: 192.168.15.101}",
-                shape=record
+                label=<
+                    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+                        <TR><TD PORT="f0">Сервер</TD></TR>
+                        <TR><TD PORT="f1">NAT</TD></TR>
+                        <TR><TD PORT="f2">intnet<BR />IP: 192.168.15.101<BR />DNS: 192.168.15.101</TD></TR>
+                    </TABLE>>
+                shape=plaintext
             ];
 
             local_lan [
@@ -70,8 +85,8 @@ Cервер в локальной сети
             {rank=same; workspace; local_lan; server}
         }
 
-        inet -- server:f1;
-        inet -- workspace:f1;
+        inet -- server:f1 [weight=1, penwidth=3];
+        inet -- workspace:f1 [weight=1, penwidth=3];
         workspace:f2 -- local_lan -- server:f2;
         local_lan -- user:f1;
     }

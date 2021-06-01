@@ -206,7 +206,7 @@ Cервер в локальной сети
         VBoxManage storageattach "$SERVER_VM" --storagectl "IDE Controller" --port 0 \
             --device 0 --type dvddrive --medium /usr/share/virtualbox/VBoxGuestAdditions.iso
 
-   на сервере выполним команды
+    на сервере выполним команды
 
     .. code-block:: bash
 
@@ -316,7 +316,7 @@ Cервер в локальной сети
         VBoxManage storageattach "$ADM_WSP_VM" --storagectl "IDE Controller" --port 0 \
             --device 0 --type dvddrive --medium /usr/share/virtualbox/VBoxGuestAdditions.iso
 
-   на сервере выполним команды
+    на сервере выполним команды
 
     .. code-block:: bash
 

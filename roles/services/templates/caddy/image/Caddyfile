@@ -258,3 +258,23 @@ registry.{{ conf['domain'] }}:443 {
         output file /var/log/caddy/registry.{{ conf['domain'] }}.log
     }
 }
+
+adminer.{{ conf['domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
+    tls /etc/pki/tls/certs/adminer.{{ conf['domain'] }}.crt /etc/pki/tls/private/adminer.{{ conf['domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
+
+    reverse_proxy * adminer:8080
+
+    log {
+        output file /var/log/caddy/adminer.{{ conf['domain'] }}.log
+    }
+}

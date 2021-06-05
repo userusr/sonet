@@ -93,6 +93,15 @@ services:
       - net
 {% endif %}
 
+{% if "adminer" in include_service|default([]) %}
+  adminer:
+    container_name: {{project}}-adminer
+    image:  {{registry_url}}{{project}}-adminer:latest
+    restart: always
+    networks:
+      - net
+{% endif %}
+
 {% if "redmine" in include_service|default([]) %}
   redmine:
     image:  {{registry_url}}{{project}}-redmine:latest

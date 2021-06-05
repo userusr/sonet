@@ -22,6 +22,7 @@
         - "onlyoffice.{{ conf['domain'] }}"
         - "drawio.{{ conf['domain'] }}"
         - "portainer.{{ conf['domain'] }}"
+        - "adminer.{{ conf['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "ca.crt", dest: "pki/ca.crt" }
@@ -50,4 +51,6 @@
         - { src: "private/drawio.{{ conf['domain'] }}.key", dest: "private/drawio.{{ conf['domain'] }}.key" }
         - { src: "issued/portainer.{{ conf['domain'] }}.crt", dest: "certs/portainer.{{ conf['domain'] }}.crt" }
         - { src: "private/portainer.{{ conf['domain'] }}.key", dest: "private/portainer.{{ conf['domain'] }}.key" }
+        - { src: "issued/adminer.{{ conf['domain'] }}.crt", dest: "certs/adminer.{{ conf['domain'] }}.crt" }
+        - { src: "private/adminer.{{ conf['domain'] }}.key", dest: "private/adminer.{{ conf['domain'] }}.key" }
   tags: [init, build, push]

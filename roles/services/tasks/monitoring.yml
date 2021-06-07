@@ -1,0 +1,46 @@
+---
+- name: 'grafana : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: grafana
+    - service_image_dir: '{{ local_path }}/images/grafana'
+    - service_copy_files:
+      - {src: "{{ playbook_dir }}/monitoring/grafana/provisioning/", dest: "{{ local_path }}/images/grafana/provisioning/"}
+  tags: [init, build, push]
+
+- name: 'cadvisor : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: cadvisor
+    - service_image_dir: '{{ local_path }}/images/cadvisor'
+  tags: [init, build, push]
+
+- name: 'prometheus : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: prometheus
+    - service_image_dir: '{{ local_path }}/images/prometheus'
+    - service_copy_files:
+      - {src: "{{ playbook_dir }}/monitoring/prometheus/", dest: "{{ local_path }}/images/prometheus/prometheus/"}
+  tags: [init, build, push]
+
+- name: 'grafana-image-renderer : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: grafana-image-renderer
+    - service_image_dir: '{{ local_path }}/images/grafana-image-renderer'
+  tags: [init, build, push]
+
+- name: 'pushgateway : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: pushgateway
+    - service_image_dir: '{{ local_path }}/images/pushgateway'
+  tags: [init, build, push]
+
+- name: 'node-exporter : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: node-exporter
+    - service_image_dir: '{{ local_path }}/images/node-exporter'
+  tags: [init, build, push]

@@ -278,3 +278,23 @@ adminer.{{ conf['domain'] }}:443 {
         output file /var/log/caddy/adminer.{{ conf['domain'] }}.log
     }
 }
+
+grafana.{{ conf['domain'] }}:443 {
+{% if generate_service_certs is defined -%}
+{%- if generate_service_certs is sameas true %}
+    tls /etc/pki/tls/certs/grafana.{{ conf['domain'] }}.crt /etc/pki/tls/private/grafana.{{ conf['domain'] }}.key
+{%- endif -%}
+{%- endif %}
+
+{% if (caddy['basic_auth_user'] is defined) and (caddy['basic_auth_pass_hash'] is defined) -%}
+    basicauth {
+        {{ caddy['basic_auth_user'] }} {{ caddy['basic_auth_pass_hash'] }}
+    }
+{%- endif %}
+
+    reverse_proxy http://grafana:3000
+
+    log {
+        output file /var/log/caddy/grafana.{{ conf['domain'] }}.log
+    }
+}

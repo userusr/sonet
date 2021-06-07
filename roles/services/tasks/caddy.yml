@@ -23,6 +23,7 @@
         - "drawio.{{ conf['domain'] }}"
         - "portainer.{{ conf['domain'] }}"
         - "adminer.{{ conf['domain'] }}"
+        - "grafana.{{ conf['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "ca.crt", dest: "pki/ca.crt" }
@@ -53,4 +54,6 @@
         - { src: "private/portainer.{{ conf['domain'] }}.key", dest: "private/portainer.{{ conf['domain'] }}.key" }
         - { src: "issued/adminer.{{ conf['domain'] }}.crt", dest: "certs/adminer.{{ conf['domain'] }}.crt" }
         - { src: "private/adminer.{{ conf['domain'] }}.key", dest: "private/adminer.{{ conf['domain'] }}.key" }
+        - { src: "issued/grafana.{{ conf['domain'] }}.crt", dest: "certs/grafana.{{ conf['domain'] }}.crt" }
+        - { src: "private/grafana.{{ conf['domain'] }}.key", dest: "private/grafana.{{ conf['domain'] }}.key" }
   tags: [init, build, push]

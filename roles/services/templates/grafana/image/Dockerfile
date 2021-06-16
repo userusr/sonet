@@ -1,5 +1,4 @@
 # https://github.com/grafana/grafana/blob/main/packaging/docker/custom/ubuntu.Dockerfile
-
 FROM grafana/grafana:{{ conf['docker_tag_grafana']|default("8.0.0-beta3-ubuntu") }}
 
 USER root
@@ -42,7 +41,7 @@ RUN if [ $GF_INSTALL_IMAGE_RENDERER_PLUGIN = "true" ]; then \
         plugins install grafana-image-renderer; \
 fi
 
-ARG GF_INSTALL_PLUGINS="flant-statusmap-panel,grafana-piechart-panel,grafana-polystat-panel,jdbranham-diagram-panel,michaeldmoore-multistat-panel,vonage-status-panel,yesoreyeram-boomtable-panel,camptocamp-prometheus-alertmanager-datasource,natel-influx-admin-panel"
+ARG GF_INSTALL_PLUGINS="{% for plugin in grafana['plugins']|default([]) %}{{ plugin }}{{ ',' if not loop.last else '' }}{% endfor %}"
 
 RUN if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then \
     OLDIFS=$IFS; \

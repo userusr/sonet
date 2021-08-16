@@ -7,6 +7,7 @@
     force_apt_get: yes
   tags:
     - init
+    - docker
 
 - name: Install required system packages
   apt:
@@ -89,9 +90,19 @@
 
 - name: Install docker-compose
   get_url:
-    url: https://github.com/docker/compose/releases/download/1.26.2/docker-compose-Linux-x86_64
+    url: https://github.com/docker/compose/releases/download/{{ docker_compose_version|default("1.29.2") }}/docker-compose-Linux-x86_64
     dest: /usr/local/bin/docker-compose
     mode: 'u+x,g+x'
+  tags:
+    - init
+    - docker
+
+- name: Ensure docker users are added to the docker group.
+  user:
+    name: "{{ item }}"
+    groups: [ docker ]
+    append: true
+  with_items: "{{ docker_users|default([]) }}"
   tags:
     - init
     - docker

@@ -23,6 +23,9 @@ COPY service/redmine/themes/ /themes
 RUN find /plugins -maxdepth 1 -mindepth 1 -name "*.zip" -exec unzip -d /usr/src/redmine/plugins/ {} \;
 RUN find /themes -maxdepth 1 -mindepth 1 -name "*.zip" -exec unzip -d /usr/src/redmine/public/themes/ {} \;
 
+RUN find /usr/src/redmine/plugins -maxdepth 1 -mindepth 1 -type d -name "*-master" | perl -pe 'print $_; s/(.*)-master$/$1/' | xargs -d "\n" -n2 mv
+RUN find /usr/src/redmine/public/themes -maxdepth 1 -mindepth 1 -type d -name "*-master" | perl -pe 'print $_; s/(.*)-master$/$1/' | xargs -d "\n" -n2 mv
+
 RUN find /plugins -maxdepth 1 -mindepth 1 -type d -exec cp -r {} /usr/src/redmine/plugins/ \;
 RUN find /themes -maxdepth 1 -mindepth 1 -type d -exec cp -r {} /usr/src/redmine/public/themes/ \;
 

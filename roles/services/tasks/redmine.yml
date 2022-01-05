@@ -17,7 +17,7 @@
   tags: [init, build, push]
 
 - name: 'redmine : get plugins and themes'
-  include_tasks: helper_github_clone.yml
+  include_tasks: helper_get_url.yml
   loop: "{{ redmine['plugins_and_themes'] }}"
   when: redmine.plugins_and_themes is defined
   tags: init

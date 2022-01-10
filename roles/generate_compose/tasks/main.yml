@@ -27,3 +27,10 @@
     dest: '{{ local_path }}/{{ project }}'
     mode: '+x'
   tags: init
+
+- name: generate Makefile
+  template:
+    src: Makefile
+    dest: '{{ local_path }}/Makefile'
+    mode: preserve
+  tags: init

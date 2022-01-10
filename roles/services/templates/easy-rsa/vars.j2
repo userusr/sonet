@@ -9,7 +9,7 @@ if [ -z "$EASYRSA_CALLER" ]; then
 	return 1
 fi
 
-set_var EASYRSA_PKI		"{{ local_path }}/pki/certs"
+set_var EASYRSA_PKI		"{{ pki_path }}/certs"
 set_var EASYRSA_DN	"cn_only"
 
 set_var EASYRSA_CA_EXPIRE	3650

@@ -1,35 +1,35 @@
 ---
 - name: 'pki : setup certs dir'
   stat:
-    path: "{{ local_path }}/pki/certs"
+    path: "{{ pki_path }}/certs"
   register: pki_certs_dir
   tags: init
 
 - name: 'pki : setup easy-rsa dir'
   stat:
-    path: "{{ local_path }}/pki/easy-rsa"
+    path: "{{ pki_path }}/easy-rsa"
   register: pki_easyrsa_dir
   tags: init
 
 - name: 'pki : checkuot easy-rsa repo'
   git:
     repo: https://github.com/OpenVPN/easy-rsa.git
-    dest: '{{ local_path }}/pki/easy-rsa'
+    dest: '{{ pki_path }}/easy-rsa'
     version: v3.0.8
   when: not pki_easyrsa_dir.stat.exists
   tags: init
 
-- name: 'pki : create easy-rsa var file {{ local_path }}/pki/easy-rsa/easyrsa3/vars'
+- name: 'pki : create easy-rsa var file {{ pki_path }}/easy-rsa/easyrsa3/vars'
   template:
     src: easy-rsa/vars.j2
-    dest: "{{ local_path }}/pki/easy-rsa/easyrsa3/vars"
+    dest: "{{ pki_path }}/easy-rsa/easyrsa3/vars"
   when: not pki_easyrsa_dir.stat.exists
   tags: [init, skip_ansible_lint]
 
 - name: 'pki : init and generate ca keys'
   shell: |
-    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch init-pki nopass
-    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch "--req-cn=rootca.{{ conf['domain'] }}" build-ca nopass
-    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch gen-dh
+    "{{ pki_path }}/easy-rsa/easyrsa3/easyrsa" --batch init-pki nopass
+    "{{ pki_path }}/easy-rsa/easyrsa3/easyrsa" --batch "--req-cn=rootca.{{ conf['domain'] }}" build-ca nopass
+    "{{ pki_path }}/easy-rsa/easyrsa3/easyrsa" --batch gen-dh
   when: not pki_certs_dir.stat.exists
   tags: init

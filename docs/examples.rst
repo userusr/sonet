@@ -447,9 +447,9 @@ Cервер в локальной сети
               ansible_become: true
               ansible_python_interpreter: python3
               ansible_become_password: "{{ vault_server_become_password }}"
-              backup_dir: "/opt/{{ project }}/backup"
-              local_path: "/opt/{{ project }}/build"
-              docker_data_dir: "/opt/{{ project }}/data"
+              backup_path: "/opt/{{ project }}/backup"
+              build_path: "/opt/{{ project }}/build"
+              docker_data_path: "/opt/{{ project }}/data"
               generate_service_certs: true
               include_service:
                 - caddy

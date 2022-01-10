@@ -1,36 +1,36 @@
 ---
 - name: 'register local path'
   stat:
-    path: "{{ local_path }}"
-  register: local_path_dir
+    path: "{{ build_path }}"
+  register: build_path_dir
   tags: init
 
 - name: "create local path"
   file:
-    path: '{{ local_path }}'
+    path: '{{ build_path }}'
     state: directory
     recurse: yes
     mode: 0775
-  when: not local_path_dir.stat.exists
+  when: not build_path_dir.stat.exists
   tags: init
 
 - name: generate composer file
   template:
     src: docker-compose.yml.j2
-    dest: '{{ local_path }}/{{ project }}.yml'
+    dest: '{{ build_path }}/{{ project }}.yml'
     mode: preserve
   tags: init
 
 - name: generate control files
   template:
     src: control.j2
-    dest: '{{ local_path }}/{{ project }}'
+    dest: '{{ build_path }}/{{ project }}'
     mode: '+x'
   tags: init
 
 - name: generate Makefile
   template:
     src: Makefile
-    dest: '{{ local_path }}/Makefile'
+    dest: '{{ build_path }}/Makefile'
     mode: preserve
   tags: init

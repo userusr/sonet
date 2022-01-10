@@ -3,7 +3,7 @@
   include_tasks: service_common.yml
   vars:
     - service_name: nextcloud
-    - service_image_dir: '{{ local_path }}/images/nextcloud'
+    - service_image_dir: '{{ build_path }}/images/nextcloud'
     - service_dirs:
         - service/nextcloud/apps
   tags: [init, build, push]
@@ -12,35 +12,35 @@
   include_tasks: service_common.yml
   vars:
     - service_name: nextcloud_db
-    - service_image_dir: '{{ local_path }}/images/nextcloud_db'
+    - service_image_dir: '{{ build_path }}/images/nextcloud_db'
   tags: [init, build, push]
 
 - name: 'nextcloud_redis : service init'
   include_tasks: service_common.yml
   vars:
     - service_name: nextcloud_redis
-    - service_image_dir: '{{ local_path }}/images/nextcloud_redis'
+    - service_image_dir: '{{ build_path }}/images/nextcloud_redis'
   tags: [init, build, push]
 
 - name: 'nextcloud_onlyoffice_ds : service init'
   include_tasks: service_common.yml
   vars:
     - service_name: nextcloud_onlyoffice_ds
-    - service_image_dir: '{{ local_path }}/images/nextcloud_onlyoffice_ds'
+    - service_image_dir: '{{ build_path }}/images/nextcloud_onlyoffice_ds'
   tags: [init, build, push]
 
 - name: 'nextcloud_drawio_export_server: service init'
   include_tasks: service_common.yml
   vars:
     - service_name: nextcloud_drawio_export_server
-    - service_image_dir: '{{ local_path }}/images/nextcloud_drawio_export_server'
+    - service_image_dir: '{{ build_path }}/images/nextcloud_drawio_export_server'
   tags: [init, build, push]
 
 - name: 'nextcloud_drawio: service init'
   include_tasks: service_common.yml
   vars:
     - service_name: nextcloud_drawio
-    - service_image_dir: '{{ local_path }}/images/nextcloud_drawio'
+    - service_image_dir: '{{ build_path }}/images/nextcloud_drawio'
   tags: [init, build, push]
 
 - name: 'nextcloud : create apps folder'
@@ -62,5 +62,5 @@
     dest: "{{ item['dest'] }}"
     mode: 0775
   loop:
-    - { src: "{{ playbook_dir }}/nextcloud/apps/", dest: "{{ local_path }}/images/nextcloud/service/nextcloud/apps/" }
+    - { src: "{{ playbook_dir }}/nextcloud/apps/", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/" }
   tags: init

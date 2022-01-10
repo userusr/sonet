@@ -1,7 +1,7 @@
 ---
-- name: "services : create build folder {{ local_path }}/images"
+- name: "services : create build folder {{ build_path }}/images"
   file:
-    path: '{{ local_path }}/images'
+    path: '{{ build_path }}/images'
     state: directory
     recurse: yes
     mode: 0775

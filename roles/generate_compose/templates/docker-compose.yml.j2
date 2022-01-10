@@ -21,7 +21,7 @@ services:
     image: {{registry_url}}{{project}}-coredns:latest
     restart: always
     volumes:
-      - {{docker_data_dir}}/coredns/etc/coredns:/etc/coredns
+      - {{docker_data_path}}/coredns/etc/coredns:/etc/coredns
     entrypoint:
       - "/entrypoint.sh"
       - "/coredns/coredns"
@@ -63,8 +63,8 @@ services:
       LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
       LDAP_SSL_HELPER_PREFIX: "ldap"
     volumes:
-      - {{docker_data_dir}}/openldap/var/lib/ldap:/var/lib/ldap
-      - {{docker_data_dir}}/openldap/etc/ldap/slapd.d:/etc/ldap/slapd.d
+      - {{docker_data_path}}/openldap/var/lib/ldap:/var/lib/ldap
+      - {{docker_data_path}}/openldap/etc/ldap/slapd.d:/etc/ldap/slapd.d
     ports:
       - "{{bind_ip}}636:636/tcp"
     # For replication to work correctly, domainname and hostname must be
@@ -114,7 +114,7 @@ services:
       REDMINE_DB_PASSWORD: "password"
       REDMINE_PLUGINS_MIGRATE: "true"
     volumes:
-      - {{docker_data_dir}}/redmine/redmine-data/usr/src/redmine/files:/usr/src/redmine/files
+      - {{docker_data_path}}/redmine/redmine-data/usr/src/redmine/files:/usr/src/redmine/files
     depends_on:
       - redminedb
     networks:
@@ -125,7 +125,7 @@ services:
     container_name: {{project}}-redminedb
     restart: always
     volumes:
-      - {{docker_data_dir}}/redmine/postgres-data/var/lib/postgresql/data:/var/lib/postgresql/data
+      - {{docker_data_path}}/redmine/postgres-data/var/lib/postgresql/data:/var/lib/postgresql/data
     environment:
       POSTGRES_USERNAME: "postgres"
       POSTGRES_PASSWORD: "password"
@@ -141,12 +141,12 @@ services:
     image:  {{registry_url}}{{project}}-caddy:latest
     restart: always
     volumes:
-      - {{docker_data_dir}}/caddy/config:/config
-      - {{docker_data_dir}}/caddy/data:/data
-      - {{docker_data_dir}}/caddy/opt/caddy:/opt/caddy
-      - {{docker_data_dir}}/caddy/var/log/caddy:/var/log/caddy
-      - {{docker_data_dir}}/caddy/etc/pki/tls:/etc/pki/tls
-      - {{docker_data_dir}}/caddy/etc/caddy:/etc/caddy
+      - {{docker_data_path}}/caddy/config:/config
+      - {{docker_data_path}}/caddy/data:/data
+      - {{docker_data_path}}/caddy/opt/caddy:/opt/caddy
+      - {{docker_data_path}}/caddy/var/log/caddy:/var/log/caddy
+      - {{docker_data_path}}/caddy/etc/pki/tls:/etc/pki/tls
+      - {{docker_data_path}}/caddy/etc/caddy:/etc/caddy
     entrypoint:
       - "/entrypoint.sh"
       - "/usr/bin/caddy"
@@ -166,9 +166,9 @@ services:
     image:  {{registry_url}}{{project}}-storage:latest
     restart: always
     volumes:
-      - {{docker_data_dir}}/storage/proftpd/var/log/proftpd:/var/log/proftpd
+      - {{docker_data_path}}/storage/proftpd/var/log/proftpd:/var/log/proftpd
 {% for share in storage['smb_shares'] %}
-      - {{docker_data_dir}}/storage/storage/{{ share["name"] }}:/opt/var/storage/{{ share["name"] }}
+      - {{docker_data_path}}/storage/storage/{{ share["name"] }}:/opt/var/storage/{{ share["name"] }}
 {% endfor %}
     ports:
       - "{{bind_ip}}137:137/udp"
@@ -186,8 +186,8 @@ services:
     image:  {{registry_url}}{{project}}-mailserv:latest
     restart: always
     volumes:
-      - {{docker_data_dir}}/mailserv/var/mail:/var/mail
-      - {{docker_data_dir}}/mailserv/data/backup:/data/backup
+      - {{docker_data_path}}/mailserv/var/mail:/var/mail
+      - {{docker_data_path}}/mailserv/data/backup:/data/backup
     ports:
       # Expose smtp, pop3, imap, smtp (submission), imap ssl, managesieve and dovecot replication ports
       - "{{bind_ip}}25:25/tcp"
@@ -209,7 +209,7 @@ services:
     image:  {{registry_url}}{{project}}-roundcube:latest
     restart: unless-stopped
     volumes:
-      - {{docker_data_dir}}/roundcube/roundcube/var/www/html:/var/www/html
+      - {{docker_data_path}}/roundcube/roundcube/var/www/html:/var/www/html
     entrypoint:
       - "/wait-for-postgres.sh"
       - "--host=roundcubedb"
@@ -238,7 +238,7 @@ services:
     container_name: {{project}}-roundcubedb
     restart: always
     volumes:
-      - {{docker_data_dir}}/roundcube/postgres-data:/var/lib/postgresql/data
+      - {{docker_data_path}}/roundcube/postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: roundcube
       POSTGRES_PASSWORD: roundcube
@@ -309,9 +309,9 @@ services:
     ports:
       - "{{bind_ip}}2222:22/tcp"
     volumes:
-      - '{{docker_data_dir}}/gitlab/config:/etc/gitlab'
-      - '{{docker_data_dir}}/gitlab/logs:/var/log/gitlab'
-      - '{{docker_data_dir}}/gitlab/data:/var/opt/gitlab'
+      - '{{docker_data_path}}/gitlab/config:/etc/gitlab'
+      - '{{docker_data_path}}/gitlab/logs:/var/log/gitlab'
+      - '{{docker_data_path}}/gitlab/data:/var/opt/gitlab'
     networks:
       net:
         aliases:
@@ -338,7 +338,7 @@ services:
     container_name: {{project}}-nextcloud_db
     restart: always
     volumes:
-      - {{docker_data_dir}}/nextcloud/postgres-data:/var/lib/postgresql/data
+      - {{docker_data_path}}/nextcloud/postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: nextcloud
       POSTGRES_PASSWORD: nextcloud
@@ -359,8 +359,8 @@ services:
     container_name: {{project}}-nextcloud_onlyoffice_ds
     restart: always
     volumes:
-      - {{docker_data_dir}}/nextcloud/onlyoffice_ds/var/www/onlyoffice/Data:/var/www/onlyoffice/Data
-      - {{docker_data_dir}}/nextcloud/onlyoffice_ds/var/log/onlyoffice:/var/log/onlyoffice
+      - {{docker_data_path}}/nextcloud/onlyoffice_ds/var/www/onlyoffice/Data:/var/www/onlyoffice/Data
+      - {{docker_data_path}}/nextcloud/onlyoffice_ds/var/log/onlyoffice:/var/log/onlyoffice
     networks:
       - net
 
@@ -369,7 +369,7 @@ services:
     container_name: {{project}}-nextcloud_drawio_export_server
     restart: always
     volumes:
-      - {{docker_data_dir}}/nextcloud/drawio/export-server/usr/share/fonts/drawio:/usr/share/fonts/drawio
+      - {{docker_data_path}}/nextcloud/drawio/export-server/usr/share/fonts/drawio:/usr/share/fonts/drawio
     networks:
       - net
 
@@ -391,7 +391,7 @@ services:
     container_name: {{project}}-nextcloud
     restart: always
     volumes:
-      - {{docker_data_dir}}/nextcloud/nextcloud-data/var/www/html:/var/www/html
+      - {{docker_data_path}}/nextcloud/nextcloud-data/var/www/html:/var/www/html
     environment:
       VIRTUAL_HOST: nextcloud.{{ conf['domain'] }}
       NEXTCLOUD_TRUSTED_DOMAINS: nextcloud nextcloud.{{ conf['domain'] }}
@@ -466,7 +466,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /var/run/docker.sock:/var/run/docker.sock
-      - {{docker_data_dir}}/portainer/data:/data
+      - {{docker_data_path}}/portainer/data:/data
     environment:
       - VIRTUAL_HOST=portainer.{{ conf['domain'] }}
       - VIRTUAL_PORT=9000
@@ -497,8 +497,8 @@ services:
     ports:
       - "{{bind_ip}}9090:9090"
     volumes:
-      - {{docker_data_dir}}/prometheus/data:/data
-      - {{docker_data_dir}}/prometheus/etc/prometheus:/etc/prometheus
+      - {{docker_data_path}}/prometheus/data:/data
+      - {{docker_data_path}}/prometheus/etc/prometheus:/etc/prometheus
     entrypoint:
       - "/entrypoint.sh"
       - "/bin/prometheus"
@@ -526,8 +526,8 @@ services:
       GF_SERVER_ROOT_URL: "https://grafana.{{ conf['domain'] }}/"
       GF_SERVER_DOMAIN: '{{ conf['domain'] }}'
     volumes:
-      - {{docker_data_dir}}/grafana/var/lib/grafana:/var/lib/grafana
-      - {{docker_data_dir}}/grafana/etc/grafana:/etc/grafana
+      - {{docker_data_path}}/grafana/var/lib/grafana:/var/lib/grafana
+      - {{docker_data_path}}/grafana/etc/grafana:/etc/grafana
     entrypoint:
       - "/entrypoint.sh"
       - "/run.sh"

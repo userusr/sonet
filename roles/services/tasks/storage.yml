@@ -3,7 +3,7 @@
   include_tasks: service_common.yml
   vars:
     - service_name: storage
-    - service_image_dir: '{{ local_path }}/images/storage'
+    - service_image_dir: '{{ build_path }}/images/storage'
     - service_dirs:
         - service/proftpd/certs
     - service_gen_certs:

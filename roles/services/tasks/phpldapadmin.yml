@@ -3,5 +3,5 @@
   include_tasks: service_common.yml
   vars:
     - service_name: phpldapadmin
-    - service_image_dir: '{{ local_path }}/images/phpldapadmin'
+    - service_image_dir: '{{ build_path }}/images/phpldapadmin'
   tags: [init, build, push]

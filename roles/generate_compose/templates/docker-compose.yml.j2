@@ -256,56 +256,7 @@ services:
     restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.{{ conf['domain'] }}'
-        mattermost_external_url 'https://mattermost.{{ conf['domain'] }}'
-        registry_external_url "https://registry.{{ conf['domain'] }}"
-        letsencrypt['enable'] = false
-        nginx['ssl_client_certificate'] = "/certs/ca.crt"
-        nginx['ssl_dhparam'] = "/certs/dhparam.pem"
-        nginx['ssl_certificate'] = '/certs/gitlab.{{ conf['domain'] }}.crt'
-        nginx['ssl_certificate_key'] = '/certs/gitlab.{{ conf['domain'] }}.key'
-        mattermost_nginx['ssl_certificate'] = '/certs/mattermost.{{ conf['domain'] }}.crt'
-        mattermost_nginx['ssl_certificate_key'] = '/certs/mattermost.{{ conf['domain'] }}.key'
-        registry_nginx['ssl_certificate'] = "/certs/registry.{{ conf['domain'] }}.crt"
-        registry_nginx['ssl_certificate_key'] = "/certs/registry.{{ conf['domain'] }}.key"
-        gitlab_rails['smtp_enable'] = true
-        gitlab_rails['smtp_address'] = '{{ mailserv['hostname'] }}'
-        gitlab_rails['smtp_port'] = 25
-        gitlab_rails['smtp_domain'] = '{{ mailserv['domain'] }}'
-        gitlab_rails['smtp_tls'] = false
-        gitlab_rails['smtp_openssl_verify_mode'] = 'none'
-        gitlab_rails['smtp_enable_starttls_auto'] = false
-        gitlab_rails['smtp_ssl'] = false
-        gitlab_rails['smtp_force_ssl'] = false
-        gitlab_rails['gitlab_email_from'] = 'gitlab@{{ conf['domain'] }}'
-        gitlab_rails['gitlab_email_reply_to'] = 'noreply@{{ conf['domain'] }}'
-        gitlab_rails['ldap_enabled'] = true
-        gitlab_rails['prevent_ldap_sign_in'] = false
-        gitlab_rails['gitlab_shell_ssh_port'] = 2222
-        gitlab_rails['ldap_servers'] = {
-          'main' => {
-            'label' => 'LDAP',
-            'host' =>  'ldap',
-            'port' => 389,
-            'uid' => 'cn',
-            'encryption' => 'plain',
-            'bind_dn' => 'cn={{ openldap['ldap_readonly_user_username'] }},{{ openldap['ldap_base_dn'] }}',
-            'password' => '{{ openldap['ldap_readonly_user_password'] }}',
-            'timeout' => 10,
-            'allow_username_or_email_login' => true,
-            'block_auto_created_users' => false,
-            'base' => '{{ openldap['ldap_base_dn'] }}',
-            'user_filter' => '(&(objectClass=person)(memberOf=cn=gitlab_users,ou=groups,{{ openldap['ldap_base_dn'] }}))',
-            'attributes' => {
-              'username' => 'cn',
-              'email' => 'mail',
-              'name' => 'displayName',
-              'first_name' => 'givenName',
-              'last_name' => 'sn'
-            },
-            'lowercase_usernames' => true,
-          }
-        }
+{{ gitlab['gitlab_omnibus_config'] }}
     ports:
       - "{{bind_ip}}2222:22/tcp"
     volumes:

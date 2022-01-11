@@ -2,8 +2,8 @@ bind = yes
 bind_dn = {{ mailserv['ldap_bind_dn'] }}
 bind_pw = {{ mailserv['ldap_bind_pw'] }}
 server_host = {{ mailserv['ldap_url'] }}
-search_base = ou=users,{{ mailserv['ldap_base_dn'] }}
-query_filter = (&(objectClass=mailAccount)(mailenable=OK)(|(mail=%s)(mailalias=%s)))
-result_attribute = mail,mailalias
-special_result_attribute = mailaliasmember
+search_base = {{ mailserv['postfix']['senders']['search_base'] }}
+query_filter = {{ mailserv['postfix']['senders']['query_filter'] }}
+result_attribute = {{ mailserv['postfix']['senders']['result_attribute'] }}
+special_result_attribute = {{ mailserv['postfix']['senders']['special_result_attribute'] }}
 version = 3

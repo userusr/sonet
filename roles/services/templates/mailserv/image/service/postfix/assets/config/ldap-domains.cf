@@ -2,7 +2,7 @@ bind = yes
 bind_dn = {{ mailserv['ldap_bind_dn'] }}
 bind_pw = {{ mailserv['ldap_bind_pw'] }}
 server_host = {{ mailserv['ldap_url'] }}
-search_base = ou=mailDomains,{{ mailserv['ldap_base_dn'] }}
-query_filter = (&(objectClass=mailDomain)(virtualdomain=%s))
-result_attribute = virtualdomain
+search_base = {{ mailserv['postfix']['domains']['search_base'] }}
+query_filter = {{ mailserv['postfix']['domains']['query_filter'] }}
+result_attribute = {{ mailserv['postfix']['domains']['result_attribute'] }}
 version = 3

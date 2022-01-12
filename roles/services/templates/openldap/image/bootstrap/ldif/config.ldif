@@ -1,5 +1,5 @@
 {% for ou in openldap['preset_ldiff'].keys() %}
-dn: ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+dn: ou={{ ou }},{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: organizationalUnit
 objectClass: top
@@ -8,7 +8,7 @@ ou: {{ ou }}
 {% if ou == 'users' %}
 {% for name, data in openldap['preset_ldiff'][ou].items() %}
 {% if data['person'] %}
-dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+dn: cn={{ name }},ou={{ ou }},{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
@@ -31,7 +31,7 @@ mailAlias: {{ name }}@{{ conf['domain'] }}
 userPassword: {{ data['userPassword'] }}
 
 {% else %}
-dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+dn: cn={{ name }},ou={{ ou }},{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: mailAccount
 objectClass: organizationalRole
@@ -50,14 +50,14 @@ userPassword: {{ data['userPassword'] }}
 
 {% if ou == 'groups' %}
 {% for name, data in openldap['preset_ldiff'][ou].items() %}
-dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+dn: cn={{ name }},ou={{ ou }},{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: groupOfUniqueNames
 objectClass: top
 description: {{ openldap['preset_ldiff'][ou][name]['description']|default(name) }}
 cn: {{ name }}
 {% for cn in openldap['preset_ldiff'][ou][name]['members'] %}
-uniqueMember: cn={{ cn }},ou=users,{{ openldap['ldap_base_dn'] }}
+uniqueMember: cn={{ cn }},ou=users,{{ conf['ldap_base_dn'] }}
 {% endfor %}
 
 {% endfor %}
@@ -65,25 +65,25 @@ uniqueMember: cn={{ cn }},ou=users,{{ openldap['ldap_base_dn'] }}
 
 {% endfor %}
 
-dn: ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+dn: ou=mailDomains,{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: organizationalUnit
 objectClass: top
 ou: mailDomains
 
-dn: virtualdomain={{ conf['domain'] }},ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+dn: virtualdomain={{ conf['domain'] }},ou=mailDomains,{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: mailDomain
 objectClass: top
 virtualdomain: {{ conf['domain'] }}
 
-dn: ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+dn: ou=mailAliases,{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: organizationalUnit
 objectClass: top
 ou: mailAliases
 
-dn: mailalias={{ conf['domain'] }},ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+dn: mailalias={{ conf['domain'] }},ou=mailAliases,{{ conf['ldap_base_dn'] }}
 changetype: add
 objectClass: mailAlias
 objectClass: top

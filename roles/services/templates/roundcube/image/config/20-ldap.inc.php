@@ -1,2 +1,2 @@
 <?php
-    {{ mailserv['roundcube']['ldap_inc'] }}
+{{ roundcube['ldap_inc'] }}

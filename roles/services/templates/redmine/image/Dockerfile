@@ -14,9 +14,6 @@ RUN apt-get -y update \
 
 RUN gem install rmagick
 
-COPY service/redmine/db/migrate/20200916115806_add_ldap.rb /usr/src/redmine/db/migrate/20200916115806_add_ldap.rb
-COPY service/redmine/config/configuration.yml /usr/src/redmine/config/configuration.yml
-
 COPY service/redmine/plugins/ /plugins
 COPY service/redmine/themes/ /themes
 
@@ -35,5 +32,8 @@ RUN chown -R redmine:redmine /usr/src/redmine/plugins/
 WORKDIR /usr/src/redmine/
 
 RUN BUNDLER_WITHOUT="development test" bundle install
+
+COPY service/redmine/db/migrate/20200916115806_add_ldap.rb /usr/src/redmine/db/migrate/20200916115806_add_ldap.rb
+COPY service/redmine/config/configuration.yml /usr/src/redmine/config/configuration.yml
 
 CMD ["passenger", "start"]

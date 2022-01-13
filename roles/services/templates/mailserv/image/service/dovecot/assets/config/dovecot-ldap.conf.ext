@@ -1,13 +1,1 @@
-auth_bind = yes
-ldap_version = 3
-
-uris = {{ mailserv['dovecot']['uris'] }}
-base =  {{ mailserv['dovecot']['base'] }}
-user_attrs = {{ mailserv['dovecot']['user_attrs'] }}
-user_filter = {{ mailserv['dovecot']['user_filter'] }}
-pass_attrs = {{ mailserv['dovecot']['pass_attrs'] }}
-pass_filter = {{ mailserv['dovecot']['pass_filter'] }}
-iterate_attrs = {{ mailserv['dovecot']['iterate_attrs'] }}
-iterate_filter = {{ mailserv['dovecot']['iterate_filter'] }}
-dn =  {{ mailserv['ldap_bind_dn'] }}
-dnpass =  {{ mailserv['ldap_bind_pw'] }}
+{{ dovecot['ldap'] }}

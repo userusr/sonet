@@ -1,14 +1,3 @@
-{%- if docker_bind_ip is defined -%}
-  {%- set bind_ip = docker_bind_ip + ':' -%}
-{%- else -%}
-  {%- set bind_ip = '' -%}
-{%- endif -%}
-
-{%- if docker_registry_url is defined -%}
-  {%- set registry_url = docker_registry_url + '/' -%}
-{%- else -%}
-  {%- set registry_url = '' -%}
-{%- endif -%}
 version: '3.4'
 networks:
   net:
@@ -43,11 +32,11 @@ services:
     image:  {{registry_url}}{{project}}-openldap:latest
     restart: always
     environment:
-      LDAP_LOG_LEVEL: "{{ openldap['ldap_log_level'] }}"
-      LDAP_ORGANISATION: "{{ openldap['ldap_organisation'] }}"
+      LDAP_LOG_LEVEL: "256"
+      LDAP_ORGANISATION: "sonet"
       LDAP_DOMAIN: "{{ conf['domain'] }}"
-      LDAP_ADMIN_PASSWORD: "{{ openldap['ldap_admin_password'] }}"
-      LDAP_CONFIG_PASSWORD: "{{ openldap['ldap_config_password'] }}"
+      LDAP_ADMIN_PASSWORD: "{{ vault_ldap_admin_password }}"
+      LDAP_CONFIG_PASSWORD: "{{ vault_ldap_config_password }}"
       LDAP_READONLY_USER: "true"
       LDAP_READONLY_USER_USERNAME: "{{ conf['ldap_readonly_user_username'] }}"
       LDAP_READONLY_USER_PASSWORD: "{{ conf['ldap_readonly_user_password'] }}"

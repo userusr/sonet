@@ -13,7 +13,7 @@
     dos charset = cp1251
     store dos attributes = yes
 
-{% for share in storage['smb_shares'] %}
+{% for share in smb['smb_shares'] %}
 [{{ share['name'] }}]
     path = /opt/var/storage/{{ share['dir'] }}
     guest ok = yes

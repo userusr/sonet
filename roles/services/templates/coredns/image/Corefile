@@ -11,7 +11,7 @@
     }
 }
 
-{% for zone in coredns['zones'] %}
+{% for zone in dns['zones'] %}
 {{ zone['name'] }}:53 {
     file /etc/coredns/zones/{{ zone['zonefile'] }}
     log

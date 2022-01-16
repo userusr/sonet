@@ -7,6 +7,30 @@
     mode: 0775
   tags: init
 
+- name: set 'bind_ip' if 'docker_bind_ip' is defined
+  ansible.builtin.set_fact:
+     bind_ip: "{{ docker_bind_ip + ':' }}"
+  when: docker_bind_ip is defined
+  tags: init
+
+- name: set 'bind_ip' if 'docker_bind_ip' is undefined
+  ansible.builtin.set_fact:
+     bind_ip: ""
+  when: docker_bind_ip is undefined
+  tags: init
+
+- name: set 'registry_url' if 'docker_registry_url' is defined
+  ansible.builtin.set_fact:
+     registry_url: "{{ docker_registry_url + '/' }}"
+  when: docker_registry_url is defined
+  tags: init
+
+- name: set 'registry_url' if 'docker_registry_url' is undefined
+  ansible.builtin.set_fact:
+     registry_url: ""
+  when: docker_registry_url is undefined
+  tags: init
+
 - name: "setup pki"
   include_tasks: 'setup_pki.yml'
   when: generate_service_certs

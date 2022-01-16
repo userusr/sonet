@@ -13,5 +13,5 @@
     src: 'coredns/zone.j2'
     dest: "{{ build_path }}/images/coredns/zones/{{ item['zonefile'] }}"
     mode: preserve
-  loop: "{{ coredns['zones'] }}"
+  loop: "{{ dns['zones'] }}"
   tags: init

@@ -8,7 +8,7 @@ PUBLIC_DIR=/opt/var/storage
 
 if [ ! -d $PUBLIC_DIR ]; then
 	mkdir -p $PUBLIC_DIR
-{% for share in storage['smb_shares'] %}
+{% for share in smb['smb_shares'] %}
 	mkdir -p ${PUBLIC_DIR}/{{ share['dir'] }}
 {% endfor %}
 fi

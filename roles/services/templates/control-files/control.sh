@@ -1,8 +1,3 @@
-{%- if docker_registry_url is defined -%}
-  {%- set registry_url = docker_registry_url + '/' -%}
-{%- else -%}
-  {%- set registry_url = '' -%}
-{%- endif -%}
 #!/bin/bash
 set -e
 

@@ -1,1 +1,1 @@
-{{ postfix['senders'] }}
+{{ postfix['ldap-senders.cf']|default("") }}

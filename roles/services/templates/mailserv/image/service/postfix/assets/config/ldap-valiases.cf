@@ -1,1 +1,1 @@
-{{ postfix['valiases'] }}
+{{ postfix['ldap-valiases.cf']|default("") }}

@@ -52,6 +52,10 @@ services:
 {{ portainer_docker_service }}
 {%- endif %}
 
+{% if "grafana" in include_service|default([]) -%}
+{{ grafana_docker_service }}
+{%- endif %}
+
 {% if "monitoring" in include_service|default([]) -%}
 {{ monitoring_docker_service }}
 {%- endif %}

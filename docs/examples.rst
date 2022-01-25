@@ -317,6 +317,10 @@ Cервер в локальной сети
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name 'vault_gitlab_root_account_password' \
+            >> ./inventory/group_vars/all/00-vault.yml.tmp
+
+        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
             'change_me' --name 'vault_nextcloud_admin_mail_account_password' \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 

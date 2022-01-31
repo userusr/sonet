@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/adminer/?tab=tags&page=1&ordering=last_updated
-FROM adminer:{{ conf['docker_tag_adminer']|default("4.8.1") }}
+FROM adminer:{{ sonet_general['docker_tag_adminer']|default("4.8.1") }}
 
 LABEL project="{{ project }}"
 

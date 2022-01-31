@@ -1,0 +1,62 @@
+---
+version: '3.4'
+networks:
+  net:
+    attachable: true
+services:
+
+{% if "coredns" in include_service|default([]) -%}
+{{ coredns_docker_service }}
+{%- endif %}
+
+{% if "openldap" in include_service|default([]) -%}
+{{ openldap_docker_service }}
+{%- endif %}
+
+{% if "adminer" in include_service|default([]) -%}
+{{ adminer_docker_service }}
+{%- endif %}
+
+{% if "redmine" in include_service|default([]) -%}
+{{ redmine_docker_service }}
+{%- endif %}
+
+{% if "caddy" in include_service|default([]) -%}
+{{ caddy_docker_service }}
+{%- endif %}
+
+{% if "storage" in include_service|default([]) -%}
+{{ storage_docker_service }}
+{% endif -%}
+
+{% if "mailserv" in include_service|default([]) -%}
+{{ mailserv_docker_service }}
+{%- endif %}
+
+{% if "roundcube" in include_service|default([]) -%}
+{{ roundcube_docker_service }}
+{%- endif %}
+
+{% if "gitlab" in include_service|default([]) -%}
+{{ gitlab_docker_service }}
+{%- endif %}
+
+{% if "excalidraw" in include_service|default([]) -%}
+{{ excalidraw_docker_service }}
+{%- endif %}
+
+{% if "nextcloud" in include_service|default([]) -%}
+{{ nextcloud_docker_service }}
+{%- endif %}
+
+{% if "portainer" in include_service|default([]) -%}
+{{ portainer_docker_service }}
+{%- endif %}
+
+{% if "grafana" in include_service|default([]) -%}
+{{ grafana_docker_service }}
+{%- endif %}
+
+{% if "monitoring" in include_service|default([]) -%}
+{{ monitoring_docker_service }}
+{%- endif %}

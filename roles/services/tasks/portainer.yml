@@ -3,5 +3,5 @@
   include_tasks: service_common.yml
   vars:
     - service_name: portainer
-    - service_image_dir: '{{ local_path }}/images/portainer'
+    - service_image_dir: '{{ build_path }}/images/portainer'
   tags: [init, build, push]

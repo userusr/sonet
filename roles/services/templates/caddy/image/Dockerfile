@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/caddy?tab=tags&page=1&ordering=last_updated
-FROM caddy:{{ conf['docker_tag_caddy']|default("2.3.0") }}
+FROM caddy:{{ sonet_general['docker_tag_caddy']|default("2.3.0") }}
 
 LABEL project="{{ project }}"
 

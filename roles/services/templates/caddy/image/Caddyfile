@@ -2,10 +2,10 @@
     admin :2019
 }
 
-pki.{{ conf['domain'] }}:443 {
+pki.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/pki.{{ conf['domain'] }}.crt /etc/pki/tls/private/pki.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/pki.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/pki.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -20,14 +20,14 @@ pki.{{ conf['domain'] }}:443 {
     }
 
     log {
-        output file /var/log/caddy/pki.{{ conf['domain'] }}.log
+        output file /var/log/caddy/pki.{{ sonet_general['domain'] }}.log
     }
 }
 
-ldapadmin.{{ conf['domain'] }}:443 {
+ldapadmin.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/ldapadmin.{{ conf['domain'] }}.crt /etc/pki/tls/private/ldapadmin.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/ldapadmin.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/ldapadmin.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -40,14 +40,14 @@ ldapadmin.{{ conf['domain'] }}:443 {
     reverse_proxy * phpldapadmin:80
 
     log {
-        output file /var/log/caddy/ldapadmin.{{ conf['domain'] }}.log
+        output file /var/log/caddy/ldapadmin.{{ sonet_general['domain'] }}.log
     }
 }
 
-redmine.{{ conf['domain'] }}:443 {
+redmine.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/redmine.{{ conf['domain'] }}.crt /etc/pki/tls/private/redmine.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/redmine.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/redmine.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -60,14 +60,14 @@ redmine.{{ conf['domain'] }}:443 {
     reverse_proxy * redmine:3000
 
     log {
-        output file /var/log/caddy/redmine.{{ conf['domain'] }}.log
+        output file /var/log/caddy/redmine.{{ sonet_general['domain'] }}.log
     }
 }
 
-mail.{{ conf['domain'] }}:443 {
+mail.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/mail.{{ conf['domain'] }}.crt /etc/pki/tls/private/mail.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/mail.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/mail.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -80,14 +80,14 @@ mail.{{ conf['domain'] }}:443 {
     reverse_proxy * roundcube:80
 
     log {
-        output file /var/log/caddy/mail.{{ conf['domain'] }}.log
+        output file /var/log/caddy/mail.{{ sonet_general['domain'] }}.log
     }
 }
 
-excalidraw.{{ conf['domain'] }}:443 {
+excalidraw.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/excalidraw.{{ conf['domain'] }}.crt /etc/pki/tls/private/excalidraw.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/excalidraw.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/excalidraw.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -100,14 +100,14 @@ excalidraw.{{ conf['domain'] }}:443 {
     reverse_proxy * excalidraw:80
 
     log {
-        output file /var/log/caddy/excalidraw.{{ conf['domain'] }}.log
+        output file /var/log/caddy/excalidraw.{{ sonet_general['domain'] }}.log
     }
 }
 
-nextcloud.{{ conf['domain'] }}:443 {
+nextcloud.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/nextcloud.{{ conf['domain'] }}.crt /etc/pki/tls/private/nextcloud.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/nextcloud.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/nextcloud.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -120,14 +120,14 @@ nextcloud.{{ conf['domain'] }}:443 {
     reverse_proxy * nextcloud:80
 
     log {
-        output file /var/log/caddy/nextcloud.{{ conf['domain'] }}.log
+        output file /var/log/caddy/nextcloud.{{ sonet_general['domain'] }}.log
     }
 }
 
-portainer.{{ conf['domain'] }}:443 {
+portainer.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/portainer.{{ conf['domain'] }}.crt /etc/pki/tls/private/portainer.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/portainer.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/portainer.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -140,14 +140,14 @@ portainer.{{ conf['domain'] }}:443 {
     reverse_proxy * portainer:9000
 
     log {
-        output file /var/log/caddy/portainer.{{ conf['domain'] }}.log
+        output file /var/log/caddy/portainer.{{ sonet_general['domain'] }}.log
     }
 }
 
-onlyoffice.{{ conf['domain'] }}:443 {
+onlyoffice.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/onlyoffice.{{ conf['domain'] }}.crt /etc/pki/tls/private/onlyoffice.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/onlyoffice.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/onlyoffice.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -160,14 +160,14 @@ onlyoffice.{{ conf['domain'] }}:443 {
     reverse_proxy * nextcloud_onlyoffice_ds:80
 
     log {
-        output file /var/log/caddy/onlyoffice.{{ conf['domain'] }}.log
+        output file /var/log/caddy/onlyoffice.{{ sonet_general['domain'] }}.log
     }
 }
 
-drawio.{{ conf['domain'] }}:443 {
+drawio.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/drawio.{{ conf['domain'] }}.crt /etc/pki/tls/private/drawio.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/drawio.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/drawio.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -180,14 +180,14 @@ drawio.{{ conf['domain'] }}:443 {
     reverse_proxy * nextcloud_drawio:8080
 
     log {
-        output file /var/log/caddy/drawio.{{ conf['domain'] }}.log
+        output file /var/log/caddy/drawio.{{ sonet_general['domain'] }}.log
     }
 }
 
-gitlab.{{ conf['domain'] }}:443 {
+gitlab.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/gitlab.{{ conf['domain'] }}.crt /etc/pki/tls/private/gitlab.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/gitlab.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/gitlab.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -205,14 +205,14 @@ gitlab.{{ conf['domain'] }}:443 {
     }
 
     log {
-        output file /var/log/caddy/gitlab.{{ conf['domain'] }}.log
+        output file /var/log/caddy/gitlab.{{ sonet_general['domain'] }}.log
     }
 }
 
-mattermost.{{ conf['domain'] }}:443 {
+mattermost.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/mattermost.{{ conf['domain'] }}.crt /etc/pki/tls/private/mattermost.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/mattermost.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/mattermost.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -230,14 +230,14 @@ mattermost.{{ conf['domain'] }}:443 {
     }
 
     log {
-        output file /var/log/caddy/mattermost.{{ conf['domain'] }}.log
+        output file /var/log/caddy/mattermost.{{ sonet_general['domain'] }}.log
     }
 }
 
-registry.{{ conf['domain'] }}:443 {
+registry.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/registry.{{ conf['domain'] }}.crt /etc/pki/tls/private/registry.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/registry.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/registry.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -255,14 +255,14 @@ registry.{{ conf['domain'] }}:443 {
     }
 
     log {
-        output file /var/log/caddy/registry.{{ conf['domain'] }}.log
+        output file /var/log/caddy/registry.{{ sonet_general['domain'] }}.log
     }
 }
 
-adminer.{{ conf['domain'] }}:443 {
+adminer.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/adminer.{{ conf['domain'] }}.crt /etc/pki/tls/private/adminer.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/adminer.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/adminer.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -275,14 +275,14 @@ adminer.{{ conf['domain'] }}:443 {
     reverse_proxy * adminer:8080
 
     log {
-        output file /var/log/caddy/adminer.{{ conf['domain'] }}.log
+        output file /var/log/caddy/adminer.{{ sonet_general['domain'] }}.log
     }
 }
 
-grafana.{{ conf['domain'] }}:443 {
+grafana.{{ sonet_general['domain'] }}:443 {
 {% if generate_service_certs is defined -%}
 {%- if generate_service_certs is sameas true %}
-    tls /etc/pki/tls/certs/grafana.{{ conf['domain'] }}.crt /etc/pki/tls/private/grafana.{{ conf['domain'] }}.key
+    tls /etc/pki/tls/certs/grafana.{{ sonet_general['domain'] }}.crt /etc/pki/tls/private/grafana.{{ sonet_general['domain'] }}.key
 {%- endif -%}
 {%- endif %}
 
@@ -295,6 +295,6 @@ grafana.{{ conf['domain'] }}:443 {
     reverse_proxy http://grafana:3000
 
     log {
-        output file /var/log/caddy/grafana.{{ conf['domain'] }}.log
+        output file /var/log/caddy/grafana.{{ sonet_general['domain'] }}.log
     }
 }

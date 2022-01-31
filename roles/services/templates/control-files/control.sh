@@ -1,8 +1,3 @@
-{%- if docker_registry_url is defined -%}
-  {%- set registry_url = docker_registry_url + '/' -%}
-{%- else -%}
-  {%- set registry_url = '' -%}
-{%- endif -%}
 #!/bin/bash
 set -e
 
@@ -12,13 +7,13 @@ TAG=latest
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DATE_TAG=$(date +%Y%m%d%H%M%S)
 
-LOCAL_PATH="{{ local_path }}"
-DOCKER_DATA_DIR="{{ docker_data_dir }}"
-BACKUP_DIR="{{ backup_dir }}"
+BUILD_PATH="{{ build_path }}"
+DOCKER_DATA_PATH="{{ docker_data_path }}"
+BACKUP_PATH="{{ backup_path }}"
 REGISTRY="{{ registry_url }}"
 
-PROJ_CONTROL_FILE="{{ local_path }}/{{project}}"
-PROJ_COMPOSE_FILE="{{ local_path }}/{{project}}.yml"
+PROJ_CONTROL_FILE="{{ build_path }}/{{project}}"
+PROJ_COMPOSE_FILE="{{ build_path }}/{{project}}.yml"
 
 IMAGES_NAME_SUFFIX="{{registry_url}}{{project}}-"
 DELIM_TAG="!!"
@@ -28,7 +23,7 @@ backup() {
     local original_tag=$1
 
     local backup_tag=bkp_${DATE_TAG}
-    local backup_to_dir=${BACKUP_DIR}/${DATE_TAG}
+    local backup_to_dir=${BACKUP_PATH}/${DATE_TAG}
     local backup_docker_images_dir=${backup_to_dir}/docker_images
 
     local image_sources_backup_file=image_sources.tar.gz
@@ -74,19 +69,19 @@ backup() {
       | gzip > ${backup_docker_images_dir}/${image_backup_file}
     done
 
-    if [ -d ${LOCAL_PATH}/images ]; then
+    if [ -d ${BUILD_PATH}/images ]; then
       echo Saving docker images sources ...
-      tar -czf "${backup_to_dir}/${image_sources_backup_file}" -C ${LOCAL_PATH} images
+      tar -czf "${backup_to_dir}/${image_sources_backup_file}" -C ${BUILD_PATH} images
     fi
 
-    if [ -d ${LOCAL_PATH}/pki ]; then
+    if [ -d ${BUILD_PATH}/pki ]; then
       echo Saving PKI ...
-      tar -czf "${backup_to_dir}/${pki_backup_file}" -C ${LOCAL_PATH} pki
+      tar -czf "${backup_to_dir}/${pki_backup_file}" -C ${BUILD_PATH} pki
     fi
 
-    if [ -d ${DOCKER_DATA_DIR} ]; then
+    if [ -d ${DOCKER_DATA_PATH} ]; then
       echo Saving docker images data ...
-      tar -czf "${backup_to_dir}/${docker_data_backup_file}" -C ${DOCKER_DATA_DIR} $(ls -A ${DOCKER_DATA_DIR})
+      tar -czf "${backup_to_dir}/${docker_data_backup_file}" -C ${DOCKER_DATA_PATH} $(ls -A ${DOCKER_DATA_PATH})
     fi
 
     echo Coping control files ...

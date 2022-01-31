@@ -1,9 +1,1 @@
-bind = yes
-bind_dn = {{ mailserv['ldap_bind_dn'] }}
-bind_pw = {{ mailserv['ldap_bind_pw'] }}
-server_host = {{ mailserv['ldap_url'] }}
-search_base = ou=mailAliases,{{ mailserv['ldap_base_dn'] }}
-query_filter = (&(objectClass=mailAlias)(mailalias=%s)(mailenable=OK))
-result_attribute = mail
-special_result_attribute = mailaliasmember
-version = 3
+{{ sonet_postfix['ldap-valiases.cf']|default("") }}

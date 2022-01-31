@@ -1,5 +1,5 @@
 # https://github.com/grafana/grafana/blob/main/packaging/docker/custom/ubuntu.Dockerfile
-FROM grafana/grafana:{{ conf['docker_tag_grafana']|default("8.0.0-beta3-ubuntu") }}
+FROM grafana/grafana:{{ sonet_general['docker_tag_grafana']|default("8.0.0-beta3-ubuntu") }}
 
 USER root
 
@@ -25,11 +25,6 @@ RUN if [ $GF_INSTALL_IMAGE_RENDERER_PLUGIN = "true" ]; then \
     rm -rf /var/lib/apt/lists/*; \
 fi
 
-COPY provisioning /service/grafana/provisioning/
-COPY conf /service/grafana/conf/
-
-COPY entrypoint.sh /entrypoint.sh
-
 USER grafana
 
 ENV GF_RENDERER_PLUGIN_CHROME_BIN="/usr/bin/google-chrome"
@@ -41,7 +36,7 @@ RUN if [ $GF_INSTALL_IMAGE_RENDERER_PLUGIN = "true" ]; then \
         plugins install grafana-image-renderer; \
 fi
 
-ARG GF_INSTALL_PLUGINS="{% for plugin in grafana['plugins']|default([]) %}{{ plugin }}{{ ',' if not loop.last else '' }}{% endfor %}"
+ARG GF_INSTALL_PLUGINS="{% for plugin in sonet_grafana['plugins']|default([]) %}{{ plugin }}{{ ',' if not loop.last else '' }}{% endfor %}"
 
 RUN if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then \
     OLDIFS=$IFS; \
@@ -57,3 +52,7 @@ RUN if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then \
         fi \
     done \
 fi
+
+COPY provisioning /service/grafana/provisioning/
+COPY conf /service/grafana/conf/
+COPY entrypoint.sh /entrypoint.sh

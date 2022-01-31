@@ -3,57 +3,57 @@
   include_tasks: service_common.yml
   vars:
     - service_name: caddy
-    - service_image_dir: '{{ local_path }}/images/caddy'
+    - service_image_dir: '{{ build_path }}/images/caddy'
     - service_dirs:
         - certs
         - private
         - pki
     - service_gen_certs:
-        - "pki.{{ conf['domain'] }}"
-        - "gitlab.{{ conf['domain'] }}"
-        - "ldapadmin.{{ conf['domain'] }}"
-        - "mail.{{ conf['domain'] }}"
-        - "mattermost.{{ conf['domain'] }}"
-        - "redmine.{{ conf['domain'] }}"
-        - "registry.{{ conf['domain'] }}"
-        - "storage.{{ conf['domain'] }}"
-        - "excalidraw.{{ conf['domain'] }}"
-        - "nextcloud.{{ conf['domain'] }}"
-        - "onlyoffice.{{ conf['domain'] }}"
-        - "drawio.{{ conf['domain'] }}"
-        - "portainer.{{ conf['domain'] }}"
-        - "adminer.{{ conf['domain'] }}"
-        - "grafana.{{ conf['domain'] }}"
+        - "pki.{{ sonet_general['domain'] }}"
+        - "gitlab.{{ sonet_general['domain'] }}"
+        - "ldapadmin.{{ sonet_general['domain'] }}"
+        - "mail.{{ sonet_general['domain'] }}"
+        - "mattermost.{{ sonet_general['domain'] }}"
+        - "redmine.{{ sonet_general['domain'] }}"
+        - "registry.{{ sonet_general['domain'] }}"
+        - "storage.{{ sonet_general['domain'] }}"
+        - "excalidraw.{{ sonet_general['domain'] }}"
+        - "nextcloud.{{ sonet_general['domain'] }}"
+        - "onlyoffice.{{ sonet_general['domain'] }}"
+        - "drawio.{{ sonet_general['domain'] }}"
+        - "portainer.{{ sonet_general['domain'] }}"
+        - "adminer.{{ sonet_general['domain'] }}"
+        - "grafana.{{ sonet_general['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "ca.crt", dest: "pki/ca.crt" }
         - { src: "dh.pem", dest: "certs/dhparam.pem" }
-        - { src: "issued/gitlab.{{ conf['domain'] }}.crt", dest: "certs/gitlab.{{ conf['domain'] }}.crt" }
-        - { src: "private/gitlab.{{ conf['domain'] }}.key", dest: "private/gitlab.{{ conf['domain'] }}.key" }
-        - { src: "issued/mattermost.{{ conf['domain'] }}.crt", dest: "certs/mattermost.{{ conf['domain'] }}.crt" }
-        - { src: "private/mattermost.{{ conf['domain'] }}.key", dest: "private/mattermost.{{ conf['domain'] }}.key" }
-        - { src: "issued/mail.{{ conf['domain'] }}.crt", dest: "certs/mail.{{ conf['domain'] }}.crt" }
-        - { src: "private/mail.{{ conf['domain'] }}.key", dest: "private/mail.{{ conf['domain'] }}.key" }
-        - { src: "issued/registry.{{ conf['domain'] }}.crt", dest: "certs/registry.{{ conf['domain'] }}.crt" }
-        - { src: "private/registry.{{ conf['domain'] }}.key", dest: "private/registry.{{ conf['domain'] }}.key" }
-        - { src: "issued/redmine.{{ conf['domain'] }}.crt", dest: "certs/redmine.{{ conf['domain'] }}.crt" }
-        - { src: "private/redmine.{{ conf['domain'] }}.key", dest: "private/redmine.{{ conf['domain'] }}.key" }
-        - { src: "issued/ldapadmin.{{ conf['domain'] }}.crt", dest: "certs/ldapadmin.{{ conf['domain'] }}.crt" }
-        - { src: "private/ldapadmin.{{ conf['domain'] }}.key", dest: "private/ldapadmin.{{ conf['domain'] }}.key" }
-        - { src: "issued/pki.{{ conf['domain'] }}.crt", dest: "certs/pki.{{ conf['domain'] }}.crt" }
-        - { src: "private/pki.{{ conf['domain'] }}.key", dest: "private/pki.{{ conf['domain'] }}.key" }
-        - { src: "issued/excalidraw.{{ conf['domain'] }}.crt", dest: "certs/excalidraw.{{ conf['domain'] }}.crt" }
-        - { src: "private/excalidraw.{{ conf['domain'] }}.key", dest: "private/excalidraw.{{ conf['domain'] }}.key" }
-        - { src: "issued/nextcloud.{{ conf['domain'] }}.crt", dest: "certs/nextcloud.{{ conf['domain'] }}.crt" }
-        - { src: "private/nextcloud.{{ conf['domain'] }}.key", dest: "private/nextcloud.{{ conf['domain'] }}.key" }
-        - { src: "issued/onlyoffice.{{ conf['domain'] }}.crt", dest: "certs/onlyoffice.{{ conf['domain'] }}.crt" }
-        - { src: "private/onlyoffice.{{ conf['domain'] }}.key", dest: "private/onlyoffice.{{ conf['domain'] }}.key" }
-        - { src: "issued/drawio.{{ conf['domain'] }}.crt", dest: "certs/drawio.{{ conf['domain'] }}.crt" }
-        - { src: "private/drawio.{{ conf['domain'] }}.key", dest: "private/drawio.{{ conf['domain'] }}.key" }
-        - { src: "issued/portainer.{{ conf['domain'] }}.crt", dest: "certs/portainer.{{ conf['domain'] }}.crt" }
-        - { src: "private/portainer.{{ conf['domain'] }}.key", dest: "private/portainer.{{ conf['domain'] }}.key" }
-        - { src: "issued/adminer.{{ conf['domain'] }}.crt", dest: "certs/adminer.{{ conf['domain'] }}.crt" }
-        - { src: "private/adminer.{{ conf['domain'] }}.key", dest: "private/adminer.{{ conf['domain'] }}.key" }
-        - { src: "issued/grafana.{{ conf['domain'] }}.crt", dest: "certs/grafana.{{ conf['domain'] }}.crt" }
-        - { src: "private/grafana.{{ conf['domain'] }}.key", dest: "private/grafana.{{ conf['domain'] }}.key" }
+        - { src: "issued/gitlab.{{ sonet_general['domain'] }}.crt", dest: "certs/gitlab.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/gitlab.{{ sonet_general['domain'] }}.key", dest: "private/gitlab.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/mattermost.{{ sonet_general['domain'] }}.crt", dest: "certs/mattermost.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/mattermost.{{ sonet_general['domain'] }}.key", dest: "private/mattermost.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/mail.{{ sonet_general['domain'] }}.crt", dest: "certs/mail.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/mail.{{ sonet_general['domain'] }}.key", dest: "private/mail.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/registry.{{ sonet_general['domain'] }}.crt", dest: "certs/registry.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/registry.{{ sonet_general['domain'] }}.key", dest: "private/registry.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/redmine.{{ sonet_general['domain'] }}.crt", dest: "certs/redmine.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/redmine.{{ sonet_general['domain'] }}.key", dest: "private/redmine.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/ldapadmin.{{ sonet_general['domain'] }}.crt", dest: "certs/ldapadmin.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/ldapadmin.{{ sonet_general['domain'] }}.key", dest: "private/ldapadmin.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/pki.{{ sonet_general['domain'] }}.crt", dest: "certs/pki.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/pki.{{ sonet_general['domain'] }}.key", dest: "private/pki.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/excalidraw.{{ sonet_general['domain'] }}.crt", dest: "certs/excalidraw.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/excalidraw.{{ sonet_general['domain'] }}.key", dest: "private/excalidraw.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/nextcloud.{{ sonet_general['domain'] }}.crt", dest: "certs/nextcloud.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/nextcloud.{{ sonet_general['domain'] }}.key", dest: "private/nextcloud.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/onlyoffice.{{ sonet_general['domain'] }}.crt", dest: "certs/onlyoffice.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/onlyoffice.{{ sonet_general['domain'] }}.key", dest: "private/onlyoffice.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/drawio.{{ sonet_general['domain'] }}.crt", dest: "certs/drawio.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/drawio.{{ sonet_general['domain'] }}.key", dest: "private/drawio.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/portainer.{{ sonet_general['domain'] }}.crt", dest: "certs/portainer.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/portainer.{{ sonet_general['domain'] }}.key", dest: "private/portainer.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/adminer.{{ sonet_general['domain'] }}.crt", dest: "certs/adminer.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/adminer.{{ sonet_general['domain'] }}.key", dest: "private/adminer.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/grafana.{{ sonet_general['domain'] }}.crt", dest: "certs/grafana.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/grafana.{{ sonet_general['domain'] }}.key", dest: "private/grafana.{{ sonet_general['domain'] }}.key" }
   tags: [init, build, push]

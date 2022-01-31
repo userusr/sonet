@@ -3,12 +3,12 @@ default:
   email_delivery:
     delivery_method: :smtp
     smtp_settings:
-      address: "{{ redmine['smtp_address'] }}"
-      port: "{{ redmine['smtp_port'] }}"
-      authentication: {{ redmine['smtp_authentication'] }}
-      domain: "{{ redmine['smtp_domain'] }}"
-      user_name: "{{ redmine['smtp_user_name'] }}"
-      password: "{{ redmine['smtp_password'] }}"
+      address: "{{ sonet_redmine['smtp_address'] }}"
+      port: "{{ sonet_redmine['smtp_port'] }}"
+      authentication: "{{ sonet_redmine['smtp_authentication'] }}"
+      domain: "{{ sonet_redmine['smtp_domain'] }}"
+      user_name: "{{ sonet_redmine['smtp_user_name'] }}"
+      password: "{{ sonet_redmine['smtp_password'] }}"
   attachments_storage_path:
   autologin_cookie_name:
   autologin_cookie_path:

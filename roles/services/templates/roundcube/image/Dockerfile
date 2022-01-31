@@ -1,5 +1,5 @@
 # https://hub.docker.com/r/roundcube/roundcubemail/tags?page=1&ordering=last_updated
-FROM roundcube/roundcubemail:{{ conf['docker_tag_roundcubemail']|default("1.4.x-apache") }}
+FROM roundcube/roundcubemail:{{ sonet_general['docker_tag_roundcubemail']|default("1.4.x-apache") }}
 
 LABEL project="{{ project }}"
 

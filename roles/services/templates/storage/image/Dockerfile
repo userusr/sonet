@@ -1,7 +1,7 @@
 # Use osixia/light-baseimage
 # https://github.com/osixia/docker-light-baseimage
 # https://hub.docker.com/r/osixia/light-baseimage/tags?page=1&ordering=last_updated
-FROM osixia/light-baseimage:{{ conf['docker_tag_storage_baseimage']|default("stable-amd64") }}
+FROM osixia/light-baseimage:{{ sonet_general['docker_tag_storage_baseimage']|default("stable-amd64") }}
 
 LABEL project="{{ project }}"
 

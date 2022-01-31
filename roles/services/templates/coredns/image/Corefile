@@ -1,6 +1,6 @@
 .:53 {
-{% if coredns['root_forward'] is defined %}
-    forward . {{ coredns['root_forward']|join(' ') }}
+{% if coresonet_dns['root_forward'] is defined %}
+    forward . {{ coresonet_dns['root_forward']|join(' ') }}
 {%- endif %}
 
     reload
@@ -11,7 +11,7 @@
     }
 }
 
-{% for zone in coredns['zones'] %}
+{% for zone in sonet_dns['zones'] %}
 {{ zone['name'] }}:53 {
     file /etc/coredns/zones/{{ zone['zonefile'] }}
     log

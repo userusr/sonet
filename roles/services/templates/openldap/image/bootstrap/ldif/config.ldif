@@ -1,14 +1,14 @@
-{% for ou in openldap['preset_ldiff'].keys() %}
-dn: ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+{% for ou in sonet_openldap['preset_ldiff'].keys() %}
+dn: ou={{ ou }},{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: organizationalUnit
 objectClass: top
 ou: {{ ou }}
 
 {% if ou == 'users' %}
-{% for name, data in openldap['preset_ldiff'][ou].items() %}
+{% for name, data in sonet_openldap['preset_ldiff'][ou].items() %}
 {% if data['person'] %}
-dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+dn: cn={{ name }},ou={{ ou }},{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
@@ -24,14 +24,14 @@ gidNumber: {{ data['id'] }}
 sn: {{ data['sn'] }}
 displayName: {{ data['displayName'] }}
 givenName: {{ data['givenName'] }}
-mail: {{ name }}@{{ conf['domain'] }}
+mail: {{ name }}@{{ sonet_general['domain'] }}
 ou: {{ data['ou'] }}
 mailenable: ok
-mailAlias: {{ name }}@{{ conf['domain'] }}
+mailAlias: {{ name }}@{{ sonet_general['domain'] }}
 userPassword: {{ data['userPassword'] }}
 
 {% else %}
-dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+dn: cn={{ name }},ou={{ ou }},{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: mailAccount
 objectClass: organizationalRole
@@ -39,8 +39,8 @@ objectClass: simpleSecurityObject
 objectClass: top
 cn: {{ name }}
 mailenable: ok
-mailAlias: {{ name }}@{{ conf['domain'] }}
-mail: {{ name }}@{{ conf['domain'] }}
+mailAlias: {{ name }}@{{ sonet_general['domain'] }}
+mail: {{ name }}@{{ sonet_general['domain'] }}
 userPassword: {{ data['userPassword'] }}
 
 {% endif %}
@@ -49,15 +49,15 @@ userPassword: {{ data['userPassword'] }}
 {% endif %}
 
 {% if ou == 'groups' %}
-{% for name, data in openldap['preset_ldiff'][ou].items() %}
-dn: cn={{ name }},ou={{ ou }},{{ openldap['ldap_base_dn'] }}
+{% for name, data in sonet_openldap['preset_ldiff'][ou].items() %}
+dn: cn={{ name }},ou={{ ou }},{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: groupOfUniqueNames
 objectClass: top
-description: {{ openldap['preset_ldiff'][ou][name]['description']|default(name) }}
+description: {{ sonet_openldap['preset_ldiff'][ou][name]['description']|default(name) }}
 cn: {{ name }}
-{% for cn in openldap['preset_ldiff'][ou][name]['members'] %}
-uniqueMember: cn={{ cn }},ou=users,{{ openldap['ldap_base_dn'] }}
+{% for cn in sonet_openldap['preset_ldiff'][ou][name]['members'] %}
+uniqueMember: cn={{ cn }},ou=users,{{ sonet_general['ldap_base_dn'] }}
 {% endfor %}
 
 {% endfor %}
@@ -65,27 +65,27 @@ uniqueMember: cn={{ cn }},ou=users,{{ openldap['ldap_base_dn'] }}
 
 {% endfor %}
 
-dn: ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+dn: ou=mailDomains,{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: organizationalUnit
 objectClass: top
 ou: mailDomains
 
-dn: virtualdomain={{ conf['domain'] }},ou=mailDomains,{{ openldap['ldap_base_dn'] }}
+dn: virtualdomain={{ sonet_general['domain'] }},ou=mailDomains,{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: mailDomain
 objectClass: top
-virtualdomain: {{ conf['domain'] }}
+virtualdomain: {{ sonet_general['domain'] }}
 
-dn: ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+dn: ou=mailAliases,{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: organizationalUnit
 objectClass: top
 ou: mailAliases
 
-dn: mailalias={{ conf['domain'] }},ou=mailAliases,{{ openldap['ldap_base_dn'] }}
+dn: mailalias={{ sonet_general['domain'] }},ou=mailAliases,{{ sonet_general['ldap_base_dn'] }}
 changetype: add
 objectClass: mailAlias
 objectClass: top
-mailalias: {{ conf['domain'] }}
+mailalias: {{ sonet_general['domain'] }}
 mailenable: ok

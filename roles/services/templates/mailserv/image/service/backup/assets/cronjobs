@@ -1,4 +1,4 @@
 # Backup mail directory
-{{ mailserv['backup_cron_exp'] }} root /sbin/mail-backup > /proc/1/fd/1 2>/proc/1/fd/2
+{{ sonet_mailserv['backup_cron_exp'] }} root /sbin/mail-backup > /proc/1/fd/1 2>/proc/1/fd/2
 
 # empty line

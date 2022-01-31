@@ -3,20 +3,20 @@
   include_tasks: service_common.yml
   vars:
     - service_name: gitlab
-    - service_image_dir: '{{ local_path }}/images/gitlab'
+    - service_image_dir: '{{ build_path }}/images/gitlab'
     - service_dirs:
         - certs
     - service_gen_certs:
-        - "gitlab.{{ conf['domain'] }}"
-        - "mattermost.{{ conf['domain'] }}"
-        - "registry.{{ conf['domain'] }}"
+        - "gitlab.{{ sonet_general['domain'] }}"
+        - "mattermost.{{ sonet_general['domain'] }}"
+        - "registry.{{ sonet_general['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "dh.pem", dest: "certs/dhparam.pem" }
-        - { src: "issued/gitlab.{{ conf['domain'] }}.crt", dest: "certs/gitlab.{{ conf['domain'] }}.crt" }
-        - { src: "private/gitlab.{{ conf['domain'] }}.key", dest: "certs/gitlab.{{ conf['domain'] }}.key" }
-        - { src: "issued/mattermost.{{ conf['domain'] }}.crt", dest: "certs/mattermost.{{ conf['domain'] }}.crt" }
-        - { src: "private/mattermost.{{ conf['domain'] }}.key", dest: "certs/mattermost.{{ conf['domain'] }}.key" }
-        - { src: "issued/registry.{{ conf['domain'] }}.crt", dest: "certs/registry.{{ conf['domain'] }}.crt" }
-        - { src: "private/registry.{{ conf['domain'] }}.key", dest: "certs/registry.{{ conf['domain'] }}.key" }
+        - { src: "issued/gitlab.{{ sonet_general['domain'] }}.crt", dest: "certs/gitlab.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/gitlab.{{ sonet_general['domain'] }}.key", dest: "certs/gitlab.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/mattermost.{{ sonet_general['domain'] }}.crt", dest: "certs/mattermost.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/mattermost.{{ sonet_general['domain'] }}.key", dest: "certs/mattermost.{{ sonet_general['domain'] }}.key" }
+        - { src: "issued/registry.{{ sonet_general['domain'] }}.crt", dest: "certs/registry.{{ sonet_general['domain'] }}.crt" }
+        - { src: "private/registry.{{ sonet_general['domain'] }}.key", dest: "certs/registry.{{ sonet_general['domain'] }}.key" }
   tags: [init, build, push]

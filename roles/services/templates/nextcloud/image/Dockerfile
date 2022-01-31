@@ -1,5 +1,5 @@
 # https://hub.docker.com/_/nextcloud?tab=tags&page=1&ordering=last_updated
-FROM nextcloud:{{ conf['docker_tag_nextcloud']|default("21.0.1-apache") }}
+FROM nextcloud:{{ sonet_general['docker_tag_nextcloud']|default("21.0.1-apache") }}
 
 LABEL project="{{ project }}"
 

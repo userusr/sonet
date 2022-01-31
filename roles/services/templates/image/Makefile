@@ -7,7 +7,13 @@
 
 TAG ?= latest
 REGISTRY ?= {{ registry_url }}
-NAME ?= {{project}}-{{ service_name }}
+PROJECT ?= {{project}}
+
+ifndef PROJECT
+$(error PROJECT is not defined)
+endif
+
+NAME ?= $(PROJECT)-{{ service_name }}
 
 build:
 	docker build . --tag $(REGISTRY)$(NAME):$(TAG)

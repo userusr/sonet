@@ -1,0 +1,16 @@
+---
+- name: 'grafana : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: grafana
+    - service_image_dir: '{{ build_path }}/images/grafana'
+    - service_copy_files:
+        - { src: "{{ playbook_dir }}/monitoring/grafana/provisioning/", dest: "{{ build_path }}/images/grafana/provisioning/" }
+  tags: [init, build, push]
+
+- name: 'grafana-image-renderer : service init'
+  include_tasks: service_common.yml
+  vars:
+    - service_name: grafana-image-renderer
+    - service_image_dir: '{{ build_path }}/images/grafana-image-renderer'
+  tags: [init, build, push]

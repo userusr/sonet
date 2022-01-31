@@ -58,15 +58,15 @@
 
 - name: '{{ service_name }} : generate certs'
   shell: |
-    "{{ local_path }}/pki/easy-rsa/easyrsa3/easyrsa" --batch build-server-full "{{ item }}" nopass
+    "{{ pki_path }}/easy-rsa/easyrsa3/easyrsa" --batch build-server-full "{{ item }}" nopass
   args:
-    creates: '{{ local_path }}/pki/certs/issued/{{ item }}.crt'
+    creates: '{{ pki_path }}/certs/issued/{{ item }}.crt'
   loop: '{{ service_gen_certs|default([]) }}'
   tags: init
 
 - name: '{{ service_name }} : copy certs'
   copy:
-    src: '{{ local_path }}/pki/certs/{{ item.src }}'
+    src: '{{ pki_path }}/certs/{{ item.src }}'
     dest: '{{ service_image_dir }}/{{ item.dest }}'
     mode: 0755
     remote_src: yes

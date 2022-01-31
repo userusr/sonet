@@ -3,7 +3,7 @@
   include_tasks: service_common.yml
   vars:
     - service_name: redmine
-    - service_image_dir: '{{ local_path }}/images/redmine'
+    - service_image_dir: '{{ build_path }}/images/redmine'
     - service_dirs:
         - service/redmine/plugins
         - service/redmine/themes
@@ -13,12 +13,12 @@
   include_tasks: service_common.yml
   vars:
     - service_name: redminedb
-    - service_image_dir: '{{ local_path }}/images/redminedb'
+    - service_image_dir: '{{ build_path }}/images/redminedb'
   tags: [init, build, push]
 
 - name: 'redmine : get plugins and themes'
   include_tasks: helper_get_url.yml
-  loop: "{{ redmine['plugins_and_themes'] }}"
+  loop: "{{ sonet_redmine['plugins_and_themes'] }}"
   when: redmine.plugins_and_themes is defined
   tags: init
 
@@ -28,6 +28,6 @@
     dest: "{{ item['dest'] }}"
     mode: 0775
   loop:
-    - { src: "{{ playbook_dir }}/redmine/plugins/", dest: "{{ local_path }}/images/redmine/service/redmine/plugins/" }
-    - { src: "{{ playbook_dir }}/redmine/themes/", dest: "{{ local_path }}/images/redmine/service/redmine/themes/" }
+    - { src: "{{ playbook_dir }}/redmine/plugins/", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/" }
+    - { src: "{{ playbook_dir }}/redmine/themes/", dest: "{{ build_path }}/images/redmine/service/redmine/themes/" }
   tags: init

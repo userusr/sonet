@@ -3,5 +3,5 @@
   include_tasks: service_common.yml
   vars:
     - service_name: adminer
-    - service_image_dir: '{{ local_path }}/images/adminer'
+    - service_image_dir: '{{ build_path }}/images/adminer'
   tags: [init, build, push]

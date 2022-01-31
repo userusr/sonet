@@ -3,14 +3,14 @@
   include_tasks: service_common.yml
   vars:
     - service_name: mailserv
-    - service_image_dir: '{{ local_path }}/images/mailserv'
+    - service_image_dir: '{{ build_path }}/images/mailserv'
     - service_dirs:
         - certs
     - service_gen_certs:
-        - "mail.{{ conf['domain'] }}"
+        - "mail.{{ sonet_general['domain'] }}"
     - service_copy_certs:
         - { src: "ca.crt", dest: "certs/ca.crt" }
         - { src: "dh.pem", dest: "certs/dhparam.pem" }
-        - { src: "issued/mail.{{ conf['domain'] }}.crt", dest: "certs/cert.crt" }
-        - { src: "private/mail.{{ conf['domain'] }}.key", dest: "certs/cert.key" }
+        - { src: "issued/mail.{{ sonet_general['domain'] }}.crt", dest: "certs/cert.crt" }
+        - { src: "private/mail.{{ sonet_general['domain'] }}.key", dest: "certs/cert.key" }
   tags: [init, build, push]

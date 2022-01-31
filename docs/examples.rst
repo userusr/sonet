@@ -297,31 +297,35 @@ Cервер в локальной сети
         source .env; export ANSIBLE_VAULT_PASSWORD
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_ldap_admin_password' \
+            'change_me' --name "sonet_vault['ldap_admin_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_ldap_config_password' \
+            'change_me' --name "sonet_vault['ldap_config_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_ldap_readonly_user_password' \
+            'change_me' --name "sonet_vault['ldap_readonly_user_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_redmine_admin_mail_account_password' \
+            'change_me' --name "sonet_vault['redmine_admin_mail_account_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_gitlab_mail_account_password' \
+            'change_me' --name "sonet_vault['gitlab_mail_account_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_nextcloud_admin_mail_account_password' \
+            'change_me' --name "sonet_vault['gitlab_root_account_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name 'vault_ldap_user_default_password' \
+            'change_me' --name "sonet_vault['nextcloud_admin_mail_account_password']" \
+            >> ./inventory/group_vars/all/00-vault.yml.tmp
+
+        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name "sonet_vault['ldap_user_default_password']" \
             >> ./inventory/group_vars/all/00-vault.yml.tmp
 
         mv ./inventory/group_vars/all/00-vault.yml.tmp ./inventory/group_vars/all/00-vault.yml
@@ -357,37 +361,37 @@ Cервер в локальной сети
 
         coredns:
           zones:
-            - zonefile: "{{ conf['domain'] }}.zone"
-              name: "{{ conf['domain'] }}"
+            - zonefile: "{{ sonet_general['domain'] }}.zone"
+              name: "{{ sonet_general['domain'] }}"
               domain_name: "@"
-              name_server_fqdn: "ns.{{ conf['domain'] }}."
-              admin_email: "root@ns.{{ conf['domain'] }}."
+              name_server_fqdn: "ns.{{ sonet_general['domain'] }}."
+              admin_email: "root@ns.{{ sonet_general['domain'] }}."
               members:
-                - { hostname: '@', type: 'NS', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: '', type: 'MX', address: "10 mail.{{ conf['domain'] }}." }
-                - { hostname: "ns.{{ conf['domain'] }}.", type: 'A', address: '192.168.15.101' }
-                - { hostname: "{{ conf['ldap_hostname'] }}.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "mail.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "gitlab.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "mattermost.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "redmine.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "ldapadmin.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "storage.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "pki.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "excalidraw.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "owncloud.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "nextcloud.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "onlyoffice.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "drawio.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "portainer.{{ conf['domain'] }}.", type: 'CNAME', address: "ns.{{ conf['domain'] }}." }
+                - { hostname: '@', type: 'NS', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: '', type: 'MX', address: "10 mail.{{ sonet_general['domain'] }}." }
+                - { hostname: "ns.{{ sonet_general['domain'] }}.", type: 'A', address: '192.168.15.101' }
+                - { hostname: "{{ sonet_general['ldap_hostname'] }}.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "mail.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "gitlab.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "mattermost.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "redmine.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "ldapadmin.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "storage.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "pki.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "excalidraw.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "owncloud.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "nextcloud.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "onlyoffice.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "drawio.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "portainer.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
             - zonefile: '15.168.192.in-addr.arpa.zone'
               name: '15.168.192.in-addr.arpa'
               domain_name: "@"
-              name_server_fqdn: "ns.{{ conf['domain'] }}."
-              admin_email: "root@ns.{{ conf['domain'] }}."
+              name_server_fqdn: "ns.{{ sonet_general['domain'] }}."
+              admin_email: "root@ns.{{ sonet_general['domain'] }}."
               members:
-                - { hostname: '@', type: 'NS', address: "ns.{{ conf['domain'] }}." }
-                - { hostname: "ns.{{ conf['domain'] }}.", type: 'PTR', address: '192.168.15.101' }
+                - { hostname: '@', type: 'NS', address: "ns.{{ sonet_general['domain'] }}." }
+                - { hostname: "ns.{{ sonet_general['domain'] }}.", type: 'PTR', address: '192.168.15.101' }
 
 #.  все сервисы авторизуют пользоватей через LDAP. Будем использовать внутренний
     сервер *openldap*. В файле ``./inventory/group_vars/all/10-openldap.yml``
@@ -447,9 +451,9 @@ Cервер в локальной сети
               ansible_become: true
               ansible_python_interpreter: python3
               ansible_become_password: "{{ vault_server_become_password }}"
-              backup_dir: "/opt/{{ project }}/backup"
-              local_path: "/opt/{{ project }}/build"
-              docker_data_dir: "/opt/{{ project }}/data"
+              backup_path: "/opt/{{ project }}/backup"
+              build_path: "/opt/{{ project }}/build"
+              docker_data_path: "/opt/{{ project }}/data"
               generate_service_certs: true
               include_service:
                 - caddy

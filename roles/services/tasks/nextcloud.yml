@@ -53,7 +53,7 @@
 
 - name: 'nextcloud : get apps'
   include_tasks: helper_get_url.yml
-  loop: "{{ sonet_nextcloud['apps'] }}"
+  loop: "{{ sonet_nextcloud['apps'] | default([]) }}"
   tags: init
 
 - name: 'nextcloud : copy apps'

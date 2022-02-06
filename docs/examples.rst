@@ -296,39 +296,44 @@ Cервер в локальной сети
 
         source .env; export ANSIBLE_VAULT_PASSWORD
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['ldap_admin_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        cat <<EOF>./configs/sonet_local/vars/10-vault.yml.tmp
+        ---
+        sonet_vault:
+        EOF
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['ldap_config_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name ldap_admin_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['ldap_readonly_user_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name ldap_config_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['redmine_admin_mail_account_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name ldap_readonly_user_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['gitlab_mail_account_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name redmine_admin_mail_account_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['gitlab_root_account_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name gitlab_mail_account_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['nextcloud_admin_mail_account_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name gitlab_root_account_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
-            'change_me' --name "sonet_vault['ldap_user_default_password']" \
-            >> ./inventory/group_vars/all/00-vault.yml.tmp
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name nextcloud_admin_mail_account_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
 
-        mv ./inventory/group_vars/all/00-vault.yml.tmp ./inventory/group_vars/all/00-vault.yml
+        echo "  $(ansible-vault encrypt_string --vault-password-file ./sonet/tools/vault-env-client.py \
+            'change_me' --name ldap_user_default_password)" \
+            >> ./configs/sonet_local/vars/10-vault.yml.tmp
+
+        mv ./configs/sonet_local/vars/10-vault.yml.tmp  ./configs/sonet_local/vars/10-vault.yml
 
 #.  В файле ``./inventory/group_vars/all/02-settings.yml`` поменяем пароль для
     пользователя ``admin`` для сервиса ``portainer``. Он записывается в виде хеша

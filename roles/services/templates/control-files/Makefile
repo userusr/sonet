@@ -1,8 +1,3 @@
-{%- if docker_registry_url is defined -%}
-  {%- set registry_url = docker_registry_url + '/' -%}
-{%- else -%}
-  {%- set registry_url = '' -%}
-{%- endif -%}
 .DEFAULT_GOAL := all
 
 export TAG ?= latest
@@ -13,7 +8,10 @@ IMAGES := $(wildcard ./images/*/.)
 
 all: $(IMAGES)
 
-$(IMAGES):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
+push: GOAL=push
+push: $(IMAGES)
 
-.PHONY: all $(IMAGES)
+$(IMAGES):
+	$(MAKE) -C $@ ${GOAL}
+
+.PHONY: all push $(IMAGES)

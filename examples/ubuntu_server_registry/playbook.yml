@@ -1,0 +1,213 @@
+---
+- name: update all packages to their latest version
+  hosts: "ubuntu_server"
+  become: true
+  tasks:
+    - ansible.builtin.apt:
+        name: "*"
+        state: latest
+    - ansible.builtin.apt:
+        name: '{{ item }}'
+        state: present
+        update_cache: yes
+        force_apt_get: yes
+      with_items:
+        - python3-docker
+  tags:
+    - init
+
+- name: set authorized key taken from current user
+  hosts: "ubuntu_server"
+  tasks:
+    - ansible.posix.authorized_key:
+        user: vagrant
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  tags:
+    - init
+
+- name: install docker on remote server
+  hosts: "ubuntu_server"
+  become: true
+  roles:
+    - role: './roles/install_docker'
+      vars:
+        docker_compose_version: "1.29.2"
+        docker_users:
+          - "vagrant"
+
+- name: "add registry to /etc/hosts"
+  hosts: "ubuntu_server"
+  become: true
+  tasks:
+    - name: add local registry to /etc/hosts
+      ansible.builtin.lineinfile:
+        dest=/etc/hosts
+        regexp='^{{ item.ip }}\s+{{ item.host }}$'
+        line="{{ item.ip }} {{ item.host }}"
+        state=present
+      with_items:
+        - { ip: "192.168.56.201", host: "registry.sonet.local" }
+  tags:
+    - init
+
+- name: run local docker registry
+  hosts: "ubuntu_server"
+  tasks:
+    - name: run local docker registry
+      community.docker.docker_container:
+        name: local-registry
+        image: registry:2
+        state: started
+        ports:
+          - "192.168.56.201:5000:5000"
+        volumes:
+          - /opt/sonet/registry:/var/lib/registry
+  tags:
+    - init
+
+- name: generate sonet on local mashine
+  hosts: 127.0.0.1
+  connection: local
+  roles:
+    - role: './roles/services'
+  vars:
+    build_path: ".vagrant/build/sonet_local/source"
+    pki_path: ".vagrant/build/sonet_local/pki"
+    docker_data_path: "/opt/sonet/data"
+    backup_path: "/opt/sonet/backup"
+    docker_registry_url: "registry.sonet.local:5000"
+    generate_service_certs: true
+    include_service:
+      - caddy
+      - coredns
+      - openldap
+      - phpldapadmin
+      - redmine
+      - excalidraw
+      - gitlab
+      - roundcube
+      - mailserv
+      - storage
+      - nextcloud
+      - portainer
+      - adminer
+      - grafana
+      - monitoring
+  vars_files:
+    - ../../configs/sonet_local/vars/10-vault.yml
+    - ../../configs/sonet_local/vars/90-general.yml
+  tags:
+    - skip-build
+    - skip-push
+
+- name: generate docker-compose file on server
+  hosts: "ubuntu_server"
+  become: true
+  roles:
+    - role: './roles/control_files'
+  vars:
+    build_path: "/opt/sonet"
+    docker_data_path: "/opt/sonet/data"
+    backup_path: "/opt/sonet/backup"
+    docker_bind_ip: 192.168.56.201
+    docker_registry_url: "registry.sonet.local:5000"
+    include_service:
+      - caddy
+      - coredns
+      - openldap
+      - redmine
+      # - phpldapadmin
+      # - excalidraw
+      # - gitlab
+      # - roundcube
+      # - mailserv
+      # - storage
+      # - nextcloud
+      # - portainer
+      # - adminer
+      # - grafana
+      # - monitoring
+  vars_files:
+    - ../../configs/sonet_local/vars/10-vault.yml
+    - ../../configs/sonet_local/vars/90-general.yml
+  tags:
+    - skip-build
+    - skip-push
+
+- name: build sonet images
+  hosts: 127.0.0.1
+  connection: local
+  roles:
+    - role: './roles/services'
+  environment:
+    DOCKER_HOST: ssh://vagrant@192.168.56.201
+  vars:
+    build_path: ".vagrant/build/sonet_local/source"
+    pki_path: ".vagrant/build/sonet_local/pki"
+    docker_data_path: "/opt/sonet/data"
+    backup_path: "/opt/sonet/backup"
+    docker_registry_url: "registry.sonet.local:5000"
+    include_service:
+      - caddy
+      - coredns
+      - openldap
+      - redmine
+      - phpldapadmin
+      - excalidraw
+      - gitlab
+      - roundcube
+      - mailserv
+      - storage
+      - nextcloud
+      - portainer
+      - adminer
+      - grafana
+      - monitoring
+  vars_files:
+    - ../../configs/sonet_local/vars/10-vault.yml
+    - ../../configs/sonet_local/vars/90-general.yml
+  tags:
+    - skip-init
+    - skip-push
+
+- name: push sonet images
+  hosts: 127.0.0.1
+  connection: local
+  roles:
+    - role: './roles/services'
+  environment:
+    DOCKER_HOST: ssh://vagrant@192.168.56.201
+  vars:
+    docker_registry_url: "registry.sonet.local:5000"
+    include_service:
+      - caddy
+      - coredns
+      - openldap
+      - redmine
+      - phpldapadmin
+      - excalidraw
+      - gitlab
+      - roundcube
+      - mailserv
+      - storage
+      - nextcloud
+      - portainer
+      - adminer
+      - grafana
+      - monitoring
+  vars_files:
+    - ../../configs/sonet_local/vars/10-vault.yml
+    - ../../configs/sonet_local/vars/90-general.yml
+  tags:
+    - skip-init
+    - skip-build
+
+- name: run sonet
+  hosts: "ubuntu_server"
+  become: true
+  tasks:
+    - ansible.builtin.shell:
+        cmd: '/opt/sonet/sonet up'
+  tags:
+    - run

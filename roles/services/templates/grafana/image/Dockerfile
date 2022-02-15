@@ -53,6 +53,6 @@ RUN if [ ! -z "${GF_INSTALL_PLUGINS}" ]; then \
     done \
 fi
 
-COPY provisioning /service/grafana/provisioning/
-COPY conf /service/grafana/conf/
+COPY service/grafana/provisioning /service/grafana/provisioning/
+COPY service/grafana/conf /service/grafana/conf/
 COPY entrypoint.sh /entrypoint.sh

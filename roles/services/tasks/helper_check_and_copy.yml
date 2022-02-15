@@ -1,0 +1,20 @@
+---
+- name: "check file {{ copy_source }}"
+  stat:
+    path: "{{ copy_source }}"
+  register: check_source_result
+  tags: init
+
+- name: "check file {{ copy_destination }}"
+  stat:
+    path: "{{ copy_destination }}"
+  register: check_destination_result
+  tags: init
+
+- name: "copy file"
+  copy:
+    src: "{{ copy_source }}"
+    dest: "{{ copy_destination }}"
+    mode: 0755
+  when: check_source_result.stat.exists and check_destination_result.stat.exists
+  tags: init

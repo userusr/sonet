@@ -6,6 +6,8 @@
     - service_image_dir: '{{ build_path }}/images/nextcloud'
     - service_dirs:
         - service/nextcloud/apps
+    - service_copy_files:
+        - { src: "{{ playbook_dir }}/files/nextcloud/apps/", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/" }
   tags: [init, build, push]
 
 - name: 'nextcloud_db : service init'
@@ -43,24 +45,7 @@
     - service_image_dir: '{{ build_path }}/images/nextcloud_drawio'
   tags: [init, build, push]
 
-- name: 'nextcloud : create apps folder'
-  file:
-    path: '{{ playbook_dir }}/nextcloud/apps/'
-    state: directory
-    recurse: yes
-    mode: 0755
-  tags: init
-
 - name: 'nextcloud : get apps'
   include_tasks: helper_get_url.yml
   loop: "{{ sonet_nextcloud['apps'] | default([]) }}"
-  tags: init
-
-- name: 'nextcloud : copy apps'
-  copy:
-    src: "{{ item['src'] }}"
-    dest: "{{ item['dest'] }}"
-    mode: 0775
-  loop:
-    - { src: "{{ playbook_dir }}/nextcloud/apps/", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/" }
   tags: init

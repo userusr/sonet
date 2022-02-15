@@ -1,0 +1,1169 @@
+---
+sonet_general:
+  ##
+  # Доменное имя
+  domain: "sonet.local"
+  ##
+  # Хеш пароля пользователя 'admin' сервиса portainer. Генерируется так:
+  # docker run --rm httpd:2.4-alpine htpasswd -nbB admin portainer | cut -d ":" -f 2 | sed 's/\$/\$\$/g'
+  portainer_admin_account_password: '$$2y$$05$$oEcbxi6amQS5.xCFLQS3N.q35YvRuimDxy9aRmNTEs7Kxn4lYi.dm'
+  ##
+  # Hostname и alias для сервиса openldap. Нужен для доступа клиентов к LDAP.
+  # Нужно изменить в случае использования внешнего сервера LDAP.
+  ldap_hostname: 'ldap'
+  ldap_base_dn: "dc=sonet,dc=local"
+  ldap_readonly_user_username: "readonly"
+  ldap_readonly_user_password: "{{ sonet_vault['ldap_readonly_user_password'] }}"
+  ##
+  # Версии используемых docker images.
+  #
+  # https://hub.docker.com/_/caddy?tab=tags&page=1&ordering=last_updated
+  docker_tag_caddy: "2.3.0"
+  # https://hub.docker.com/_/golang?tab=tags&page=1&ordering=last_updated
+  docker_tag_coredns_golang: "1.17.5-buster"
+  # https://github.com/coredns/coredns.git
+  git_tag_coredns: "v1.8.3"
+  # https://hub.docker.com/r/excalidraw/excalidraw/tags?page=1&ordering=last_updated
+  docker_tag_excalidraw: "latest"
+  # https://hub.docker.com/r/gitlab/gitlab-ce/tags?page=1&ordering=last_updated
+  docker_tag_gitlab: "13.11.3-ce.0"
+  # https://hub.docker.com/r/osixia/light-baseimage/tags?page=1&ordering=last_updated
+  docker_tag_mailserv_baseimage: "stable-amd64"
+  # https://hub.docker.com/_/nextcloud?tab=tags&page=1&ordering=last_updated
+  docker_tag_nextcloud: "21.0.1-apache"
+  # https://hub.docker.com/_/postgres?tab=tags&page=1&ordering=last_updated
+  docker_tag_nextcloud_postgres: "13"
+  # https://hub.docker.com/r/jgraph/export-server/tags?page=1&ordering=last_updated
+  docker_tag_nextcloud_drawio: "14.6.9"
+  # https://hub.docker.com/r/jgraph/export-server/tags?page=1&ordering=last_updated
+  docker_tag_nextcloud_drawio_export_server: "latest"
+  # https://hub.docker.com/r/onlyoffice/documentserver/tags?page=1&ordering=last_updated
+  docker_tag_nextcloud_onlyoffice_ds: "6.4"
+  # https://hub.docker.com/_/redis?tab=tags&page=1&ordering=last_updated
+  docker_tag_redmine_redis: "6.2.2"
+  # https://hub.docker.com/r/osixia/openldap/tags?page=1&ordering=last_updated
+  docker_tag_openldap: "1.4.0"
+  # https://hub.docker.com/r/osixia/phpldapadmin/tags?page=1&ordering=last_updated
+  docker_tag_phpldapadmin: "stable-amd64"
+  # https://hub.docker.com/r/portainer/portainer-ce/tags?page=1&ordering=last_updated
+  docker_tag_portainer: "linux-amd64-2.1.1"
+  # https://hub.docker.com/_/redmine?tab=tags&page=1&ordering=last_updated
+  docker_tag_redmine: "4.2.1-passenger"
+  # https://hub.docker.com/_/postgres?tab=tags&page=1&ordering=last_updated
+  docker_tag_redmine_postgres: "13"
+  # https://hub.docker.com/r/roundcube/roundcubemail/tags?page=1&ordering=last_updated
+  docker_tag_roundcubemail: "1.4.x-apache"
+  # https://hub.docker.com/_/postgres?tab=tags&page=1&ordering=last_updated
+  docker_tag_roundcube_postgres: "13"
+  # https://hub.docker.com/r/osixia/light-baseimage/tags?page=1&ordering=last_updated
+  docker_tag_storage_baseimage: "stable-amd64"
+  # https://hub.docker.com/_/adminer/?tab=tags&page=1&ordering=last_updated
+  docker_tag_adminer: "4.8.1"
+  # https://hub.docker.com/r/prom/pushgateway/tags?page=1&ordering=last_updated
+  docker_tag_pushgateway: "v1.4.1"
+  # https://hub.docker.com/r/prom/prometheus/tags?page=1&ordering=last_updated
+  docker_tag_prometheus: "v2.27.1"
+  # https://hub.docker.com/r/prom/node-exporter/tags?page=1&ordering=last_updated
+  docker_tag_node-exporter: "v1.1.2"
+  # https://hub.docker.com/r/grafana/grafana-image-renderer/tags?page=1&ordering=last_updated
+  docker_tag_grafana-image-renderer: "2.1.1"
+  # https://hub.docker.com/r/grafana/grafana/tags?page=1&ordering=last_updated
+  docker_tag_grafana: "8.0.0-beta3-ubuntu"
+  # https://hub.docker.com/r/google/cadvisor/tags?page=1&ordering=last_updated
+  docker_tag_cadvisor: "v0.33.0"
+
+sonet_dns:
+  # root_forward: [ '8.8.8.8' ]
+  zones:
+    - zonefile: "{{ sonet_general['domain'] }}.zone"
+      name: "{{ sonet_general['domain'] }}"
+      domain_name: "@"
+      name_server_fqdn: "ns.{{ sonet_general['domain'] }}."
+      admin_email: "root@ns.{{ sonet_general['domain'] }}."
+      members:
+        - { hostname: '@', type: 'NS', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: '', type: 'MX', address: "10 mail.{{ sonet_general['domain'] }}." }
+        - { hostname: "ns.{{ sonet_general['domain'] }}.", type: 'A', address: '10.20.1.1' }
+        - { hostname: "{{ sonet_general['ldap_hostname'] }}.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "mail.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "gitlab.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "mattermost.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "redmine.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "ldapadmin.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "storage.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "pki.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "excalidraw.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "nextcloud.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "onlyoffice.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "drawio.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "portainer.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "grafana.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "registry.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "adminer.{{ sonet_general['domain'] }}.", type: 'CNAME', address: "ns.{{ sonet_general['domain'] }}." }
+    - zonefile: '1.20.10.in-addr.arpa.zone'
+      name: '1.20.10.in-addr.arpa'
+      domain_name: "@"
+      name_server_fqdn: "ns.{{ sonet_general['domain'] }}."
+      admin_email: "root@ns.{{ sonet_general['domain'] }}."
+      members:
+        - { hostname: '@', type: 'NS', address: "ns.{{ sonet_general['domain'] }}." }
+        - { hostname: "ns.{{ sonet_general['domain'] }}.", type: 'PTR', address: '10.20.1.1' }
+
+coredns_docker_service: |2
+    coredns:
+      container_name: {{project}}-coredns
+      image: {{registry_url}}{{project}}-coredns:latest
+      restart: always
+      volumes:
+        - {{docker_data_path}}/coredns/etc/coredns:/etc/coredns
+      entrypoint:
+        - "/entrypoint.sh"
+        - "/coredns/coredns"
+        - "-conf"
+        - "/etc/coredns/Corefile"
+      expose:
+        - '53'
+        - '53/udp'
+      ports:
+        - '{{bind_ip}}53:53'
+        - '{{bind_ip}}53:53/udp'
+      networks:
+        - net
+
+sonet_openldap:
+  ldap_organisation: "Sonet"
+  preset_ldiff:
+    users:
+      lpervov: { person: true, id: 20201, sn: Первов, displayName: "Первов Л.", givenName: Лев, ou: Редакция, userPassword: "{{ sonet_vault['ldap_user_default_password'] }}" }
+      avtorov: { person: true, id: 20202, sn: Второв, displayName: "Второв А.", givenName: Антон, ou: Редакция, userPassword: "{{ sonet_vault['ldap_user_default_password'] }}" }
+      itretiev: { person: true, id: 20203, sn: Третьев, displayName: "Третьев А.", givenName: Игорь, ou: Редакция, userPassword: "{{ sonet_vault['ldap_user_default_password'] }}" }
+      pchetvertov: { person: true, id: 20204, sn: Четвертов, displayName: "Четвертов П.", givenName: Павел, ou: Редакция, userPassword: "{{ sonet_vault['ldap_user_default_password'] }}" }
+      opyatov: { person: true, id: 20205, sn: Пятов, displayName: "Пятов О.", givenName: Олег, ou: Редакция, userPassword: "{{ sonet_vault['ldap_user_default_password'] }}" }
+      redmine: { person: false, userPassword: "{{ sonet_vault['redmine_admin_mail_account_password'] }}" }
+      gitlab: { person: false, userPassword: "{{ sonet_vault['gitlab_mail_account_password'] }}" }
+      nextcloud: { person: false, userPassword: "{{ sonet_vault['nextcloud_admin_mail_account_password'] }}" }
+    groups:
+      gitlab_users:
+        description: "Пользователи GitLab"
+        members:
+          - gitlab
+          - lpervov
+          - avtorov
+      grafana_admins:
+        description: "Администраторы Grafana"
+        members:
+          - lpervov
+      grafana_editors:
+        description: "Пользователи Grafana"
+        members:
+          - avtorov
+          - itretiev
+      redmine_users:
+        description: "Пользователи Redmine"
+        members:
+          - redmine
+          - lpervov
+          - avtorov
+      nextcloud_users:
+        description: "Пользователи NextCloud"
+        members:
+          - nextcloud
+          - lpervov
+          - avtorov
+          - pchetvertov
+          - opyatov
+      storage_admins:
+        description: "Администраторы SFTP"
+        members:
+          - lpervov
+      managers:
+        description: "Руководство"
+        members:
+          - lpervov
+      colleagues:
+        description: "Сотрудники"
+        members:
+          - lpervov
+          - avtorov
+          - itretiev
+          - pchetvertov
+          - opyatov
+
+openldap_docker_service: |2
+    openldap:
+      container_name: {{project}}-openldap
+      image:  {{registry_url}}{{project}}-openldap:latest
+      restart: always
+      environment:
+        LDAP_LOG_LEVEL: "256"
+        LDAP_ORGANISATION: "{{ project }}"
+        LDAP_DOMAIN: "{{ sonet_general['domain'] }}"
+        LDAP_ADMIN_PASSWORD: "{{ sonet_vault['ldap_admin_password'] }}"
+        LDAP_CONFIG_PASSWORD: "{{ sonet_vault['ldap_config_password'] }}"
+        LDAP_READONLY_USER: "true"
+        LDAP_READONLY_USER_USERNAME: "{{ sonet_general['ldap_readonly_user_username'] }}"
+        LDAP_READONLY_USER_PASSWORD: "{{ sonet_general['ldap_readonly_user_password'] }}"
+        LDAP_TLS: "true"
+        LDAP_TLS_CRT_FILENAME: "cert.crt"
+        LDAP_TLS_KEY_FILENAME: "cert.key"
+        LDAP_TLS_DH_PARAM_FILENAME: "dhparam.pem"
+        LDAP_TLS_CA_CRT_FILENAME: "ca.crt"
+        LDAP_TLS_ENFORCE: "false"
+        LDAP_TLS_CIPHER_SUITE: "SECURE256:-VERS-SSL3.0"
+        LDAP_TLS_VERIFY_CLIENT: "try"
+        KEEP_EXISTING_CONFIG: "false"
+        LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+        LDAP_SSL_HELPER_PREFIX: "ldap"
+      volumes:
+        - {{docker_data_path}}/openldap/var/lib/ldap:/var/lib/ldap
+        - {{docker_data_path}}/openldap/etc/ldap/slapd.d:/etc/ldap/slapd.d
+      ports:
+        - "{{bind_ip}}636:636/tcp"
+      domainname: "{{ sonet_general['domain'] }}"
+      hostname: "{{ sonet_general['ldap_hostname'] }}"
+      networks:
+        net:
+          aliases:
+            - "{{ sonet_general['ldap_hostname'] }}"
+            - "{{ sonet_general['ldap_hostname'] }}.{{ sonet_general['domain'] }}"
+
+phpldapadmin_docker_service: |2
+    phpldapadmin:
+      container_name: {{project}}-phpldapadmin
+      image:  {{registry_url}}{{project}}-phpldapadmin:latest
+      restart: always
+      environment:
+        PHPLDAPADMIN_LDAP_HOSTS: "openldap"
+        PHPLDAPADMIN_HTTPS: "false"
+      depends_on:
+        - openldap
+      networks:
+        - net
+
+caddy_docker_service: |2
+    caddy:
+      container_name: {{project}}-caddy
+      image:  {{registry_url}}{{project}}-caddy:latest
+      restart: always
+      volumes:
+        - {{docker_data_path}}/caddy/config:/config
+        - {{docker_data_path}}/caddy/data:/data
+        - {{docker_data_path}}/caddy/opt/caddy:/opt/caddy
+        - {{docker_data_path}}/caddy/var/log/caddy:/var/log/caddy
+        - {{docker_data_path}}/caddy/etc/pki/tls:/etc/pki/tls
+        - {{docker_data_path}}/caddy/etc/caddy:/etc/caddy
+      entrypoint:
+        - "/entrypoint.sh"
+        - "/usr/bin/caddy"
+        - "run"
+        - "--config"
+        - "/etc/caddy/Caddyfile"
+      ports:
+        - "{{bind_ip}}80:80/tcp"
+        - "{{bind_ip}}443:443/tcp"
+      networks:
+        - net
+
+adminer_docker_service: |2
+    adminer:
+      container_name: {{project}}-adminer
+      image:  {{registry_url}}{{project}}-adminer:latest
+      restart: always
+      networks:
+        - net
+
+sonet_mailserv:
+  hostname: mail
+  domain: "{{ sonet_general['domain'] }}"
+  ldap_url: "ldap://{{ sonet_general['ldap_hostname'] }}:389"
+  ldap_base_dn: "{{ sonet_general['ldap_base_dn'] }}"
+  ldap_bind_dn: "cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}"
+  ldap_bind_pw: "{{ sonet_general['ldap_readonly_user_password'] }}"
+  ssl_crt_filename: cert.crt
+  ssl_key_filename: cert.key
+  ssl_ca_crt_filename: ca.crt
+  ssl_dhparam_1024: dhparam.pem
+  ssl_dhparam_512: dhparam.pem
+
+  backup_cron_exp: 30 4 * * *  # every day at 4:30am
+  backup_ttl: 15   # delete backups that are over 15 days
+
+mailserv_docker_service: |2
+    mailserv:
+      container_name: {{project}}-mailserv
+      image:  {{registry_url}}{{project}}-mailserv:latest
+      restart: always
+      volumes:
+        - {{docker_data_path}}/mailserv/var/mail:/var/mail
+        - {{docker_data_path}}/mailserv/data/backup:/data/backup
+      ports:
+        # Expose smtp, pop3, imap, smtp (submission), imap ssl, managesieve and dovecot replication ports
+        - "{{bind_ip}}25:25/tcp"
+        - "{{bind_ip}}143:143/tcp"
+        - "{{bind_ip}}587:587/tcp"
+        - "{{bind_ip}}993:993/tcp"
+      domainname: "{{ sonet_mailserv['domain'] }}"
+      hostname: "{{ sonet_mailserv['hostname'] }}"
+      networks:
+        net:
+          aliases:
+            - "{{ sonet_mailserv['hostname'] }}"
+            - "{{ sonet_mailserv['hostname'] }}.{{ sonet_mailserv['domain'] }}"
+
+sonet_dovecot:
+  ldap: |
+    auth_bind = yes
+    ldap_version = 3
+    uris = ldap://{{ sonet_general['ldap_hostname'] }}:389
+    base = ou=users,{{ sonet_general['ldap_base_dn'] }}
+    user_attrs = mailuserquota=quota_rule=*:bytes=%$
+    user_filter = (&(objectClass=mailAccount)(mail=%u)(mailenable=OK))
+    pass_attrs = mail=user,userPassword=password
+    pass_filter = (&(objectClass=mailAccount)(cn=%n)(mailenable=OK))
+    iterate_attrs = mail=user
+    iterate_filter = (objectClass=mailAccount)
+    dn =  {{ sonet_mailserv['ldap_bind_dn'] }}
+    dnpass =  {{ sonet_mailserv['ldap_bind_pw'] }}
+
+sonet_postfix:
+  ldap-accounts.cf: |
+    bind = yes
+    bind_dn = {{ sonet_mailserv['ldap_bind_dn'] }}
+    bind_pw = {{ sonet_mailserv['ldap_bind_pw'] }}
+    server_host = {{ sonet_mailserv['ldap_url'] }}
+    search_base = ou=users,{{ sonet_general['ldap_base_dn'] }}
+    query_filter = (&(objectClass=mailAccount)(mailenable=OK)(mail=%s))
+    result_attribute = mailbox
+    version = 3
+    expansion_limit = 1
+  ldap-aliases.cf: |
+    bind = yes
+    bind_dn = {{ sonet_mailserv['ldap_bind_dn'] }}
+    bind_pw = {{ sonet_mailserv['ldap_bind_pw'] }}
+    server_host = {{ sonet_mailserv['ldap_url'] }}
+    search_base = ou=users,{{ sonet_general['ldap_base_dn'] }}
+    query_filter = (&(objectClass=mailAccount)(mailalias=%s)(mailenable=OK))
+    result_attribute = mail
+    version = 3
+  ldap-domains.cf: |
+    bind = yes
+    bind_dn = {{ sonet_mailserv['ldap_bind_dn'] }}
+    bind_pw = {{ sonet_mailserv['ldap_bind_pw'] }}
+    server_host = {{ sonet_mailserv['ldap_url'] }}
+    search_base = ou=mailDomains,{{ sonet_general['ldap_base_dn'] }}
+    query_filter = (&(objectClass=mailDomain)(virtualdomain=%s))
+    result_attribute = virtualdomain
+    version = 3
+  ldap-senders.cf: |
+    bind = yes
+    bind_dn = {{ sonet_mailserv['ldap_bind_dn'] }}
+    bind_pw = {{ sonet_mailserv['ldap_bind_pw'] }}
+    server_host = {{ sonet_mailserv['ldap_url'] }}
+    search_base = ou=users,{{ sonet_general['ldap_base_dn'] }}
+    query_filter = (&(objectClass=mailAccount)(mailenable=OK)(|(mail=%s)(mailalias=%s)))
+    result_attribute = mail,mailalias
+    special_result_attribute = mailaliasmember
+    version = 3
+  ldap-valiases.cf: |
+    bind = yes
+    bind_dn = {{ sonet_mailserv['ldap_bind_dn'] }}
+    bind_pw = {{ sonet_mailserv['ldap_bind_pw'] }}
+    server_host = {{ sonet_mailserv['ldap_url'] }}
+    search_base = ou=mailAliases,{{ sonet_general['ldap_base_dn'] }}
+    query_filter = (&(objectClass=mailAlias)(mailalias=%s)(mailenable=OK))
+    result_attribute = mail
+    special_result_attribute = mailaliasmember
+    version = 3
+  main.cf: |
+    #######################
+    ## GENERALS SETTINGS ##
+    #######################
+    smtpd_banner         = $myhostname ESMTP $mail_name (Debian/GNU)
+    biff                 = no
+    append_dot_mydomain  = no
+    readme_directory     = no
+    delay_warning_time   = 4h
+    recipient_delimiter  = +
+    disable_vrfy_command = yes
+    message_size_limit   = 52428800
+    mailbox_size_limit   = 1024000000
+
+    inet_interfaces = all
+    inet_protocols = ipv4
+
+    myhostname    = {{ sonet_mailserv['hostname'] }}
+    myorigin      = $mydomain
+    mydestination = localhost
+    mynetworks    = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+
+    alias_maps     = hash:/etc/aliases
+    alias_database = hash:/etc/aliases
+
+    ####################
+    ## TLS PARAMETERS ##
+    ####################
+
+    # SMTP ( OUTGOING )
+    # ----------------------------------------------------------------------
+
+    smtp_tls_loglevel               = 1
+    smtp_tls_security_level         = may
+    smtp_tls_CAfile                 = /etc/postfix/certs/{{ sonet_mailserv['ssl_ca_crt_filename'] }}
+    smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+
+    # SMTPD ( INCOMING )
+    # ----------------------------------------------------------------------
+    smtpd_tls_loglevel            = 1
+    smtpd_tls_auth_only           = yes
+    smtpd_tls_security_level      = may
+    smtpd_tls_received_header     = yes
+    smtpd_tls_mandatory_protocols = !SSLv2, !SSLv3, TLSv1
+    smtpd_tls_mandatory_ciphers   = high
+    smtpd_tls_exclude_ciphers     = aNULL, eNULL, EXPORT, DES, RC4, MD5, PSK, aECDH, EDH-DSS-DES-CBC3-SHA, EDH-RSA-DES-CDB3-SHA, KRB5-DES, CBC3-SHA
+
+    tls_random_source = dev:/dev/urandom
+
+    # TLS PUBLIC CERTIFICATES AND PRIVATE KEY
+    smtpd_tls_CAfile    = /etc/postfix/certs/{{ sonet_mailserv['ssl_ca_crt_filename'] }}
+    smtpd_tls_cert_file = /etc/postfix/certs/{{ sonet_mailserv['ssl_crt_filename'] }}
+    smtpd_tls_key_file  = /etc/postfix/certs/{{ sonet_mailserv['ssl_key_filename'] }}
+
+    # TLS/LMTP SESSION CACHE DATABASES
+    smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+    lmtp_tls_session_cache_database  = btree:${data_directory}/lmtp_scache
+
+    # CYPHERS AND CURVE PARAMETERS
+    smtpd_tls_eecdh_grade  = ultra
+    tls_eecdh_strong_curve = prime256v1
+    tls_eecdh_ultra_curve  = secp384r1
+
+    # DIFFIE-HELLMAN PARAMETERS
+    smtpd_tls_dh1024_param_file = /etc/postfix/certs/{{ sonet_mailserv['ssl_dhparam_1024'] }}
+    smtpd_tls_dh512_param_file  = /etc/postfix/certs/{{ sonet_mailserv['ssl_dhparam_512'] }}
+
+    # ----------------------------------------------------------------------
+
+    #####################
+    ## SASL PARAMETERS ##
+    #####################
+
+    smtpd_sasl_auth_enable          = yes
+    smtpd_sasl_type                 = dovecot
+    smtpd_sasl_path                 = private/auth
+    smtpd_sasl_security_options     = noanonymous
+    smtpd_sasl_tls_security_options = $smtpd_sasl_security_options
+    smtpd_sasl_local_domain         = $mydomain
+    smtpd_sasl_authenticated_header = yes
+
+    broken_sasl_auth_clients = yes
+
+    ##############################
+    ## VIRTUALS MAPS PARAMETERS ##
+    ##############################
+
+    virtual_uid_maps        = static:5000
+    virtual_gid_maps        = static:5000
+    virtual_minimum_uid     = 5000
+    virtual_mailbox_base    = /var/mail
+    virtual_transport       = lmtp:unix:private/dovecot-lmtp
+    virtual_mailbox_domains = ldap:/etc/postfix/ldap-domains.cf
+    virtual_mailbox_maps    = ldap:/etc/postfix/ldap-accounts.cf
+    virtual_alias_maps      = ldap:/etc/postfix/ldap-aliases.cf,ldap:/etc/postfix/ldap-valiases.cf
+
+    smtpd_sender_login_maps=ldap:/etc/postfix/ldap-senders.cf,ldap:/etc/postfix/ldap-valiases.cf
+
+    ######################
+    ## ERRORS REPORTING ##
+    ######################
+
+    # notify_classes = bounce, delay, resource, software
+
+    ##################
+    ## RESTRICTIONS ##
+    ##################
+
+    smtpd_recipient_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_invalid_hostname,
+        reject_non_fqdn_hostname,
+        reject_non_fqdn_recipient,
+        reject_unauth_destination,
+        reject_unknown_recipient_domain,
+        reject_unknown_sender_domain,
+        reject_unauth_pipelining,
+        permit_auth_destination,
+        reject_unauth_destination,
+        reject_rbl_client zen.spamhaus.org
+
+    smtpd_helo_restrictions =
+        permit_mynetworks,
+        permit_sasl_authenticated,
+        reject_invalid_helo_hostname,
+        reject_non_fqdn_helo_hostname
+        # reject_unknown_helo_hostname
+
+    smtpd_client_restrictions =
+        permit_mynetworks,
+        permit_inet_interfaces,
+        permit_sasl_authenticated
+        # reject_plaintext_session,
+        # reject_unauth_pipelining
+
+    smtpd_sender_restrictions =
+        reject_non_fqdn_sender,
+        reject_unknown_sender_domain,
+        reject_authenticated_sender_login_mismatch
+
+    #########################
+    ## MILTERS DKIM/CLAMAV ##
+    #########################
+
+    milter_protocol       = 6
+    milter_default_action = accept
+    smtpd_milters         = inet:127.0.0.1:12301 inet:127.0.0.1:12302 unix:/var/spool/postfix/clamav/clamav-milter.ctl
+    non_smtpd_milters     = inet:127.0.0.1:12301 inet:127.0.0.1:12302
+
+sonet_roundcube:
+  ldap_inc: |
+    // Type of LDAP cache. Supported values: 'db', 'apc' and 'memcache'.
+    $config['ldap_cache'] = 'db';
+
+    // Lifetime of LDAP cache. Possible units: s, m, h, d, w
+    $config['ldap_cache_ttl'] = '10m';
+
+    //Разрешить поиск и автодополнение из массива AD
+    $rcmail_config['autocomplete_addressbooks'] = array('sql','AD');
+
+    $config['ldap_public'] = array(
+        //Имя массива, в котором выполняется поиск
+        'AD' =>array (
+            'name' => 'LDAP', //Отображаемое имя в интерфейсе WEBMail Roundcube
+            'hosts' => array('{{ sonet_general['ldap_hostname'] }}'), //IP адрес или ДНС имя
+            'sizelimit' => 600,
+            'port' => 389,
+            'use_tls' => false,
+            'user_specific' => false,
+            'base_dn' => '{{ sonet_general['ldap_base_dn'] }}', //Где выполнять поиск
+            'bind_dn' => 'cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}', //Авторизация на контроллере домена
+            'bind_pass' => '{{ sonet_general['ldap_readonly_user_password'] }}', //Авторизация на контроллере домена
+            'writable' => false,
+            'ldap_version' => 3,
+            'search_fields' => array(
+            'mail',
+            'cn',
+            'sn',
+            ),
+            'name_field' => 'displayName',
+            'email_field' => 'mail',
+            'surname_field' => 'sn',
+            'firstname_field' => 'givenName',
+            //Можно добавить немного дополнительной информации в адресной книге
+            // 'organization_field'     => 'company',
+            // 'jobtitle_field'    => 'title',
+            // 'department_field'   => 'department',
+            //Порядок сортировки
+            'sort' => 'sn',
+            'scope' => 'sub', //Выполнять поиск по всему каталогу LDAP // search mode: sub|base|list
+            'filter' => '(&(objectClass=person)(mailenable=OK)(mail=*))',
+            //'filter' => '(&(mail=*)(|(&(objectcategory=person)(!(objectClass=computer)))(objectClass=group)))',
+            'global_search' => true,
+            'fuzzy_search' => true
+        ),
+    );
+
+roundcube_docker_service: |2
+    roundcube:
+      container_name: {{project}}-roundcube
+      image:  {{registry_url}}{{project}}-roundcube:latest
+      restart: unless-stopped
+      volumes:
+        - {{docker_data_path}}/roundcube/roundcube/var/www/html:/var/www/html
+      entrypoint:
+        - "/wait-for-postgres.sh"
+        - "--host=roundcubedb"
+        - "--db=roundcube"
+        - "--user=roundcube"
+        - "--pass=roundcube"
+        - "--"
+        - "/docker-entrypoint.sh"
+        - "apache2-foreground"
+      environment:
+        ROUNDCUBEMAIL_DB_TYPE: pgsql
+        ROUNDCUBEMAIL_DB_HOST: roundcubedb
+        ROUNDCUBEMAIL_DB_NAME: roundcube
+        ROUNDCUBEMAIL_DB_USER: roundcube
+        ROUNDCUBEMAIL_DB_PASSWORD: roundcube
+        ROUNDCUBEMAIL_SKIN: elastic
+        ROUNDCUBEMAIL_DEFAULT_HOST: tls://{{ sonet_mailserv['hostname'] }}.{{ sonet_mailserv['domain'] }}
+        ROUNDCUBEMAIL_SMTP_SERVER: tls://{{ sonet_mailserv['hostname'] }}.{{ sonet_mailserv['domain'] }}
+      depends_on:
+        - roundcubedb
+      networks:
+        - net
+
+    roundcubedb:
+      image:  {{registry_url}}{{project}}-roundcubedb:latest
+      container_name: {{project}}-roundcubedb
+      restart: always
+      volumes:
+        - {{docker_data_path}}/roundcube/postgres-data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_USER: roundcube
+        POSTGRES_PASSWORD: roundcube
+        POSTGRES_DB: roundcube
+        PGDATA: /var/lib/postgresql/data
+      networks:
+        - net
+
+sonet_redmine:
+  ldap_auth_name: "{{ sonet_openldap['ldap_organisation'] }}"
+  ldap_host: "{{ sonet_general['ldap_hostname'] }}"
+  ldap_account: "cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}"
+  ldap_account_password: "{{ sonet_general['ldap_readonly_user_password'] }}"
+  ldap_base_dn: "ou=users,{{ sonet_general['ldap_base_dn'] }}"
+  ldap_attr_login: cn
+  ldap_attr_firstname: givenName
+  ldap_attr_lastname: sn
+  ldap_attr_mail: mail
+  ldap_filter: "(&(objectClass=person)(memberOf=cn=redmine_users,ou=groups,{{ sonet_general['ldap_base_dn'] }}))"
+  smtp_address: "{{ sonet_mailserv['hostname'] }}.{{ sonet_mailserv['domain'] }}"
+  smtp_port: 25
+  smtp_authentication: ":login"
+  smtp_domain: "{{ sonet_mailserv['domain'] }}"
+  smtp_user_name: 'redmine'
+  smtp_password: "{{ sonet_vault['redmine_admin_mail_account_password'] }}"
+  plugins_and_themes:
+    - { url: "https://github.com/fraoustin/RTMaterial/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/RTMaterial.zip" }
+    - { url: "https://github.com/Nitrino/flatly_light_redmine/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/flatly_light_redmine.zip" }
+    - { url: "https://github.com/mrliptontea/PurpleMine2/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/PurpleMine2.zip" }
+    - { url: "https://github.com/makotokw/redmine-theme-gitmike/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/redmine-theme-gitmike.zip" }
+    - { url: "https://github.com/AlphaNodes/additional_tags/archive/refs/heads/main.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/additional_tags.zip" }
+    - { url: "https://github.com/AlphaNodes/additionals/archive/refs/heads/main.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/additionals.zip" }
+    - { url: "https://github.com/danmunn/redmine_dmsf/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/redmine_dmsf.zip" }
+    - { url: "https://github.com/akpaevj/dashboard/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/dashboard.zip" }
+
+redmine_docker_service: |2
+    redmine:
+      image:  {{registry_url}}{{project}}-redmine:latest
+      container_name: {{project}}-redmine
+      restart: always
+      environment:
+        REDMINE_DB_POSTGRES: "redminedb"
+        REDMINE_DB_DATABASE: "redmine"
+        REDMINE_DB_USERNAME: "postgres"
+        REDMINE_DB_PASSWORD: "password"
+        REDMINE_PLUGINS_MIGRATE: "true"
+      volumes:
+        - {{docker_data_path}}/redmine/redmine-data/usr/src/redmine/files:/usr/src/redmine/files
+      depends_on:
+        - redminedb
+      networks:
+        - net
+
+    redminedb:
+      image: {{registry_url}}{{project}}-redminedb:latest
+      container_name: {{project}}-redminedb
+      restart: always
+      volumes:
+        - {{docker_data_path}}/redmine/postgres-data/var/lib/postgresql/data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_USERNAME: "postgres"
+        POSTGRES_PASSWORD: "password"
+        POSTGRES_DB: "redmine"
+        PGDATA: "/var/lib/postgresql/data"
+      networks:
+        - net
+
+sonet_nextcloud:
+  ldap_host: ldap
+  ldap_port: 389
+  ldap_base: "{{ sonet_general['ldap_base_dn'] }}"
+  ldap_agent_name: "cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}"
+  ldap_agent_password: "{{ sonet_general['ldap_readonly_user_password'] }}"
+  ldap_email_attribute: mail
+  ldap_gid_number: gidNumber
+  ldap_group_display_name: description
+  ldap_group_filter: "(&(|(objectclass=groupOfUniqueNames))(|(cn=colleagues)(cn=managers)))"
+  ldap_group_filter_objectclass: groupOfUniqueNames
+  ldap_group_member_assoc_attr: uniqueMember
+  ldap_login_filter: "(&(&(|(objectclass=person))(|(memberof=cn=nextcloud_users,ou=groups,{{ sonet_general['ldap_base_dn'] }})))(|(cn=%uid)))"
+  ldap_login_filter_attributes: cn
+  ldap_userdisplay_name: displayname
+  ldap_user_filter: "(&(|(objectclass=person))(|(memberof=cn=nextcloud_users,ou=groups,{{ sonet_general['ldap_base_dn'] }})))"
+  ldap_user_filter_groups: nextcloud
+  ldap_user_filter_objectclass: person
+  ldap_configuration_active: 1
+  apps:
+    - { url: "https://github.com/nextcloud/mail/releases/download/v1.9.5/mail.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/mail.tar.gz" }
+    - { url: "https://github.com/nextcloud/groupfolders/releases/download/v9.0.1/groupfolders.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/groupfolders.tar.gz" }
+    - { url: "https://github.com/nextcloud/announcementcenter/releases/download/v5.0.0/announcementcenter-5.0.0.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/announcementcenter.tar.gz" }
+    - { url: "https://github.com/nextcloud/contacts/releases/download/v3.5.1/contacts.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/contacts.tar.gz" }
+    - { url: "https://github.com/nextcloud/notes/releases/download/v4.0.4/notes.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/notes.tar.gz" }
+    - { url: "https://github.com/nextcloud/forms/releases/download/v2.2.4/forms.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/forms.tar.gz" }
+    - { url: "https://github.com/nextcloud/news/releases/download/15.4.2/news.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/news.tar.gz" }
+    - { url: "https://github.com/nextcloud/calendar/releases/download/v2.2.1/calendar.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/calendar.tar.gz" }
+    - { url: "https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v6.3.0/onlyoffice.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/onlyoffice.tar.gz" }
+    - { url: "https://github.com/pawelrojek/nextcloud-drawio/releases/download/v.1.0.0/drawio-v1.0.0.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/drawio.tar.gz" }
+    - { url: "https://github.com/icewind1991/files_markdown/releases/download/v2.3.3/files_markdown.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/files_markdown.tar.gz" }
+    - { url: "https://github.com/ACTom/files_mindmap/releases/download/v0.0.24/files_mindmap-0.0.24.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/files_mindmap.tar.gz" }
+    - { url: "https://github.com/jhass/nextcloud-keeweb/releases/download/v0.6.5/keeweb-0.6.5.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/keeweb-0.6.5.tar.gz" }
+    - { url: "https://github.com/nickv-nextcloud/event_update_notification/releases/download/v1.2.0/event_update_notification-1.2.0.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/event_update_notification-1.2.0.tar.gz" }
+    - { url: "https://h-software.de/nextcloud_apps/ldapcontacts/ldapcontacts-2.0.5.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/ldapcontacts-2.0.5.tar.gz" }
+    # can't connect to server
+    # - { url: "https://git.mdns.eu/nextcloud/passwords/-/jobs/12123/artifacts/raw/passwords.tar.gz", dest: "{{ build_path }}/images/nextcloud/service/nextcloud/apps/passwords.tar.gz" }
+
+nextcloud_docker_service: |2
+    nextcloud_db:
+      image:  {{registry_url}}{{project}}-nextcloud_db:latest
+      container_name: {{project}}-nextcloud_db
+      restart: always
+      volumes:
+        - {{docker_data_path}}/nextcloud/postgres-data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_USER: nextcloud
+        POSTGRES_PASSWORD: nextcloud
+        POSTGRES_DB: nextcloud
+        PGDATA: /var/lib/postgresql/data
+      networks:
+        - net
+
+    nextcloud_redis:
+      image:  {{registry_url}}{{project}}-nextcloud_redis:latest
+      container_name: {{project}}-nextcloud_redis
+      restart: always
+      networks:
+        - net
+
+    nextcloud_onlyoffice_ds:
+      image:  {{registry_url}}{{project}}-nextcloud_onlyoffice_ds:latest
+      container_name: {{project}}-nextcloud_onlyoffice_ds
+      restart: always
+      volumes:
+        - {{docker_data_path}}/nextcloud/onlyoffice_ds/var/www/onlyoffice/Data:/var/www/onlyoffice/Data
+        - {{docker_data_path}}/nextcloud/onlyoffice_ds/var/log/onlyoffice:/var/log/onlyoffice
+      networks:
+        - net
+
+    nextcloud_drawio_export_server:
+      image:  {{registry_url}}{{project}}-nextcloud_drawio_export_server:latest
+      container_name: {{project}}-nextcloud_drawio_export_server
+      restart: always
+      volumes:
+        - {{docker_data_path}}/nextcloud/drawio/export-server/usr/share/fonts/drawio:/usr/share/fonts/drawio
+      networks:
+        - net
+
+    nextcloud_drawio:
+      image:  {{registry_url}}{{project}}-nextcloud_drawio:latest
+      container_name: {{project}}-nextcloud_drawio
+      restart: always
+      environment:
+        VIRTUAL_HOST: drawio.{{ sonet_general['domain'] }}
+        VIRTUAL_PORT: 8080
+        EXPORT_URL: http://nextcloud_drawio_export_server:8000/
+      depends_on:
+        - nextcloud_drawio_export_server
+      networks:
+        - net
+
+    nextcloud:
+      image:  {{registry_url}}{{project}}-nextcloud:latest
+      container_name: {{project}}-nextcloud
+      restart: always
+      volumes:
+        - {{docker_data_path}}/nextcloud/nextcloud-data/var/www/html:/var/www/html
+      environment:
+        VIRTUAL_HOST: nextcloud.{{ sonet_general['domain'] }}
+        NEXTCLOUD_TRUSTED_DOMAINS: nextcloud nextcloud.{{ sonet_general['domain'] }}
+
+        NEXTCLOUD_ADMIN_USER: admin
+        NEXTCLOUD_ADMIN_PASSWORD: {{ sonet_vault['nextcloud_admin_mail_account_password'] }}
+
+        SMTP_HOST: {{ sonet_mailserv['hostname'] }}
+        SMTP_PORT: 25
+        SMTP_AUTHTYPE: LOGIN
+        SMTP_NAME: nextcloud
+        SMTP_PASSWORD: {{ sonet_vault['nextcloud_admin_mail_account_password'] }}
+        MAIL_FROM_ADDRESS: nextcloud
+        MAIL_DOMAIN: {{ sonet_mailserv['domain'] }}
+
+        REDIS_HOST: nextcloud_redis
+        POSTGRES_HOST: nextcloud_db
+        POSTGRES_DB: nextcloud
+        POSTGRES_USER: nextcloud
+        POSTGRES_PASSWORD: nextcloud
+
+        NEXTCLOUD_DRAWIO_URL: "https://drawio.{{ sonet_general['domain'] }}/"
+
+        NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_URL: "https://onlyoffice.{{ sonet_general['domain'] }}/"
+        NEXTCLOUD_ONLYOFFICE_DOCUMENT_SERVER_INTERNAL_URL: "http://nextcloud_onlyoffice_ds/"
+        NEXTCLOUD_ONLYOFFICE_STORAGE_URL: "http://nextcloud/"
+        NEXTCLOUD_ONLYOFFICE_VERIFY_PEER_OFF: "true"
+
+        NEXTCLOUD_LDAP_HOST: {{ sonet_nextcloud['ldap_host'] }}
+        NEXTCLOUD_LDAP_PORT: {{ sonet_nextcloud['ldap_port'] }}
+        NEXTCLOUD_LDAP_BASE: {{ sonet_nextcloud['ldap_base'] }}
+        NEXTCLOUD_LDAP_AGENT_NAME: {{ sonet_nextcloud['ldap_agent_name'] }}
+        NEXTCLOUD_LDAP_AGENT_PASSWORD: {{ sonet_nextcloud['ldap_agent_password'] }}
+        NEXTCLOUD_LDAP_EMAIL_ATTRIBUTE: {{ sonet_nextcloud['ldap_email_attribute'] }}
+        NEXTCLOUD_LDAP_GID_NUMBER: {{ sonet_nextcloud['ldap_gid_number'] }}
+        NEXTCLOUD_LDAP_GROUP_DISPLAY_NAME: {{ sonet_nextcloud['ldap_group_display_name'] }}
+        NEXTCLOUD_LDAP_GROUP_FILTER: {{ sonet_nextcloud['ldap_group_filter'] }}
+        NEXTCLOUD_LDAP_GROUP_FILTER_OBJECTCLASS: {{ sonet_nextcloud['ldap_group_filter_objectclass'] }}
+        NEXTCLOUD_LDAP_GROUP_MEMBER_ASSOC_ATTR: {{ sonet_nextcloud['ldap_group_member_assoc_attr'] }}
+        NEXTCLOUD_LDAP_LOGIN_FILTER: {{ sonet_nextcloud['ldap_login_filter'] }}
+        NEXTCLOUD_LDAP_LOGIN_FILTER_ATTRIBUTES: {{ sonet_nextcloud['ldap_login_filter_attributes'] }}
+        NEXTCLOUD_LDAP_USERDISPLAY_NAME: {{ sonet_nextcloud['ldap_userdisplay_name'] }}
+        NEXTCLOUD_LDAP_USER_FILTER: {{ sonet_nextcloud['ldap_user_filter'] }}
+        NEXTCLOUD_LDAP_USER_FILTER_GROUPS: {{ sonet_nextcloud['ldap_user_filter_groups'] }}
+        NEXTCLOUD_LDAP_USER_FILTER_OBJECTCLASS: {{ sonet_nextcloud['ldap_user_filter_objectclass'] }}
+        NEXTCLOUD_LDAP_CONFIGURATION_ACTIVE: {{ sonet_nextcloud['ldap_configuration_active'] }}
+      entrypoint:
+        - "/wait-for-postgres.sh"
+        - "--host=nextcloud_db"
+        - "--db=nextcloud"
+        - "--user=nextcloud"
+        - "--pass=nextcloud"
+        - "--"
+        - "/entrypoint.sh"
+        - "apache2-foreground"
+      depends_on:
+        - nextcloud_db
+        - nextcloud_redis
+        - nextcloud_onlyoffice_ds
+        - nextcloud_drawio
+      networks:
+        - net
+
+sonet_smb:
+  smb_shares:
+    - { name: public, dir: public }
+    - { name: library, dir: library }
+
+sonet_proftpd:
+  sftp_port: 2221
+  conf: |
+    SetEnv TZ :/etc/localtime
+
+    ServerType	standalone
+    UseIPv6	off
+    UseReverseDNS	off
+
+    RequireValidShell	off
+
+    MultilineRFC2228	on
+    DefaultServer	on
+    ShowSymlinks	on
+
+    TimeoutNoTransfer	600
+    TimeoutStalled	600
+    TimeoutIdle	1200
+
+    ListOptions "-la"
+
+    RootLogin	off
+    DenyFilter	\\\\*.*/
+
+    DeleteAbortedStores on
+    AllowOverwrite	on
+    AllowRetrieveRestart on
+    AllowStoreRestart on
+
+    Umask 0002 0002
+
+    LoadModule mod_ldap.c
+    LoadModule mod_sftp.c
+    LoadModule mod_rewrite.c
+
+    <IfModule mod_ctrls.c>
+        ControlsEngine      off
+        ControlsMaxClients  2
+        ControlsLog         /var/log/proftpd/controls.log
+        ControlsInterval    5
+        ControlsSocket      /var/run/proftpd/proftpd.sock
+    </IfModule>
+
+    Port 22
+
+    PidFile		/var/log/proftpd/proftpd.pid
+    SystemLog	/var/log/proftpd/proftpd.log
+    TransferLog	/var/log/proftpd/proftpd.log
+    SFTPLog     /var/log/proftpd/sftp.log
+    RewriteLog	/var/log/proftpd/rewrite.log
+
+    Protocols sftp
+    AuthOrder mod_ldap.c
+
+    SFTPEngine	on
+    SFTPCompression	delayed
+    SFTPHostKey	/etc/proftpd/certs/cert.key
+    SFTPAuthMethods	password
+    SFTPOptions IgnoreSCPUploadTimes IgnoreSFTPSetTimes
+
+    LDAPServer {{ sonet_general['ldap_hostname'] }}:389
+    LDAPProtocolVersion 3
+    LDAPAuthBinds on
+    LDAPBindDN "cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}" "{{ sonet_general['ldap_readonly_user_password'] }}"
+    LDAPUsers ou=users,{{ sonet_general['ldap_base_dn'] }} "(&(cn=%u)(objectclass=posixAccount)(memberOf=cn=storage_admins,ou=groups,{{ sonet_general['ldap_base_dn'] }}))"
+    LDAPGroups ou=groups,{{ sonet_general['ldap_base_dn'] }}
+
+    LDAPForceDefaultUID on
+    LDAPForceDefaultGID on
+    LDAPDefaultUID 3000
+    LDAPDefaultGID 3000
+
+    RewriteEngine on
+    RewriteHome on
+    RewriteCondition %m REWRITE_HOME
+    RewriteRule ^(.*) /opt/var/storage
+
+    DefaultRoot ~
+
+storage_docker_service: |2
+    storage:
+      container_name: {{project}}-storage
+      image:  {{registry_url}}{{project}}-storage:latest
+      restart: always
+      volumes:
+        - {{docker_data_path}}/storage/proftpd/var/log/proftpd:/var/log/proftpd
+    {% for share in sonet_smb['smb_shares'] %}
+      - {{docker_data_path}}/storage/storage/{{ share["name"] }}:/opt/var/storage/{{ share["name"] }}
+    {% endfor %}
+    ports:
+        - "{{bind_ip}}137:137/udp"
+        - "{{bind_ip}}138:138/udp"
+        - "{{bind_ip}}139:139/tcp"
+        - "{{bind_ip}}445:445/tcp"
+        - "{{bind_ip}}{{ sonet_proftpd['sftp_port' ]}}:22/tcp"
+      networks:
+        - net
+
+gitlab_docker_service: |2
+    gitlab:
+      image:  {{registry_url}}{{project}}-gitlab:latest
+      container_name: {{project}}-gitlab
+      # hostname: 'gitlab.{{ sonet_general['domain'] }}'
+      restart: always
+      environment:
+        GITLAB_ROOT_EMAIL: gitlab@{{ sonet_general['domain'] }}
+        GITLAB_ROOT_PASSWORD: {{ sonet_vault['gitlab_root_account_password'] }}
+        GITLAB_OMNIBUS_CONFIG: |
+          external_url 'https://gitlab.{{ sonet_general['domain'] }}'
+          mattermost_external_url 'https://mattermost.{{ sonet_general['domain'] }}'
+          registry_external_url "https://registry.{{ sonet_general['domain'] }}"
+          letsencrypt['enable'] = false
+          nginx['ssl_client_certificate'] = "/certs/ca.crt"
+          nginx['ssl_dhparam'] = "/certs/dhparam.pem"
+          nginx['ssl_certificate'] = '/certs/gitlab.{{ sonet_general['domain'] }}.crt'
+          nginx['ssl_certificate_key'] = '/certs/gitlab.{{ sonet_general['domain'] }}.key'
+          mattermost_nginx['ssl_certificate'] = '/certs/mattermost.{{ sonet_general['domain'] }}.crt'
+          mattermost_nginx['ssl_certificate_key'] = '/certs/mattermost.{{ sonet_general['domain'] }}.key'
+          registry_nginx['ssl_certificate'] = "/certs/registry.{{ sonet_general['domain'] }}.crt"
+          registry_nginx['ssl_certificate_key'] = "/certs/registry.{{ sonet_general['domain'] }}.key"
+          gitlab_rails['smtp_enable'] = true
+          gitlab_rails['smtp_address'] = '{{ sonet_mailserv['hostname'] }}'
+          gitlab_rails['smtp_port'] = 25
+          gitlab_rails['smtp_domain'] = '{{ sonet_mailserv['domain'] }}'
+          gitlab_rails['smtp_tls'] = false
+          gitlab_rails['smtp_openssl_verify_mode'] = 'none'
+          gitlab_rails['smtp_enable_starttls_auto'] = false
+          gitlab_rails['smtp_ssl'] = false
+          gitlab_rails['smtp_force_ssl'] = false
+          gitlab_rails['smtp_user_name'] = 'gitlab@{{ sonet_general['domain'] }}'
+          gitlab_rails['smtp_password'] = '{{ sonet_vault['gitlab_mail_account_password'] }}'
+          gitlab_rails['gitlab_email_from'] = 'gitlab@{{ sonet_general['domain'] }}'
+          gitlab_rails['gitlab_email_reply_to'] = 'noreply@{{ sonet_general['domain'] }}'
+          gitlab_rails['ldap_enabled'] = true
+          gitlab_rails['prevent_ldap_sign_in'] = false
+          gitlab_rails['gitlab_shell_ssh_port'] = 2222
+          gitlab_rails['ldap_servers'] = {
+            'main' => {
+              'label' => 'LDAP',
+              'host' =>  'ldap',
+              'port' => 389,
+              'uid' => 'cn',
+              'encryption' => 'plain',
+              'bind_dn' => 'cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}',
+              'password' => '{{ sonet_general['ldap_readonly_user_password'] }}',
+              'timeout' => 10,
+              'allow_username_or_email_login' => true,
+              'block_auto_created_users' => false,
+              'base' => '{{ sonet_general['ldap_base_dn'] }}',
+              'user_filter' => '(&(objectClass=person)(memberOf=cn=gitlab_users,ou=groups,{{ sonet_general['ldap_base_dn'] }}))',
+              'attributes' => {
+                'username' => 'cn',
+                'email' => 'mail',
+                'name' => 'displayName',
+                'first_name' => 'givenName',
+                'last_name' => 'sn'
+              },
+              'lowercase_usernames' => true,
+            }
+          }
+      ports:
+        - "{{bind_ip}}2222:22/tcp"
+      volumes:
+        - '{{docker_data_path}}/gitlab/config:/etc/gitlab'
+        - '{{docker_data_path}}/gitlab/logs:/var/log/gitlab'
+        - '{{docker_data_path}}/gitlab/data:/var/opt/gitlab'
+      networks:
+        net:
+          aliases:
+            - "gitlab.{{ sonet_general['domain'] }}"
+            - gitlab
+            - "mattermost.{{ sonet_general['domain'] }}"
+            - mattermost
+            - "registry.{{ sonet_general['domain'] }}"
+            - registry
+
+monitoring_docker_service: |2
+    cadvisor:
+      container_name: {{project}}-cadvisor
+      image: {{registry_url}}{{project}}-cadvisor:latest
+      restart: unless-stopped
+      ports:
+        - "{{bind_ip}}8080:8080"
+      volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker:/var/lib/docker:ro
+      networks:
+        - net
+
+    prometheus:
+      container_name: {{project}}-prometheus
+      image: {{registry_url}}{{project}}-prometheus:latest
+      user: "0"
+      restart: unless-stopped
+      ports:
+        - "{{bind_ip}}9090:9090"
+      volumes:
+        - {{docker_data_path}}/prometheus/data:/data
+        - {{docker_data_path}}/prometheus/etc/prometheus:/etc/prometheus
+      entrypoint:
+        - "/entrypoint.sh"
+        - "/bin/prometheus"
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/data'
+        - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+        - '--web.console.templates=/usr/share/prometheus/consoles'
+      depends_on:
+        - cadvisor
+      networks:
+        - net
+
+    node-exporter:
+      container_name: {{project}}-node-exporter
+      image: {{registry_url}}{{project}}-node-exporter:latest
+      restart: unless-stopped
+      ports:
+        - "{{bind_ip}}9100:9100"
+      volumes:
+        - /proc:/host/proc:ro
+        - /sys:/host/sys:ro
+        - /:/rootfs:ro
+      command:
+        - '--path.procfs=/host/proc'
+        - '--path.rootfs=/rootfs'
+        - '--path.sysfs=/host/sys'
+        - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)'
+      networks:
+        - net
+
+    pushgateway:
+      container_name: {{project}}-pushgateway
+      image: {{registry_url}}{{project}}-pushgateway:latest
+      restart: unless-stopped
+      ports:
+        - "{{bind_ip}}9091:9091"
+      networks:
+        - net
+
+sonet_grafana:
+  ldap_host: "{{ sonet_general['ldap_hostname'] }}"
+  ldap_account: "cn={{ sonet_general['ldap_readonly_user_username'] }},{{ sonet_general['ldap_base_dn'] }}"
+  ldap_account_password: "{{ sonet_general['ldap_readonly_user_password'] }}"
+
+  ldap_base_dn: "ou=users,{{ sonet_general['ldap_base_dn'] }}"
+  ldap_search_filter: "(cn=%s)"
+
+  ldap_name: "givenName"
+  ldap_surname: "sn"
+  ldap_username: "cn"
+  ldap_member_of: "memberOf"
+  ldap_email: "email"
+
+  admin_group_dn: "cn=grafana_admins,ou=groups,{{ sonet_general['ldap_base_dn'] }}"
+  editor_group_dn: "cn=grafana_editors,ou=groups,{{ sonet_general['ldap_base_dn'] }}"
+
+  plugins:
+    - flant-statusmap-panel
+    - grafana-piechart-panel
+    - grafana-polystat-panel
+    - michaeldmoore-multistat-panel
+    - vonage-status-panel
+    - yesoreyeram-boomtable-panel
+    - camptocamp-prometheus-alertmanager-datasource
+    - natel-influx-admin-panel
+
+grafana_docker_service: |2
+    grafana:
+      container_name: {{project}}-grafana
+      image: {{registry_url}}{{project}}-grafana:latest
+      user: "0"
+      restart: unless-stopped
+      ports:
+        - "{{bind_ip}}3000:3000"
+      environment:
+        GF_AUTH_BASIC_ENABLED: "false"
+        GF_RENDERING_SERVER_URL: "http://renderer:8081/render"
+        GF_RENDERING_CALLBACK_URL: "http://grafana:3000/"
+        GF_LOG_FILTERS: "rendering:debug"
+        GF_SERVER_ROOT_URL: "https://grafana.{{ sonet_general['domain'] }}/"
+        GF_SERVER_DOMAIN: '{{ sonet_general['domain'] }}'
+      volumes:
+        - {{docker_data_path}}/grafana/var/lib/grafana:/var/lib/grafana
+        - {{docker_data_path}}/grafana/etc/grafana:/etc/grafana
+      entrypoint:
+        - "/entrypoint.sh"
+        - "/run.sh"
+      networks:
+        - net
+
+    renderer:
+      container_name: {{project}}-renderer
+      image: {{registry_url}}{{project}}-grafana-image-renderer:latest
+      restart: unless-stopped
+      environment:
+        ENABLE_METRICS: 'true'
+      depends_on:
+        - grafana
+      networks:
+        - net
+
+portainer_docker_service: |2
+    portainer:
+      image:  {{registry_url}}{{project}}-portainer:latest
+      container_name: {{project}}-portainer
+      restart: always
+      command: --admin-password "{{ sonet_general['portainer_admin_account_password'] }}" -H unix:///var/run/docker.sock
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
+        - /var/run/docker.sock:/var/run/docker.sock
+        - {{docker_data_path}}/portainer/data:/data
+      environment:
+        - VIRTUAL_HOST=portainer.{{ sonet_general['domain'] }}
+        - VIRTUAL_PORT=9000
+      networks:
+        - net
+
+excalidraw_docker_service: |2
+    excalidraw:
+      container_name: {{project}}-excalidraw
+      image:  {{registry_url}}{{project}}-excalidraw:latest
+      restart: always
+      networks:
+        - net

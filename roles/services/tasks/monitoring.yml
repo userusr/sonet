@@ -11,8 +11,10 @@
   vars:
     - service_name: prometheus
     - service_image_dir: '{{ build_path }}/images/prometheus'
+    - service_dirs:
+        - service/prometheus
     - service_copy_files:
-        - { src: "{{ playbook_dir }}/monitoring/prometheus/", dest: "{{ build_path }}/images/prometheus/prometheus/" }
+        - { src: "{{ playbook_dir }}/files/monitoring/prometheus/", dest: "{{ build_path }}/images/prometheus/service/prometheus/" }
   tags: [init, build, push]
 
 - name: 'pushgateway : service init'

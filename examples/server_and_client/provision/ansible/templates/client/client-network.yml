@@ -1,0 +1,15 @@
+---
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: yes
+      dhcp4-overrides:
+        use-dns: no
+    eth1:
+      addresses: ["{{ client_addresses }}"]
+      gateway4: "{{ client_gateway4 }}"
+      nameservers:
+        addresses: ["{{ client_nameserver_addresses }}"]
+        search: ["{{ client_nameserver_search }}"]

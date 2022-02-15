@@ -4,18 +4,24 @@
     src: control-files/docker-compose.yml.j2
     dest: '{{ build_path }}/{{ project }}.yml'
     mode: preserve
-  tags: init
+  tags:
+    - init
+    - init_control_files
 
 - name: generate control files
   template:
     src: control-files/control.sh
     dest: '{{ build_path }}/{{ project }}'
     mode: '+x'
-  tags: init
+  tags:
+    - init
+    - init_control_files
 
 - name: generate Makefile
   template:
     src: control-files/Makefile
     dest: '{{ build_path }}/Makefile'
     mode: preserve
-  tags: init
+  tags:
+    - init
+    - init_control_files

@@ -1,0 +1,76 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+
+  roles:
+    - role: '../../roles/install_docker'
+      tags:
+        - server
+
+  tasks:
+    - name: enable forwarding
+      ansible.posix.sysctl:
+        name: net.ipv4.conf.all.forwarding
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
+      tags:
+        - server
+
+    - name: iptables allow forwarding local network
+      ansible.builtin.iptables:
+        chain: FORWARD
+        source: "{{ iptables_local_network }}"
+        jump: ACCEPT
+      tags:
+        - server
+
+    - name: iptables allow forwarding established connections
+      ansible.builtin.iptables:
+        chain: FORWARD
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+      tags:
+        - server
+
+    - name: iptables masquerading
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        destination: "!{{ iptables_local_network }}"
+        out_interface: eth0
+        jump: MASQUERADE
+      tags:
+        - server
+
+    - name: client network
+      template:
+        src: client/client-network.yml
+        dest: /etc/netplan/60-override.yaml
+      notify: netplan apply
+      tags:
+        - client
+
+    - name: update all packages to their latest version
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+      tags:
+        - install_packages
+
+    - name: install packages
+      ansible.builtin.apt:
+        name: '{{ item }}'
+        state: present
+        update_cache: yes
+        force_apt_get: yes
+      with_items: "{{ install_packages|default([]) }}"
+      tags:
+        - install_packages
+
+  handlers:
+    - name: netplan apply
+      command: netplan apply
+      become: true

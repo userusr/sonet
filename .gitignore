@@ -1,16 +1,3 @@
-inventories/*
-!inventories/sonet.local
-inventories/sonet.local/build/*
-!inventories/sonet.local/build/.keep
-inventories/sonet.local/pki/*
-!inventories/sonet.local/pki/.keep*
-registry/*
-!registry/.keep
-inventories/sonet.local/redmine/plugins/*
-!inventories/sonet.local/redmine/plugins/.keep
-inventories/sonet.local/redmine/themes/*
-!inventories/sonet.local/redmine/themes/.keep
-
 # environment variables
 .env
 
@@ -21,6 +8,12 @@ venv
 build/*
 !build/.keep
 
+configs/sonet_local/files/redmine/plugins/*
+!configs/sonet_local/files/redmine/plugins/.keep
+configs/sonet_local/files/redmine/themes/*
+!configs/sonet_local/files/redmine/themes/.keep
+configs/sonet_local/files/nextcloud/apps/*
+!configs/sonet_local/files/nextcloud/apps/.keep
 # IDE stuff
 .vscode
 .idea/
@@ -30,3 +23,6 @@ docs/_build/
 
 # VIM swp files
 *.swp
+
+# Vagrant
+.vagrant

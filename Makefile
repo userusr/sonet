@@ -5,9 +5,9 @@ PROJECT ?= sonet
 # Project version
 VERSION ?= 0.0.1
 # Ansible inventory file
-INVENTORY ?= inventories/sonet.local/inventory
+INVENTORY ?= ./configs/sonet_local/inventory.yml
 # Ansible playbook
-PLAYBOOK ?= inventories/sonet.local/playbook.yml
+PLAYBOOK ?= ./configs/sonet_local/playbook.yml
 #
 LOCAL_DOCKER_REGISTRY_ADDR ?= registry.sonet.local
 #
@@ -18,6 +18,7 @@ LOCAL_DOCKER_REGISTRY_BIND_IP ?= 127.0.0.1
 ANSIBLE_ASK_BECOME_PASS ?= 0
 #
 ANSIBLE_VAULT_PASSWORD ?= sonet
+export ANSIBLE_VAULT_PASSWORD
 #
 ANSIBLE_VAULT_CLIENT_SCRIPT ?= ./tools/vault-env-client.py
 #
@@ -81,6 +82,7 @@ _build:
 		--inventory $(INVENTORY) \
 		$(ANSIBLE_ASK_BECOME_PASS_PARAM) \
 		--tags '$(TAGS)' \
+		--skip-tags '$(SKIP_TAGS)' \
 		--extra-vars '{ $(ANSIBLE_ADD_VARS), $(ANSIBLE_VARS) }'
 
 help:
@@ -132,16 +134,24 @@ registry-stop: ## stop local docker registry
 	docker rm --force ${REGISTRY_CONTAINER_NAME}
 
 init: ANSIBLE_ADD_VARS="dummy": true
-init: TAGS=init, generate
+init: TAGS=init
+init: SKIP_TAGS=skip-init
 init: | $(PROJECT) _build  ## create folders and generate configs
 
 build: ANSIBLE_ADD_VARS="dummy": true
 build: TAGS=build
+build: SKIP_TAGS=skip-build
 build: | $(PROJECT) _build  ## build all docker images
 
 push: ANSIBLE_ADD_VARS="dummy": true
 push: TAGS=push
+push: SKIP_TAGS=skip-push
 push: | $(PROJECT) _build  ## push docker images to local registry
+
+run: ANSIBLE_ADD_VARS="dummy": true
+run: TAGS=run
+run: SKIP_TAGS=skip-run
+run: | $(PROJECT) _build  ## push docker images to local registry
 
 .PHONY: venv docs $(PROJECT)
 

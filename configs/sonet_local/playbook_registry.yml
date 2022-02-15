@@ -1,0 +1,29 @@
+---
+##
+# ansible-playbook configs/sonet_local/playbook_registry.yml -i ./inventory/ --ask-become-pass
+#
+- name: "add hosts to /etc/hosts"
+  hosts: sonet_local
+  become: true
+  tasks:
+    - name: add local registry to /etc/hosts
+      ansible.builtin.lineinfile:
+        dest=/etc/hosts
+        regexp='^{{ item.ip }}\s+{{ item.host }}$'
+        line="{{ item.ip }} {{ item.host }}"
+        state=present
+      with_items:
+        - { ip: "127.0.0.1", host: "registry.sonet.local" }
+
+- name: run local docker registry
+  hosts: sonet_local
+  tasks:
+    - name: run local docker registry
+      community.docker.docker_container:
+        name: local-registry
+        image: registry:2
+        state: started
+        ports:
+          - "127.0.0.1:5000:5000"
+        volumes:
+          - ../../build/sonet_local/registry:/var/lib/registry

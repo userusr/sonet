@@ -1,0 +1,29 @@
+---
+##
+# ansible-playbook configs/sonet_local/playbook_hosts.yml -i ./inventory/ --ask-become-pass
+#
+- name: "add hosts to /etc/hosts"
+  hosts: sonet_local
+  become: true
+  tasks:
+    - name: add services to /etc/hosts
+      ansible.builtin.lineinfile:
+        dest=/etc/hosts
+        regexp='^{{ item.ip }}\s+{{ item.host }}$'
+        line="{{ item.ip }} {{ item.host }}"
+        state=present
+      with_items:
+        - { ip: "127.0.0.1", host: "gitlab.sonet.local" }
+        - { ip: "127.0.0.1", host: "mattermost.sonet.local" }
+        - { ip: "127.0.0.1", host: "mail.sonet.local" }
+        - { ip: "127.0.0.1", host: "redmine.sonet.local" }
+        - { ip: "127.0.0.1", host: "ldapadmin.sonet.local" }
+        - { ip: "127.0.0.1", host: "pki.sonet.local" }
+        - { ip: "127.0.0.1", host: "excalidraw.sonet.local" }
+        - { ip: "127.0.0.1", host: "owncloud.sonet.local" }
+        - { ip: "127.0.0.1", host: "nextcloud.sonet.local" }
+        - { ip: "127.0.0.1", host: "onlyoffice.sonet.local" }
+        - { ip: "127.0.0.1", host: "drawio.sonet.local" }
+        - { ip: "127.0.0.1", host: "portainer.sonet.local" }
+        - { ip: "127.0.0.1", host: "adminer.sonet.local" }
+        - { ip: "127.0.0.1", host: "grafana.sonet.local" }

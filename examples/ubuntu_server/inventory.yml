@@ -1,0 +1,10 @@
+---
+all:
+  hosts:
+    ubuntu_server:
+      ansible_connection: ssh
+      ansible_python_interpreter: python3
+      ansible_host: 192.168.56.101
+      ansible_port: 22
+      ansible_user: 'vagrant'
+      ansible_ssh_private_key_file: './examples/ubuntu_server/.vagrant/machines/sonet_ubuntu_server/virtualbox/private_key'

@@ -1,0 +1,141 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+MACHINES = {
+    :sonet_standalone_server => {
+        :box_name => "bento/ubuntu-20.04",
+        :host_name => 'sonet-server',
+        :sonet_docker_bind_ip => '192.168.15.101',
+        :private_networks => [
+            {ip: '192.168.15.101', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "sonet-net"},
+        ]
+    },
+    :sonet_client => {
+        :box_name => "bento/ubuntu-20.04",
+        :host_name => 'sonet-client',
+        :private_networks => [
+            {ip: '192.168.15.10', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "sonet-net"},
+        ]
+    },
+}
+
+Vagrant.configure("2") do |config|
+    MACHINES.each do |boxname, boxconfig|
+        config.vm.define boxname do |box|
+
+            box.vm.provider "virtualbox"
+            box.vm.box_check_update = false
+
+            box.vm.box = boxconfig[:box_name]
+            box.vm.host_name = boxconfig[:host_name]
+
+            boxconfig[:private_networks].each do |ipconf|
+                box.vm.network "private_network", ipconf
+            end
+
+            case boxname.to_s
+            when "sonet_standalone_server"
+                ##
+                #  Запуск конфигурации:
+                #
+                #  vagrant provision sonet_standalone_server
+                #
+                box.vm.provider "virtualbox" do |vb|
+                  vb.memory = "4096"
+                #   vb.memory = "8192"
+                end
+
+                box.vm.provision "ansible" do |ansible|
+                  ansible.playbook = "provision/ansible/playbook.yml"
+                  ansible.tags ="docker"
+                  ansible.verbose = true
+                  ansible.extra_vars = {
+                    docker_compose_version: "1.29.2",
+                    docker_users: ["vagrant"],
+                  }
+                end
+
+                box.vm.provision "shell" do |s|
+                  s.path = "provision/shell/install_sonet.sh"
+                  s.args = [
+                      boxconfig[:sonet_docker_bind_ip],
+                    # Сервисы можно запускать по отдельности, если ничего не указано
+                    # будут запущены все сервисы.
+                    #
+                    # На слабой виртуалке gitlab и nextcloud не запускается
+                      'coredns',
+                      'openldap',
+                      'phpldapadmin',
+                      'adminer',
+                      'redmine',
+                      'caddy',
+                      'storage',
+                      'mailserv',
+                      'roundcube',
+                    # 'gitlab',
+                    # 'nextcloud',
+                      'excalidraw',
+                      'portainer',
+                    #  'prometheus',
+                    #  'grafana',
+                    ]
+                  s.privileged = true
+                end
+
+                box.vm.provision "ansible" do |ansible|
+                  ansible.playbook = "provision/ansible/playbook.yml"
+                  ansible.tags ="server"
+                  ansible.extra_vars = {
+                    iptables_local_network: "192.168.15.0/24"
+                  }
+                  ansible.verbose = true
+                end
+
+            when "sonet_client"
+                box.vm.provider "virtualbox" do |vb|
+                  vb.gui = true
+                  vb.memory = "2048"
+                  vb.customize ["modifyvm", :id, "--vram", "12"]
+                  vb.customize ["modifyvm", :id, "--graphicscontroller", "vmsvga"]
+                  vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+                  vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+                end
+
+                box.vm.provision "ansible" do |ansible|
+                  ansible.playbook = "provision/ansible/playbook.yml"
+                  ansible.verbose = true
+                  ansible.tags = "install_packages"
+                  ansible.extra_vars = {
+                    install_packages: [
+                        "xorg",
+                        "xserver-xorg-video-qxl",
+                        "xserver-xorg-video-fbdev",
+                        "xserver-xorg-video-vmware",
+                        "xfce4",
+                        "xfce4-terminal",
+                        "lightdm",
+                        "lightdm-gtk-greeter",
+                        "xfce4-whiskermenu-plugin",
+                        "xfce4-taskmanager",
+                        "menulibre",
+                        "firefox",
+                        "filezilla",
+                    ],
+                  }
+                end
+
+                box.vm.provision "ansible" do |ansible|
+                  ansible.playbook = "provision/ansible/playbook.yml"
+                  ansible.tags ="client"
+                  ansible.verbose = true
+                  ansible.extra_vars = {
+                    client_addresses: "192.168.15.10/24",
+                    client_gateway4: "192.168.15.101",
+                    client_nameserver_addresses: "192.168.15.101",
+                    client_nameserver_search: "sonet.local"
+                  }
+                end
+            end
+        end
+    end
+end

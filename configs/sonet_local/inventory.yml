@@ -1,0 +1,6 @@
+---
+all:
+  hosts:
+    sonet_local:
+      ansible_connection: local
+      ansible_python_interpreter: python3

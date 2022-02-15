@@ -49,10 +49,10 @@
   tags: [init, skip_ansible_lint]
 
 - name: '{{ service_name }} : copy files'
-  copy:
-    src: "{{ item['src'] }}"
-    dest: "{{ item['dest'] }}"
-    mode: 0755
+  include_tasks: helper_check_and_copy.yml
+  vars:
+    copy_source: "{{ item['src'] }}"
+    copy_destination: "{{ item['dest'] }}"
   loop: '{{ service_copy_files|default([]) }}'
   tags: init
 
@@ -73,38 +73,79 @@
   loop: '{{ service_copy_certs|default([]) }}'
   tags: init
 
-- name: '{{ service_name }} : create docker image'
-  shell: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
-  when: docker_registry_url is defined
-  register: shell_output
-  tags: [build, skip_ansible_lint]
+- name: "{{ service_name }} : build \"{{ docker_registry_url | default('') }}{{ docker_registry_url | default(false) | ternary('/', '') }}{{ project }}-{{ service_name }}\""
+  community.docker.docker_image:
+    name: "{{ docker_registry_url | default('') }}{{ docker_registry_url | default(false) | ternary('/', '') }}{{ project }}-{{ service_name }}"
+    build:
+      path: "{{ service_image_dir }}"
+    tag: latest
+    source: build
+    force_source: yes
+    state: present
+    repository: "{{ docker_registry_url | default('') }}"
+    use_ssh_client: yes # for connection via ssh://vagrant@192.168.1.1
+    debug: True
+  register: build_results
+  tags:
+    - build
 
-- name: '{{ service_name }} : debug : create docker image'
-  ansible.builtin.debug:
-    var: shell_output.cmd
-  when: docker_registry_url is defined
-  tags: [build, skip_ansible_lint]
+- name: '{{ service_name }} : debug build'
+  debug:
+    var:  build_results
+  tags:
+    - build-debug
 
-- name: '{{ service_name }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
-  command: "docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest"
-  when: docker_registry_url is defined
-  register: shell_output
-  tags: push
+- name: "{{ service_name }} : push \"{{ docker_registry_url | default('') }}{{ docker_registry_url | default(false) | ternary('/', '') }}{{ project }}-{{ service_name }}\""
+  community.docker.docker_image:
+    name: "{{ docker_registry_url | default('') }}{{ docker_registry_url | default(false) | ternary('/', '') }}{{ project }}-{{ service_name }}"
+    tag: latest
+    source: local
+    state: present
+    repository: "{{ docker_registry_url | default('') }}"
+    use_ssh_client: yes # for connection via ssh://vagrant@192.168.1.1
+    debug: True
+  register: push_results
+  tags:
+    - push
 
-- name: '{{ service_name }} : debug : push docker image'
-  ansible.builtin.debug:
-    var: shell_output.cmd
-  when: docker_registry_url is defined
-  tags: push
+- name: '{{ service_name }} : debug push'
+  debug:
+    var:  push_results
+  tags:
+    - push-debug
 
-- name: '{{ service_name }} : create docker image'
-  shell: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service_name }}:latest'
-  when: docker_registry_url is not defined
-  register: shell_output
-  tags: [build, skip_ansible_lint]
+# - name: '{{ service_name }} : create docker image'
+#   shell: 'docker build {{ service_image_dir }}/ --tag {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
+#   when: docker_registry_url is defined
+#   register: shell_output
+#   tags: [build, skip_ansible_lint]
 
-- name: '{{ service_name }} : debug : create docker image'
-  ansible.builtin.debug:
-    var: shell_output.cmd
-  when: docker_registry_url is not defined
-  tags: [build, skip_ansible_lint]
+# - name: '{{ service_name }} : debug : create docker image'
+#   ansible.builtin.debug:
+#     var: shell_output.cmd
+#   when: docker_registry_url is defined
+#   tags: [build, skip_ansible_lint]
+
+# - name: '{{ service_name }} : push docker image {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest'
+#   command: "docker push {{ docker_registry_url }}/{{ project }}-{{ service_name }}:latest"
+#   when: docker_registry_url is defined
+#   register: shell_output
+#   tags: push
+
+# - name: '{{ service_name }} : debug : push docker image'
+#   ansible.builtin.debug:
+#     var: shell_output.cmd
+#   when: docker_registry_url is defined
+#   tags: push
+
+# - name: '{{ service_name }} : create docker image'
+#   shell: 'docker build {{ service_image_dir }}/ --tag {{ project }}-{{ service_name }}:latest'
+#   when: docker_registry_url is not defined
+#   register: shell_output
+#   tags: [build, skip_ansible_lint]
+
+# - name: '{{ service_name }} : debug : create docker image'
+#   ansible.builtin.debug:
+#     var: shell_output.cmd
+#   when: docker_registry_url is not defined
+#   tags: [build, skip_ansible_lint]

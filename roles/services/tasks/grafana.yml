@@ -4,8 +4,11 @@
   vars:
     - service_name: grafana
     - service_image_dir: '{{ build_path }}/images/grafana'
+    - service_dirs:
+        - service/grafana/provisioning
+        - service/grafana/conf
     - service_copy_files:
-        - { src: "{{ playbook_dir }}/monitoring/grafana/provisioning/", dest: "{{ build_path }}/images/grafana/provisioning/" }
+        - { src: "{{ playbook_dir }}/files/monitoring/grafana/provisioning/", dest: "{{ build_path }}/images/grafana/service/grafana/provisioning/" }
   tags: [init, build, push]
 
 - name: 'grafana-image-renderer : service init'

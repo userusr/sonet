@@ -19,6 +19,9 @@
   when: docker_bind_ip is undefined
   tags: init
 
+- debug:
+    var: bind_ip
+
 - name: set 'registry_url' if 'docker_registry_url' is defined
   ansible.builtin.set_fact:
     registry_url: "{{ docker_registry_url + '/' }}"
@@ -31,9 +34,12 @@
   when: docker_registry_url is undefined
   tags: init
 
+- debug:
+    var: registry_url
+
 - name: "setup pki"
   include_tasks: 'setup_pki.yml'
-  when: generate_service_certs
+  when: generate_service_certs is defined and generate_service_certs == True
   tags: init
 
 - name: "include services"

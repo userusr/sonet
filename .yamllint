@@ -3,6 +3,8 @@ extends: default
 
 ignore: |
   venv
+  .vagrant
+  build
 
 rules:
   # 80 chars should be enough, but don't fail if a line is longer

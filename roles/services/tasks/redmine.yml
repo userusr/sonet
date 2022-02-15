@@ -7,6 +7,9 @@
     - service_dirs:
         - service/redmine/plugins
         - service/redmine/themes
+    - service_copy_files:
+        - { src: "{{ playbook_dir }}/files/redmine/plugins/", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/" }
+        - { src: "{{ playbook_dir }}/files/redmine/themes/", dest: "{{ build_path }}/images/redmine/service/redmine/themes/" }
   tags: [init, build, push]
 
 - name: 'redminedb : service init'
@@ -19,14 +22,4 @@
 - name: 'redmine : get plugins and themes'
   include_tasks: helper_get_url.yml
   loop: "{{ sonet_redmine['plugins_and_themes']|default([]) }}"
-  tags: init
-
-- name: 'redmine : copy plugins'
-  copy:
-    src: "{{ item['src'] }}"
-    dest: "{{ item['dest'] }}"
-    mode: 0775
-  loop:
-    - { src: "{{ playbook_dir }}/redmine/plugins/", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/" }
-    - { src: "{{ playbook_dir }}/redmine/themes/", dest: "{{ build_path }}/images/redmine/service/redmine/themes/" }
   tags: init

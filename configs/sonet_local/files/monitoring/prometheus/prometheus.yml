@@ -1,0 +1,62 @@
+---
+global:
+  scrape_interval: 60s
+  evaluation_interval: 60s
+
+# rule_files:
+#   - 'alerts_general.yml'
+#   - 'alerts/*.yml'
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "localhost:9090"
+        replacement: "prometheus"
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "cadvisor:8080"
+        replacement: "cadvisor"
+
+  - job_name: 'pushgateway'
+    honor_labels: true
+    static_configs:
+      - targets: ['pushgateway:9091']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "pushgateway:9091"
+        replacement: "pushgateway"
+
+  - job_name: 'node-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['node-exporter:9100']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "node-exporter:9100"
+        replacement: "node-exporter"
+
+  - job_name: 'caddy'
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scheme: http
+    static_configs:
+      - targets: ['caddy:2019']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: "caddy:2019"
+        replacement: "caddy"

@@ -1,0 +1,61 @@
+---
+- name: "control_files : create build folder '{{ build_path }}'"
+  file:
+    path: '{{ build_path }}'
+    state: directory
+    recurse: yes
+    mode: 0775
+  tags:
+    - init
+
+- name: "control_files : set 'bind_ip' if 'docker_bind_ip' is defined"
+  ansible.builtin.set_fact:
+    bind_ip: "{{ docker_bind_ip + ':' }}"
+  when: docker_bind_ip is defined
+  tags:
+    - init
+
+- name: "control_files : set 'bind_ip' if 'docker_bind_ip' is undefined"
+  ansible.builtin.set_fact:
+    bind_ip: ""
+  when: docker_bind_ip is undefined
+  tags:
+    - init
+
+- name: "control_files : print 'bind_ip'"
+  ansible.builtin.debug:
+    msg: "docker_bind_ip: {{ docker_bind_ip|default('undef') }} bind_ip: {{ bind_ip }}"
+
+- name: "control_files : set 'registry_url' if 'docker_registry_url' is defined"
+  ansible.builtin.set_fact:
+    registry_url: "{{ docker_registry_url + '/' }}"
+  when: docker_registry_url is defined
+  tags:
+    - init
+
+- name: "control_files : set 'registry_url' if 'docker_registry_url' is undefined"
+  ansible.builtin.set_fact:
+    registry_url: ""
+  when: docker_registry_url is undefined
+  tags:
+    - init
+
+- name: "control_files : print 'docker_registry_url'"
+  ansible.builtin.debug:
+    msg: "docker_registry_url: {{ docker_registry_url|default('undef') }} registry_url: {{ registry_url }}"
+
+- name: "control_files : generate composer file"
+  template:
+    src: control_files/docker-compose.yml.j2
+    dest: '{{ build_path }}/{{ project }}.yml'
+    mode: preserve
+  tags:
+    - init
+
+- name: "control_files : generate control file"
+  template:
+    src: control_files/control.sh
+    dest: '{{ build_path }}/{{ project }}'
+    mode: '+x'
+  tags:
+    - init

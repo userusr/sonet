@@ -1,0 +1,30 @@
+---
+##
+# ansible-playbook examples/ubuntu_server/playbook_hosts.yml --ask-become-pass
+#
+- name: "add hosts to /etc/hosts"
+  hosts: 127.0.0.1
+  connection: local
+  become: true
+  tasks:
+    - name: add services to /etc/hosts
+      ansible.builtin.lineinfile:
+        dest=/etc/hosts
+        regexp='^{{ item.ip }}\s+{{ item.host }}$'
+        line="{{ item.ip }} {{ item.host }}"
+        state=present
+      with_items:
+        - { ip: "192.168.56.101", host: "gitlab.sonet.local" }
+        - { ip: "192.168.56.101", host: "mattermost.sonet.local" }
+        - { ip: "192.168.56.101", host: "mail.sonet.local" }
+        - { ip: "192.168.56.101", host: "redmine.sonet.local" }
+        - { ip: "192.168.56.101", host: "ldapadmin.sonet.local" }
+        - { ip: "192.168.56.101", host: "pki.sonet.local" }
+        - { ip: "192.168.56.101", host: "excalidraw.sonet.local" }
+        - { ip: "192.168.56.101", host: "owncloud.sonet.local" }
+        - { ip: "192.168.56.101", host: "nextcloud.sonet.local" }
+        - { ip: "192.168.56.101", host: "onlyoffice.sonet.local" }
+        - { ip: "192.168.56.101", host: "drawio.sonet.local" }
+        - { ip: "192.168.56.101", host: "portainer.sonet.local" }
+        - { ip: "192.168.56.101", host: "adminer.sonet.local" }
+        - { ip: "192.168.56.101", host: "grafana.sonet.local" }

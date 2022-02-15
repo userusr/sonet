@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+MACHINES = {
+    ##
+    # you need to create a host-only adapter with address 192.168.56.101/24
+    :sonet_ubuntu_server => {
+        :box_name => "bento/ubuntu-20.04",
+        :host_name => 'server',
+        :private_networks => [
+            {ip: '192.168.56.101', adapter: 2, netmask: "255.255.255.0", name: "vboxnet0"},
+        ]
+    }
+}
+
+Vagrant.configure("2") do |config|
+    MACHINES.each do |boxname, boxconfig|
+        config.vm.define boxname do |box|
+
+            box.vm.provider "virtualbox"
+            box.vm.box_check_update = false
+
+            box.vm.box = boxconfig[:box_name]
+            box.vm.host_name = boxconfig[:host_name]
+
+            boxconfig[:private_networks].each do |ipconf|
+                box.vm.network "private_network", ipconf
+            end
+
+            case boxname.to_s
+            when "sonet_ubuntu_server"
+                box.vm.provider "virtualbox" do |vb|
+                  vb.memory = "4096"
+                end
+            end
+        end
+    end
+end

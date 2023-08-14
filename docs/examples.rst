@@ -66,7 +66,7 @@
 
     .. code-block:: bash
 
-        ./build/sonet_local/sonet up
+        ./build/sonet_local/source/sonet up
 
 #.  проверим, все ли работает:
 
@@ -125,9 +125,9 @@
 
     .. code-block:: bash
 
-        ./build/sonet_local/sonet down
-        ./build/sonet_local/sonet clean
-        ./build/sonet_local/sonet clean-images
+        ./build/sonet_local/source/sonet down
+        ./build/sonet_local/source/sonet clean
+        ./build/sonet_local/source/sonet clean-images
 
 #.  удалим записи в ``/etc/hosts``
 

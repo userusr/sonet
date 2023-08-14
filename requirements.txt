@@ -32,7 +32,7 @@ pycparser==2.20
     # via cffi
 pyparsing==2.4.7
     # via packaging
-pyyaml==5.4.1
+pyyaml==6.0.1
     # via ansible-core
 requests==2.25.1
     # via docker-py

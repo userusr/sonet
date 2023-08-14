@@ -105,7 +105,7 @@ shift $((OPTIND-1))
 case "$1" in
   up)
     shift
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       up \
@@ -113,14 +113,14 @@ case "$1" in
       $@
   ;;
   down)
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       down
   ;;
   start)
     shift
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       start \
@@ -128,7 +128,7 @@ case "$1" in
   ;;
   stop)
     shift
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       stop \
@@ -136,7 +136,7 @@ case "$1" in
   ;;
   restart)
     shift
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       restart \
@@ -144,7 +144,7 @@ case "$1" in
   ;;
   exec)
     shift
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       exec \
@@ -152,7 +152,7 @@ case "$1" in
   ;;
   logs)
     shift
-    docker-compose \
+    docker compose \
       --file ${DIR}/{{project}}.yml \
       --project-name {{project}} \
       logs \

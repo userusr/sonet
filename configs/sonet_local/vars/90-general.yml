@@ -48,7 +48,7 @@ sonet_general:
   # https://hub.docker.com/r/portainer/portainer-ce/tags?page=1&ordering=last_updated
   docker_tag_portainer: "linux-amd64-2.1.1"
   # https://hub.docker.com/_/redmine?tab=tags&page=1&ordering=last_updated
-  docker_tag_redmine: "4.2.1-passenger"
+  docker_tag_redmine: "4.2.10-passenger"
   # https://hub.docker.com/_/postgres?tab=tags&page=1&ordering=last_updated
   docker_tag_redmine_postgres: "13"
   # https://hub.docker.com/r/roundcube/roundcubemail/tags?page=1&ordering=last_updated
@@ -634,13 +634,13 @@ sonet_redmine:
   smtp_user_name: 'redmine'
   smtp_password: "{{ sonet_vault['redmine_admin_mail_account_password'] }}"
   plugins_and_themes:
-    - { url: "https://github.com/fraoustin/RTMaterial/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/RTMaterial.zip" }
+    - { url: "https://github.com/fraoustin/RTMaterial/archive/refs/tags/0.1.8.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/RTMaterial.zip" }
     - { url: "https://github.com/Nitrino/flatly_light_redmine/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/flatly_light_redmine.zip" }
-    - { url: "https://github.com/mrliptontea/PurpleMine2/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/PurpleMine2.zip" }
+    - { url: "https://github.com/mrliptontea/PurpleMine2/archive/refs/tags/v2.15.0.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/PurpleMine2.zip" }
     - { url: "https://github.com/makotokw/redmine-theme-gitmike/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/themes/redmine-theme-gitmike.zip" }
-    - { url: "https://github.com/AlphaNodes/additional_tags/archive/refs/heads/main.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/additional_tags.zip" }
-    - { url: "https://github.com/AlphaNodes/additionals/archive/refs/heads/main.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/additionals.zip" }
-    - { url: "https://github.com/danmunn/redmine_dmsf/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/redmine_dmsf.zip" }
+    - { url: "https://github.com/alphanodes/additional_tags/archive/refs/tags/1.0.4.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/additional_tags.zip" }
+    - { url: "https://github.com/alphanodes/additionals/archive/refs/tags/3.0.5.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/additionals.zip" }
+    - { url: "https://github.com/danmunn/redmine_dmsf/archive/refs/tags/v2.4.11.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/redmine_dmsf.zip" }
     - { url: "https://github.com/akpaevj/dashboard/archive/refs/heads/master.zip", dest: "{{ build_path }}/images/redmine/service/redmine/plugins/dashboard.zip" }
 
 redmine_docker_service: |2

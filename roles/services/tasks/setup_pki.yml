@@ -15,7 +15,7 @@
   git:
     repo: https://github.com/OpenVPN/easy-rsa.git
     dest: '{{ pki_path }}/easy-rsa'
-    version: v3.0.8
+    version: v3.0.4
   when: not pki_easyrsa_dir.stat.exists
   tags: init
 
